@@ -635,8 +635,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3d7d1218ccd214db5f61542cea8c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  seed: 0
   blockCountX: 3
   blockCountZ: 2
   road: {fileID: 7799802082301009339, guid: 4e375f0103b52564aab24819b604a835, type: 3}
   crossing: {fileID: 4005743241734848231, guid: 767244c251a7bd24180332c707fc2f9a, type: 3}
-  block: {fileID: 8653314378726140186, guid: d0c7fd89e9c5a9148869da60a75f30e6, type: 3}
+  blocks:
+  - {fileID: 8653314378726140186, guid: d0c7fd89e9c5a9148869da60a75f30e6, type: 3}
+  - {fileID: 2739048963646406393, guid: 76aa9d984df7c924daa0ba5caff5dcd2, type: 3}
+  - {fileID: 7357004365906536279, guid: 2acceb050a661794b81ff686fc5df79f, type: 3}
+  - {fileID: 820700259100906694, guid: 8b46110caed814d42b0e69d4a5773ec7, type: 3}
+  - {fileID: 8361419888535405638, guid: ca57f293216ba2d4c8aede0230f66a47, type: 3}
+  - {fileID: 6681703321835125016, guid: a0960b786d488bf43b10c1458329f097, type: 3}
