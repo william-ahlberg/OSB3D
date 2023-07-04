@@ -340,7 +340,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 938047756}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 40, y: 25, z: -70}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -636,14 +636,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seed: 0
-  blockCountX: 3
-  blockCountZ: 2
+  blockCountX: 10
+  blockCountZ: 10
+  blockFiles:
+  - {fileID: 4900000, guid: ed8ee26b856cec14c95eae4d31882fcf, type: 3}
+  - {fileID: 4900000, guid: e5178256e9a64b648aa3306bf0452684, type: 3}
+  - {fileID: 4900000, guid: eb841229e89d8bf4cbb25c2036f551cf, type: 3}
+  - {fileID: 4900000, guid: ac6ecfde9d56d154ea79806197087393, type: 3}
+  - {fileID: 4900000, guid: 3bbbe854125a1aa4eae1b773f21c1bbb, type: 3}
+  - {fileID: 4900000, guid: bb9bebfe8c0462548ac586681a3e8fc0, type: 3}
   road: {fileID: 7799802082301009339, guid: 4e375f0103b52564aab24819b604a835, type: 3}
   crossing: {fileID: 4005743241734848231, guid: 767244c251a7bd24180332c707fc2f9a, type: 3}
-  blocks:
-  - {fileID: 8653314378726140186, guid: d0c7fd89e9c5a9148869da60a75f30e6, type: 3}
-  - {fileID: 2739048963646406393, guid: 76aa9d984df7c924daa0ba5caff5dcd2, type: 3}
-  - {fileID: 7357004365906536279, guid: 2acceb050a661794b81ff686fc5df79f, type: 3}
-  - {fileID: 820700259100906694, guid: 8b46110caed814d42b0e69d4a5773ec7, type: 3}
-  - {fileID: 8361419888535405638, guid: ca57f293216ba2d4c8aede0230f66a47, type: 3}
-  - {fileID: 6681703321835125016, guid: a0960b786d488bf43b10c1458329f097, type: 3}
+  groundPlate: {fileID: 8653314378726140186, guid: d0c7fd89e9c5a9148869da60a75f30e6, type: 3}
