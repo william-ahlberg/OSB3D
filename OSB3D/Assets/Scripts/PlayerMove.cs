@@ -5,41 +5,35 @@ using UnityEngine;
 public class PlayerMove : MonoBehaviour
 {
     public float speed;
+    public Transform cameraPosition;
 
     private KeyCode[] letterKeys;
     private KeyCode[] arrowKeys;
     private Vector3[] moves;
 
-    /* RIGID BODY NOT USED
-    private Rigidbody ball;
-    private float xAxis;
-    private float zAxis;*/
+    private Rigidbody player;
+    private Vector3 playerMove;
 
-    void Awake()
+    void Start()
     {
-        letterKeys = new KeyCode[] { KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.S };
-        arrowKeys = new KeyCode[] { KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.UpArrow, KeyCode.DownArrow };
-        moves = new Vector3[] { Vector3.left, Vector3.right, Vector3.forward, Vector3.back };
-
-        //ball = GetComponent<Rigidbody>(); 
+        player = GetComponent<Rigidbody>();
+        player.freezeRotation = true; 
     }
 
     void Update()
     {
-        for (int i = 0; i < letterKeys.Length; i++)
-        {
-            if (Input.GetKey(letterKeys[i]) || Input.GetKey(arrowKeys[i]))
-            {
-                transform.position += moves[i] * Time.deltaTime * speed;
-            }
-        }
+        Vector3 cameraForward = cameraPosition.forward;
+        cameraForward.y = 0;
 
-        /*xAxis = Input.GetAxis("Horizontal");
-        zAxis = Input.GetAxis("Vertical");*/
+        Vector3 cameraRight = cameraPosition.right;
+        cameraRight.y = 0;
+
+        playerMove = cameraForward * Input.GetAxisRaw("Vertical") + cameraRight * Input.GetAxisRaw("Horizontal");
     }
 
-    /*void FixedUpdate()
+    void FixedUpdate()
     {
-        ball.AddForce(new Vector3(xAxis, 0f, zAxis) * Speed);
-    }*/
+        player.AddForce(playerMove.normalized * speed, ForceMode.Acceleration);
+    }
+
 }

@@ -6,15 +6,17 @@ using UnityEditor;
 
 public class LevelController : MonoBehaviour
 {
+    [Header("City setup")]
     public int seed; 
     public int blockCountX;
     public int blockCountZ;
 
+    [Header("Block .txt-files")]
     public List<TextAsset> blockFiles;
 
+    [Header("Referenced prefabs")]
     public GameObject road;
     public GameObject crossing;
-
     public GameObject groundPlate;
 
     [HideInInspector]
