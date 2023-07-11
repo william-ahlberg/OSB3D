@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 989
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Inspector
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 86
+  controlID: 17
 --- !u!114 &3
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -224,7 +224,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 91
+  controlID: 93
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 92
+  controlID: 94
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -351,22 +351,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts
+    - Assets/Materials/Buildings/Facade
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 78
   m_LastFolders:
-  - Assets/Scripts
+  - Assets/Materials/Buildings/Facade
   m_LastFoldersGridSize: 78
   m_LastProjectPath: C:\Users\julia\Documents\LiU\00\osb3d\OSB3D
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 6e590000
-    m_LastClickedID: 22894
-    m_ExpandedIDs: 000000005c5900005e59000000ca9a3b
+    scrollPos: {x: 0, y: 79}
+    m_SelectedIDs: 7e590000
+    m_LastClickedID: 22910
+    m_ExpandedIDs: 000000005c5900005e5900006659000068590000225a000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -524,9 +524,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 6eabfdff
-      m_LastClickedID: 0
-      m_ExpandedIDs: 72abfdffe2acfdff34fbffffcc570000
+      m_SelectedIDs: 8e570000
+      m_LastClickedID: 22414
+      m_ExpandedIDs: 34fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -809,9 +809,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 1094.6046, y: 198.25626, z: 3.662548}
+    m_Target: {x: -41.22154, y: 10.775237, z: -133.3075}
     speed: 2
-    m_Value: {x: 1094.6046, y: 198.25626, z: 3.662548}
+    m_Value: {x: -41.22154, y: 10.775237, z: -133.3075}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -858,13 +858,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.11784059, y: -0.42429653, z: 0.05527331, w: 0.8963929}
+    m_Target: {x: 0.04497707, y: -0.48074105, z: 0.024023836, w: 0.87566507}
     speed: 2
-    m_Value: {x: 0.11781177, y: -0.42419276, z: 0.05525979, w: 0.89617366}
+    m_Value: {x: 0.04365288, y: -0.4806561, z: 0.023296304, w: 0.87551206}
   m_Size:
-    m_Target: 262.08823
+    m_Target: 73.39215
     speed: 2
-    m_Value: 262.08823
+    m_Value: 73.39215
   m_Ortho:
     m_Target: 1
     speed: 2
