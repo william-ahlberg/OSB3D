@@ -392,7 +392,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &938047757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -750,8 +750,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerGO: {fileID: 1189932533}
-  lookSpeed: 5
-  damping: 2
+  lookSpeed: 2
+  damping: 10
 --- !u!1 &1242952677
 GameObject:
   m_ObjectHideFlags: 0
@@ -996,7 +996,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3d7d1218ccd214db5f61542cea8c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 0
+  seed: 12
   blockCountX: 10
   blockCountZ: 10
   blockFiles:
@@ -1076,7 +1076,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 53cd5fd85f603e443bbee217b0eb5495, type: 2}
+  - {fileID: 2100000, guid: 8af63e1a9efa46f48ad198da7aebed17, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
