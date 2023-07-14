@@ -369,12 +369,14 @@
 -r:"Library/Bee/artifacts/2400b0aE.dag/Unity.VSCode.Editor.ref.dll"
 -r:"Library/Bee/artifacts/2400b0aE.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/2400b0aE.dag/UnityEngine.UI.ref.dll"
-"Assets/AgentCamera.cs"
-"Assets/MoveCamera.cs"
+"Assets/Scripts/Agent/AgentCamera.cs"
 "Assets/Scripts/Agent/AgentController.cs"
 "Assets/Scripts/Agent/BaseAgent.cs"
+"Assets/Scripts/Agent/MoveCamera.cs"
+"Assets/Scripts/Agent/PlayerController.cs"
 "Assets/Scripts/CameraMove.cs"
 "Assets/Scripts/LevelController.cs"
+"Assets/Scripts/MateralSelector.cs"
 "Assets/Scripts/PlayerMove.cs"
 -langversion:9.0
 

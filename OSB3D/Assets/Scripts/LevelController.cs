@@ -19,11 +19,9 @@ public class LevelController : MonoBehaviour
     public GameObject crossing;
     public GameObject groundPlate;
 
-    [HideInInspector]
-    public List<List<Building>> blocks;
-
-    [HideInInspector]
-    public List<List<GameObject>> buildings;
+    Dictionary<string, int> buildingTypes;
+    List<List<GameObject>> buildings;
+    List<List<Building>> blocks;
 
     void Start()
     {
@@ -31,24 +29,23 @@ public class LevelController : MonoBehaviour
         float blockSize = 105;
         float roadWidth = 20;
 
-
-        /*NOTE: buildlingtypes is associated with a building code (0,1,2,..) in the templates, which depends on the order in this list. 
-        Other association would be better, so it is easier to add buildling types, so this needs to be fixed. 
-        For now - do ONLY add new types to the end of the list, undependent on type/spelling. */
-        List<string> buildingTypes = new List<string>() {"BCC30", "BCC40", 
-                                                          "BCS30", "BCS40", 
+        List<string> buildingCodes = new List<string>() {"BCC30", "BCC40",
+                                                          "BCS30", "BCS40",
                                                           "BD20", "BD30",
                                                           "BP10",
-                                                          "BR20", "BR30", "BR40", 
-                                                          "BRV20"}; 
+                                                          "BR20", "BR30", "BR40",
+                                                          "BRV20"};
+        buildingTypes = new Dictionary<string, int>();
 
-        buildings = AllBuildlings(buildingTypes);
+        buildings = AllBuildlings(buildingCodes);
         blocks = TemplateBlocks();
-        GenerateCity(blockSize, roadWidth);
+
+        MateralSelector materialSelector = new MateralSelector(seed);
+        GenerateCity(blockSize, roadWidth, materialSelector);
     }
 
     //Main function to generate city
-    void GenerateCity(float _blockSize, float _roadWidth)
+    void GenerateCity(float _blockSize, float _roadWidth, MateralSelector _materialSelector)
     {
         //adds to count for roads and crossings
         int loopX = blockCountX * 2 - 1;
@@ -73,7 +70,7 @@ public class LevelController : MonoBehaviour
                 //if both even, instatiate a block
                 if ((i % 2 == 0) && (j % 2 == 0))
                 {
-                    newInstance = GenerateBlock();
+                    newInstance = GenerateBlock(_materialSelector);
 
                     newInstance.transform.Translate(new Vector3(currentPosX, 0, currentPosZ));
 
@@ -111,7 +108,7 @@ public class LevelController : MonoBehaviour
         }
     }
 
-    GameObject GenerateBlock()
+    GameObject GenerateBlock(MateralSelector _materialSelector)
     {
         GameObject block;
 
@@ -130,25 +127,28 @@ public class LevelController : MonoBehaviour
         //loop to instantiate all buildings in the block
         for (int i = 0; i < blocks[blocknr].Count; i++)
         {
-            int type = blocks[blocknr][i].BuildingCode;
+            int type = blocks[blocknr][i].TypeIndex;
             int options = buildings[type].Count;
             int chosen = Random.Range(0, options);
 
             GameObject building = Instantiate(buildings[type][chosen], blocks[blocknr][i].Position, Quaternion.identity);
+            _materialSelector.SetMaterials(building);
             building.transform.Rotate(0, blocks[blocknr][i].Rotation, 0, Space.World);
             building.transform.parent = block.transform;
         }
 
-        return block; 
+        return block;
     }
 
     //Function to get all building types in Assets>Prefabs>Buildings (in each folder for each type)
-    List<List<GameObject>> AllBuildlings(List<string> _buildingTypes)
+    List<List<GameObject>> AllBuildlings(List<string> _buildingCodes)
     {
         List<List<GameObject>> buildingLists = new List<List<GameObject>>();
+        int index = 0;
 
-        foreach (string buildingType in _buildingTypes)
+        foreach (string buildingType in _buildingCodes)
         {
+            buildingTypes.Add(buildingType, index);
             string folder = "Assets/Prefabs/Buildings/" + buildingType;
 
             List<GameObject> tempList = new List<GameObject>();
@@ -165,6 +165,7 @@ public class LevelController : MonoBehaviour
             }
 
              buildingLists.Add(tempList);
+             index++; 
         }
 
         return buildingLists;
@@ -188,7 +189,8 @@ public class LevelController : MonoBehaviour
                 List<string> info = new List<string>(line.Split(','));
                 if (info.Count == 5)
                 {
-                    templateBlock.Add(new Building(int.Parse(info[0]), new Vector3(float.Parse(info[1]), float.Parse(info[2]), float.Parse(info[3])), float.Parse(info[4])));
+                    int typeIndex = buildingTypes[info[0]];
+                    templateBlock.Add(new Building(typeIndex, new Vector3(float.Parse(info[1]), float.Parse(info[2]), float.Parse(info[3])), float.Parse(info[4])));
                 }
             }
 
@@ -202,18 +204,18 @@ public class LevelController : MonoBehaviour
 //struct with the information for each building
 public struct Building
 {
-    private int buildingCode;
+    private int typeIndex;
     private Vector3 position;
     private float yRotation;
 
-    public Building(int _buildingCode, Vector3 _Position, float _yRotation)
+    public Building(int _typeIndex, Vector3 _Position, float _yRotation)
     {
-        this.buildingCode = _buildingCode;
+        this.typeIndex = _typeIndex;
         this.position = _Position;
         this.yRotation = _yRotation;
     }
 
-    public int BuildingCode { get { return this.buildingCode; } }
+    public int TypeIndex { get { return this.typeIndex; } }
     public Vector3 Position { get { return this.position; } }
     public float Rotation { get { return this.yRotation; } }
 }

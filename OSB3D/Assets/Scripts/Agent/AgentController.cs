@@ -4,40 +4,42 @@ using UnityEngine;
 
 public class AgentController : MonoBehaviour
 {
+/*
+Defines the agent movement physics
+*/
+
     [Header("Movement")]
-    [SerializeField] float moveSpeed;
-    [SerializeField] float maxSpeed;
-
+    [SerializeField] float moveSpeed = 100f;
+    [SerializeField] float maxSpeed = 10f;
     [SerializeField] float gravityScale = 1f;
-    [SerializeField] float fallGravityMultiplier = 2f;
+    [SerializeField] float groundDrag = 5f;
+    [SerializeField] float jumpForce = 10f;
+    [SerializeField] float jumpCooldown = 0.25f;
+    [SerializeField] float airMultiplier = 0.01f;
 
-
-    [SerializeField] float groundDrag;
-
-    [SerializeField] float jumpForce;
-    [SerializeField] float jumpCooldown;
-    [SerializeField] float airMultiplier;
     bool readyToJump;
-
-    public LayerMask groundLayer;
     bool onGround;
-
+    [SerializeField] LayerMask groundLayer;
+    
+    [SerializeField] bool flyMode = false;
+    [SerializeField] bool manualInput = true;
+    
     [SerializeField] Transform forwardFace;
 
     float horizontalInput;
     float verticalInput;
-
-
-    bool flyMode = false;
-
     Vector3 moveDirection;
+    PlayerController playerController;
 
     Rigidbody rb;
+    float[] actions;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+
+        playerController = GetComponent<PlayerController>();
 
         readyToJump = true;
     }
@@ -45,76 +47,30 @@ public class AgentController : MonoBehaviour
     private void Update()
     {
         // ground check
-        onGround = Physics.Raycast(transform.position, Vector3.down, 1f + 0.3f, groundLayer);
-
-        PlayerInput();
+        onGround = CheckGround();
+        if (manualInput)
+        {
+            actions = playerController.PlayerInput();
+        }
+        else
+        {
+            Debug.Log("Agent actionbuffer not implemented.");
+        }
+        
         SpeedControl();
         // handle drag
+
         if (onGround)
             rb.drag = groundDrag;
         else
             rb.drag = 0;
 
-        //Debug.Log("Ready to jump:" + readyToJump);                 
-        //Debug.Log("On the ground:" + onGround);
     }
 
-    private void FixedUpdate()
-    {
-        MovePlayer();
-    }
-
-    private void PlayerInput()
-    {
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-
-        if (!flyMode)
-        {
-            if (Input.GetKey(KeyCode.Space) && readyToJump && onGround)
-            {
-                readyToJump = false;
-                Jump();
-                Invoke(nameof(ResetJump), jumpCooldown);
-            }
-        }
-        else if (Input.GetKey(KeyCode.Space))            
-        {
-            Fly(1);
-        }
-        else if (Input.GetKey(KeyCode.LeftShift))
-        {
-            Fly(-1);
-        }
-           
-        if (Input.GetKeyDown("t")) 
-        {
-
-            switch (flyMode)
-            {
-                case true:
-                    flyMode = false;
-                    rb.useGravity = true;
-                    Debug.Log("Fly mode off");
-                    break;
-                case false:
-                    Debug.Log("Fly mode on");
-                    flyMode = true;
-                    rb.useGravity = false;
-                    ResetVelocity();
-                    break;
-                default:
-				    break;
-            }
-            
-
-        }
-    }
-
-    public void MovePlayer()
+    public void MoveAgent(float[] actions)
     {
         // calculate movement direction
-        moveDirection = forwardFace.forward * verticalInput + forwardFace.right * horizontalInput;
+        moveDirection = forwardFace.forward * actions[0] + forwardFace.right * actions[1];
 
         // on ground
         if(onGround)
@@ -124,10 +80,30 @@ public class AgentController : MonoBehaviour
         else if(!onGround)
             rb.AddForce(moveDirection.normalized * moveSpeed * airMultiplier, ForceMode.Force);
 
-        if (rb.velocity.y < 0)
+        if (rb.velocity.y <= 0)
         {
-             rb.AddForce(Vector3.down * gravityScale * fallGravityMultiplier, ForceMode.Force);
+            rb.AddForce(Vector3.down * gravityScale, ForceMode.Force);
         }
+
+        if (actions[2] > 0.5f && readyToJump && onGround)
+        {
+            readyToJump = false;
+            Jump();
+            Invoke(nameof(ResetJump), jumpCooldown);
+
+        }
+
+    }
+
+    private bool CheckGround()
+    {
+        return Physics.Raycast(transform.position, Vector3.down, 1f + 0.3f, groundLayer);
+    }
+
+    private void FixedUpdate()
+    {
+        actions = playerController.PlayerInput();
+        MoveAgent(actions);
     }
 
     private void SpeedControl()
