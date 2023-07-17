@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638251839313519416
-    m_Hash: 3738295859
+      ticks: 638251909324935520
+    m_Hash: 1229040562
   m_LockFileStatus:
     m_FilePath: C:/Users/sofie/OneDrive/liu/osb3d/OSB3D/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638251839313599413
-    m_Hash: 601625511
+      ticks: 638251909324945506
+    m_Hash: 3408302620
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
