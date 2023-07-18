@@ -8,5 +8,6 @@ class OSB3DEnv(UnityEnvironment):
         self.seed = seed
         self.env = UnityEnvironment(self.file_name, self.seed)
 
+    def reset(self):
 
 
