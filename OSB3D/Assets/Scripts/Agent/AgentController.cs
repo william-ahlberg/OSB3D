@@ -16,6 +16,10 @@ Defines the agent movement physics
     [SerializeField] float jumpForce = 10f;
     [SerializeField] float jumpCooldown = 0.25f;
     [SerializeField] float airMultiplier = 0.01f;
+    [SerializeField] float sensitivityX = 400f;
+    [SerializeField] float sensitivityY = 400f;
+
+
 
     bool readyToJump;
     bool onGround;
@@ -33,6 +37,10 @@ Defines the agent movement physics
 
     Rigidbody rb;
     float[] actions;
+
+
+    private float rotationX;
+    private float rotationY;
 
     private void Start()
     {
@@ -72,6 +80,9 @@ Defines the agent movement physics
         // calculate movement direction
         moveDirection = forwardFace.forward * actions[0] + forwardFace.right * actions[1];
 
+        // Rotate
+        Rotate(actions);
+
         // on ground
         if(onGround)
             rb.AddForce(moveDirection.normalized * moveSpeed, ForceMode.Force);
@@ -85,7 +96,7 @@ Defines the agent movement physics
             rb.AddForce(Vector3.down * gravityScale, ForceMode.Force);
         }
 
-        if (actions[2] > 0.5f && readyToJump && onGround)
+        if (actions[4] > 0.5f && readyToJump && onGround)
         {
             readyToJump = false;
             Jump();
@@ -117,6 +128,19 @@ Defines the agent movement physics
             rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
         }
     }
+    private void Rotate(float[] actions)
+    {
+        float mouseX = actions[2] * Time.deltaTime * sensitivityX;
+        float mouseY = actions[3] * Time.deltaTime * sensitivityY;
+        rotationY += mouseX;
+        rotationX -= mouseY;
+        rotationX = Mathf.Clamp(rotationX, -90f, 90f);
+        rotationY = rotationY % 360f;
+        transform.rotation = Quaternion.Euler(rotationX,rotationY,0);
+        forwardFace.rotation = Quaternion.Euler(0, rotationY, 0);
+    }
+
+
 
     private void Jump()
     {
