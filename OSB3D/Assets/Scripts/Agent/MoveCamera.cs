@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class MoveCamera : MonoBehaviour
 {
-    Vector3 offset = new Vector3(0f, 0f, 0f);
+    [SerializeField] Vector3 offset = new Vector3(0f, 0f, 0f);
     [SerializeField] Transform cameraPosition;
+    [SerializeField] Transform head;
     // Start is called before the first frame update
     void Start()
     {

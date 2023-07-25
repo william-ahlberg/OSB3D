@@ -29,6 +29,7 @@ Defines the agent movement physics
     [SerializeField] bool manualInput = true;
     
     [SerializeField] Transform forwardFace;
+    [SerializeField] Transform head;
 
     float horizontalInput;
     float verticalInput;
@@ -36,6 +37,7 @@ Defines the agent movement physics
     PlayerController playerController;
 
     Rigidbody rb;
+
     float[] actions;
 
 
@@ -85,11 +87,15 @@ Defines the agent movement physics
 
         // on ground
         if(onGround)
+        {
+            //Debug.Log("On the ground");
             rb.AddForce(moveDirection.normalized * moveSpeed, ForceMode.Force);
-
+        }
         // in air
         else if(!onGround)
+        {
             rb.AddForce(moveDirection.normalized * moveSpeed * airMultiplier, ForceMode.Force);
+        }
 
         if (rb.velocity.y <= 0)
         {
@@ -103,12 +109,19 @@ Defines the agent movement physics
             Invoke(nameof(ResetJump), jumpCooldown);
 
         }
+        CheckEdge();
 
+    }
+
+    private bool CheckEdge()
+    {
+        //Debug.Log(Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, Mathf.Infinity, groundLayer));
+        return true;
     }
 
     private bool CheckGround()
     {
-        return Physics.Raycast(transform.position, Vector3.down, 1f + 0.3f, groundLayer);
+        return Physics.Raycast(transform.position, Vector3.down, 1.7f + 0.3f, groundLayer);
     }
 
     private void FixedUpdate()
@@ -136,7 +149,7 @@ Defines the agent movement physics
         rotationX -= mouseY;
         rotationX = Mathf.Clamp(rotationX, -90f, 90f);
         rotationY = rotationY % 360f;
-        transform.rotation = Quaternion.Euler(rotationX,rotationY,0);
+        head.rotation = Quaternion.Euler(rotationX,rotationY,0);
         forwardFace.rotation = Quaternion.Euler(0, rotationY, 0);
     }
 

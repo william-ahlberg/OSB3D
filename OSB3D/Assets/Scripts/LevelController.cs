@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
+using System.Globalization;
 
 public class LevelController : MonoBehaviour
 {
@@ -25,6 +26,10 @@ public class LevelController : MonoBehaviour
 
     void Start()
     {
+        CultureInfo englishUSCulture = new CultureInfo("en-US"); // For Swedish computers to accept dot decimal seperation
+
+        System.Threading.Thread.CurrentThread.CurrentCulture = englishUSCulture;
+
         //fixed numbers, the size of the 3d-assets
         float blockSize = 105;
         float roadWidth = 20;
@@ -115,7 +120,7 @@ public class LevelController : MonoBehaviour
         //randomizes which block to create
         int blocknr = Random.Range(0, blocks.Count);
 
-        //Creates emtpy parent GameObject
+        //Creates empty parent GameObject
         string blockName = "Block" + blocknr.ToString();
         block = new GameObject(blockName);
         block.transform.parent = this.transform;
@@ -167,7 +172,9 @@ public class LevelController : MonoBehaviour
              buildingLists.Add(tempList);
              index++; 
         }
-
+        foreach (var kvp in buildingTypes) {
+            Debug.Log(("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
+        }
         return buildingLists;
     }
 
@@ -187,11 +194,13 @@ public class LevelController : MonoBehaviour
             foreach (string line in lines.Skip(1))
             {
                 List<string> info = new List<string>(line.Split(','));
+
                 if (info.Count == 5)
                 {
                     int typeIndex = buildingTypes[info[0]];
                     templateBlock.Add(new Building(typeIndex, new Vector3(float.Parse(info[1]), float.Parse(info[2]), float.Parse(info[3])), float.Parse(info[4])));
                 }
+
             }
 
             templates.Add(templateBlock);

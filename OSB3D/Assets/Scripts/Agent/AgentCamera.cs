@@ -4,22 +4,21 @@ using UnityEngine;
 
 public class AgentCamera : MonoBehaviour
 {
-    [SerializeField] float sensitivityX;
-    [SerializeField] float sensitivityY;
 
-    [SerializeField] Transform forwardFace;
+    [SerializeField] Transform head;
 
-    private float rotationX;
-    private float rotationY;
 
     // Start is called before the first frame update
-    void Start()
-    {
-    }
+
 
     // Update is called once per frame
-    void Update()
-    {   
-
+    private void Start() 
+    {
+    
+    }
+    
+    private void Update()
+    {
+        transform.rotation = head.rotation;
     }   
 }
