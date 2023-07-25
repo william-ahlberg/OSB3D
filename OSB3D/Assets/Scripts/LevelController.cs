@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.WSA;
 
 public class LevelController : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class LevelController : MonoBehaviour
     List<List<GameObject>> buildings;
     List<List<Building>> blocks;
 
+    List<GameObject> parks;
+
     void Start()
     {
         //fixed numbers, the size of the 3d-assets
@@ -38,8 +41,10 @@ public class LevelController : MonoBehaviour
                                                           "BRV20"};
         buildingTypes = new Dictionary<string, int>();
 
-        buildings = AllBuildlings(buildingCodes);
+        buildings = GetBuildlings(buildingCodes);
         blocks = TemplateBlocks();
+
+        parks = FromDirectory("Assets/Prefabs/Parks");
 
         MateralSelector materialSelector = new MateralSelector(seed);
         GenerateCity(blockSize, roadWidth, materialSelector);
@@ -68,10 +73,23 @@ public class LevelController : MonoBehaviour
             {
                 GameObject newInstance;
 
-                //if both even, instatiate a block
+                //if both even, instatiate a block or park
                 if ((i % 2 == 0) && (j % 2 == 0))
                 {
-                    newInstance = GenerateBlock(_materialSelector);
+                    float parkOrBlock = Random.Range(0.00f, 1.00f);
+
+                    Debug.Log("ParkOrBlock nr: " + parkOrBlock.ToString());
+
+                    if (parkOrBlock < 0.15)
+                    {
+                        int choosePark = Random.Range(0, parks.Count); 
+                        newInstance = Instantiate(parks[choosePark]);
+                    }
+
+                    else
+                    {
+                        newInstance = GenerateBlock(_materialSelector);
+                    }
 
                     newInstance.transform.Translate(new Vector3(currentPosX, 0, currentPosZ));
 
@@ -167,7 +185,7 @@ public class LevelController : MonoBehaviour
     }
 
     //Function to get all building types in Assets>Prefabs>Buildings (in each folder for each type)
-    List<List<GameObject>> AllBuildlings(List<string> _buildingCodes)
+    List<List<GameObject>> GetBuildlings(List<string> _buildingCodes)
     {
         List<List<GameObject>> buildingLists = new List<List<GameObject>>();
         int index = 0;
@@ -175,26 +193,34 @@ public class LevelController : MonoBehaviour
         foreach (string buildingType in _buildingCodes)
         {
             buildingTypes.Add(buildingType, index);
-            string folder = "Assets/Prefabs/Buildings/" + buildingType;
+            string directory = "Assets/Prefabs/Buildings/" + buildingType;
 
-            List<GameObject> tempList = new List<GameObject>();
+            List<GameObject> objectsDirectory = FromDirectory(directory);
 
-            //Finds guids for all prefabs in folders
-            string[] guids = AssetDatabase.FindAssets("t:prefab", new string[] { folder });
-
-             foreach (string guid in guids)
-             {
-                //loads objects from guid and add to list
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                var buildingPrefab = AssetDatabase.LoadAssetAtPath(path, typeof(GameObject));
-                tempList.Add((GameObject) buildingPrefab);
-            }
-
-             buildingLists.Add(tempList);
+             buildingLists.Add(objectsDirectory);
              index++; 
         }
 
         return buildingLists;
+    }
+
+    //Function to read objects from a directory
+    List<GameObject> FromDirectory(string _path)
+    {
+        List<GameObject> tempList = new();
+
+        //Finds guids for all prefabs in folders
+        string[] guids = AssetDatabase.FindAssets("t:prefab", new string[] { _path });
+
+        foreach (string guid in guids)
+        {
+            //loads objects from guid and add to list
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var buildingPrefab = AssetDatabase.LoadAssetAtPath(path, typeof(GameObject));
+            tempList.Add((GameObject)buildingPrefab);
+        }
+
+        return tempList; 
     }
 
     /*Function below reads type, position and rotation for each block type from .txt files. 
@@ -225,6 +251,8 @@ public class LevelController : MonoBehaviour
 
         return templates;
     }
+
+
 }
 
 //struct with the information for each building
