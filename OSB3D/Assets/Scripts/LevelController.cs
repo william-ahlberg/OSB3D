@@ -18,6 +18,7 @@ public class LevelController : MonoBehaviour
     public GameObject road;
     public GameObject crossing;
     public GameObject groundPlate;
+    public List<GameObject> cars;
 
     Dictionary<string, int> buildingTypes;
     List<List<GameObject>> buildings;
@@ -91,6 +92,31 @@ public class LevelController : MonoBehaviour
                 {
                     newInstance = Instantiate(road, new Vector3(currentPosX, 0, currentPosZ), Quaternion.identity);
                     newInstance.transform.Rotate(0, yRotation, 0, Space.World);
+
+                    int carNr = Random.Range(0, 4);
+
+                    for (int k = 0; k < carNr; k++)
+                    {
+                        int carDirection = Random.Range(0, 2);
+
+                        float carZ, carRot;
+
+                        if(carDirection == 0)
+                        {
+                            carZ = -3;
+                            carRot = 90;
+                        }
+
+                        else 
+                        
+                        {
+                            carZ = 3;
+                            carRot = -90;
+                        }
+                        
+                        Vector3 carPos = new Vector3(currentPosX, 0,currentPosZ + carZ);
+                        //GameObject newCar = Instantiate(car)
+                    }
                 }
 
                 //placed all instances in the active game object

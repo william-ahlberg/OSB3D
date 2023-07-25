@@ -200,7 +200,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &163846233
 Transform:
   m_ObjectHideFlags: 0
@@ -295,7 +295,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &498113637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -748,7 +748,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &928353881
 Transform:
   m_ObjectHideFlags: 0
@@ -1699,6 +1699,10 @@ MonoBehaviour:
   road: {fileID: 7799802082301009339, guid: 4e375f0103b52564aab24819b604a835, type: 3}
   crossing: {fileID: 4005743241734848231, guid: 767244c251a7bd24180332c707fc2f9a, type: 3}
   groundPlate: {fileID: 8653314378726140186, guid: d0c7fd89e9c5a9148869da60a75f30e6, type: 3}
+  cars:
+  - {fileID: 7006789628609270429, guid: e82a385f875b47543a36a97ff758c488, type: 3}
+  - {fileID: 4702092374161505864, guid: 22b4ffa11706f2843bc44357b0f25fa1, type: 3}
+  - {fileID: 534690814452103715, guid: dbea1d4f133b97547a028100be036b80, type: 3}
 --- !u!1 &1866434697
 GameObject:
   m_ObjectHideFlags: 0
