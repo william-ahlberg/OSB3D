@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
 using System.Globalization;
+using UnityEngine;
 
 public class LevelController : MonoBehaviour
 {
@@ -24,6 +23,9 @@ public class LevelController : MonoBehaviour
     List<List<GameObject>> buildings;
     List<List<Building>> blocks;
 
+    List<GameObject> parks;
+    List<GameObject> cars;
+
     void Start()
     {
         CultureInfo englishUSCulture = new CultureInfo("en-US"); // For Swedish computers to accept dot decimal seperation
@@ -42,8 +44,11 @@ public class LevelController : MonoBehaviour
                                                           "BRV20"};
         buildingTypes = new Dictionary<string, int>();
 
-        buildings = AllBuildlings(buildingCodes);
+        buildings = GetBuildlings(buildingCodes);
         blocks = TemplateBlocks();
+
+        parks = FromDirectory("Assets/Prefabs/Parks");
+        cars = FromDirectory("Assets/Prefabs/Cars");
 
         MateralSelector materialSelector = new MateralSelector(seed);
         GenerateCity(blockSize, roadWidth, materialSelector);
@@ -64,6 +69,8 @@ public class LevelController : MonoBehaviour
         float currentPosZ = 0;
         float yRotation = 0;
 
+        int roadNr = 0; 
+
         Random.InitState(seed);
 
         for (int i = 0; i < loopX; i++)
@@ -72,10 +79,23 @@ public class LevelController : MonoBehaviour
             {
                 GameObject newInstance;
 
-                //if both even, instatiate a block
+                //if both even, instatiate a block or park
                 if ((i % 2 == 0) && (j % 2 == 0))
                 {
-                    newInstance = GenerateBlock(_materialSelector);
+                    float parkOrBlock = Random.Range(0.00f, 1.00f);
+
+                    Debug.Log("ParkOrBlock nr: " + parkOrBlock.ToString());
+
+                    if (parkOrBlock < 0.15)
+                    {
+                        int choosePark = Random.Range(0, parks.Count); 
+                        newInstance = Instantiate(parks[choosePark]);
+                    }
+
+                    else
+                    {
+                        newInstance = GenerateBlock(_materialSelector);
+                    }
 
                     newInstance.transform.Translate(new Vector3(currentPosX, 0, currentPosZ));
 
@@ -94,8 +114,10 @@ public class LevelController : MonoBehaviour
                 //otherwise, instantiate a road
                 else
                 {
-                    newInstance = Instantiate(road, new Vector3(currentPosX, 0, currentPosZ), Quaternion.identity);
+                    newInstance = GenerateRoad(roadNr, currentPosX, currentPosZ);
+                    newInstance.transform.Translate(new Vector3(currentPosX, 0, currentPosZ));
                     newInstance.transform.Rotate(0, yRotation, 0, Space.World);
+                    roadNr++;
                 }
 
                 //placed all instances in the active game object
@@ -111,6 +133,86 @@ public class LevelController : MonoBehaviour
             if (yRotation == 0) yRotation = 90;
             else yRotation = 0; 
         }
+    }
+
+    GameObject GenerateRoad(int _roadnr,  float _currentPosX, float _currentPosZ)
+    {
+        string roadName = "Road" + _roadnr.ToString();
+        GameObject roadObject = new(roadName);
+
+        GameObject newRoad = Instantiate(road);
+        newRoad.transform.parent = roadObject.transform;
+
+        int carNr = Random.Range(0, 15);
+
+        List<Vector3> carPositions = CarPositions(carNr);
+
+        for (int k = 0; k < carPositions.Count; k++)
+        {
+            float carRot;
+            if (carPositions[k].z == 3) carRot = -90;
+            else carRot = 90; 
+
+            int carIndex = Random.Range(0, cars.Count);
+            GameObject newCar = Instantiate(cars[carIndex], new Vector3(carPositions[k].x, 0, carPositions[k].z), Quaternion.identity);
+            newCar.transform.Rotate(0, carRot, 0, Space.World);
+            newCar.transform.parent = roadObject.transform;
+        }
+
+        return roadObject; 
+    }
+
+    List<Vector3> CarPositions(int _carNr)
+    {
+
+        List<Vector3> carsDir1 = new();
+        List<Vector3> carsDir2 = new();
+
+
+        for (var i = 0; i < _carNr; i++)
+        {
+            int carDirection = Random.Range(0, 2);
+
+            if (carDirection == 0)
+            {
+                carsDir1 = FindCarPosition(carsDir1, -3);
+            }
+
+            else
+            {
+                carsDir1 = FindCarPosition(carsDir1, 3);
+            }
+        }
+
+        carsDir1.AddRange(carsDir2);
+        return carsDir1;
+    }
+
+    List<Vector3> FindCarPosition(List<Vector3> _previousPositions, float _carZ)
+    {
+        float minX = -46.0f;
+        float maxX = 46.0f;
+        int maxAttempts = 10;
+        int attempts = 0;
+        bool placed = false;
+
+        Vector3 carPos;
+
+        while (attempts < maxAttempts && !placed)
+        {
+
+            carPos = new Vector3(Random.Range(minX, maxX), 0, _carZ);
+
+            if (!_previousPositions.Any(p => Vector3.Distance(carPos, p) < 7.5f))
+            {
+                _previousPositions.Add(carPos);
+                placed = true;
+            }
+
+            attempts++;
+        }
+
+        return _previousPositions;
     }
 
     GameObject GenerateBlock(MateralSelector _materialSelector)
@@ -146,7 +248,7 @@ public class LevelController : MonoBehaviour
     }
 
     //Function to get all building types in Assets>Prefabs>Buildings (in each folder for each type)
-    List<List<GameObject>> AllBuildlings(List<string> _buildingCodes)
+    List<List<GameObject>> GetBuildlings(List<string> _buildingCodes)
     {
         List<List<GameObject>> buildingLists = new List<List<GameObject>>();
         int index = 0;
@@ -154,28 +256,36 @@ public class LevelController : MonoBehaviour
         foreach (string buildingType in _buildingCodes)
         {
             buildingTypes.Add(buildingType, index);
-            string folder = "Assets/Prefabs/Buildings/" + buildingType;
+            string directory = "Assets/Prefabs/Buildings/" + buildingType;
 
-            List<GameObject> tempList = new List<GameObject>();
+            List<GameObject> objectsDirectory = FromDirectory(directory);
 
-            //Finds guids for all prefabs in folders
-            string[] guids = AssetDatabase.FindAssets("t:prefab", new string[] { folder });
-
-             foreach (string guid in guids)
-             {
-                //loads objects from guid and add to list
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                var buildingPrefab = AssetDatabase.LoadAssetAtPath(path, typeof(GameObject));
-                tempList.Add((GameObject) buildingPrefab);
-            }
-
-             buildingLists.Add(tempList);
+             buildingLists.Add(objectsDirectory);
              index++; 
         }
         foreach (var kvp in buildingTypes) {
             Debug.Log(("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
         }
         return buildingLists;
+    }
+
+    //Function to read objects from a directory
+    List<GameObject> FromDirectory(string _path)
+    {
+        List<GameObject> tempList = new();
+
+        //Finds guids for all prefabs in folders
+        string[] guids = AssetDatabase.FindAssets("t:prefab", new string[] { _path });
+
+        foreach (string guid in guids)
+        {
+            //loads objects from guid and add to list
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var buildingPrefab = AssetDatabase.LoadAssetAtPath(path, typeof(GameObject));
+            tempList.Add((GameObject)buildingPrefab);
+        }
+
+        return tempList; 
     }
 
     /*Function below reads type, position and rotation for each block type from .txt files. 
@@ -208,6 +318,8 @@ public class LevelController : MonoBehaviour
 
         return templates;
     }
+
+
 }
 
 //struct with the information for each building
