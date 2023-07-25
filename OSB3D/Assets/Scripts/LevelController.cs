@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
-using UnityEngine.WSA;
+using UnityEngine;
 
 public class LevelController : MonoBehaviour
 {
@@ -19,13 +17,13 @@ public class LevelController : MonoBehaviour
     public GameObject road;
     public GameObject crossing;
     public GameObject groundPlate;
-    public List<GameObject> cars;
 
     Dictionary<string, int> buildingTypes;
     List<List<GameObject>> buildings;
     List<List<Building>> blocks;
 
     List<GameObject> parks;
+    List<GameObject> cars;
 
     void Start()
     {
@@ -45,6 +43,7 @@ public class LevelController : MonoBehaviour
         blocks = TemplateBlocks();
 
         parks = FromDirectory("Assets/Prefabs/Parks");
+        cars = FromDirectory("Assets/Prefabs/Cars");
 
         MateralSelector materialSelector = new MateralSelector(seed);
         GenerateCity(blockSize, roadWidth, materialSelector);
@@ -64,6 +63,8 @@ public class LevelController : MonoBehaviour
         float currentPosX = 0;
         float currentPosZ = 0;
         float yRotation = 0;
+
+        int roadNr = 0; 
 
         Random.InitState(seed);
 
@@ -108,33 +109,10 @@ public class LevelController : MonoBehaviour
                 //otherwise, instantiate a road
                 else
                 {
-                    newInstance = Instantiate(road, new Vector3(currentPosX, 0, currentPosZ), Quaternion.identity);
+                    newInstance = GenerateRoad(roadNr, currentPosX, currentPosZ);
+                    newInstance.transform.Translate(new Vector3(currentPosX, 0, currentPosZ));
                     newInstance.transform.Rotate(0, yRotation, 0, Space.World);
-
-                    int carNr = Random.Range(0, 4);
-
-                    for (int k = 0; k < carNr; k++)
-                    {
-                        int carDirection = Random.Range(0, 2);
-
-                        float carZ, carRot;
-
-                        if(carDirection == 0)
-                        {
-                            carZ = -3;
-                            carRot = 90;
-                        }
-
-                        else 
-                        
-                        {
-                            carZ = 3;
-                            carRot = -90;
-                        }
-                        
-                        Vector3 carPos = new Vector3(currentPosX, 0,currentPosZ + carZ);
-                        //GameObject newCar = Instantiate(car)
-                    }
+                    roadNr++;
                 }
 
                 //placed all instances in the active game object
@@ -150,6 +128,86 @@ public class LevelController : MonoBehaviour
             if (yRotation == 0) yRotation = 90;
             else yRotation = 0; 
         }
+    }
+
+    GameObject GenerateRoad(int _roadnr,  float _currentPosX, float _currentPosZ)
+    {
+        string roadName = "Road" + _roadnr.ToString();
+        GameObject roadObject = new(roadName);
+
+        GameObject newRoad = Instantiate(road);
+        newRoad.transform.parent = roadObject.transform;
+
+        int carNr = Random.Range(0, 15);
+
+        List<Vector3> carPositions = CarPositions(carNr);
+
+        for (int k = 0; k < carPositions.Count; k++)
+        {
+            float carRot;
+            if (carPositions[k].z == 3) carRot = -90;
+            else carRot = 90; 
+
+            int carIndex = Random.Range(0, cars.Count);
+            GameObject newCar = Instantiate(cars[carIndex], new Vector3(carPositions[k].x, 0, carPositions[k].z), Quaternion.identity);
+            newCar.transform.Rotate(0, carRot, 0, Space.World);
+            newCar.transform.parent = roadObject.transform;
+        }
+
+        return roadObject; 
+    }
+
+    List<Vector3> CarPositions(int _carNr)
+    {
+
+        List<Vector3> carsDir1 = new();
+        List<Vector3> carsDir2 = new();
+
+
+        for (var i = 0; i < _carNr; i++)
+        {
+            int carDirection = Random.Range(0, 2);
+
+            if (carDirection == 0)
+            {
+                carsDir1 = FindCarPosition(carsDir1, -3);
+            }
+
+            else
+            {
+                carsDir1 = FindCarPosition(carsDir1, 3);
+            }
+        }
+
+        carsDir1.AddRange(carsDir2);
+        return carsDir1;
+    }
+
+    List<Vector3> FindCarPosition(List<Vector3> _previousPositions, float _carZ)
+    {
+        float minX = -46.0f;
+        float maxX = 46.0f;
+        int maxAttempts = 10;
+        int attempts = 0;
+        bool placed = false;
+
+        Vector3 carPos;
+
+        while (attempts < maxAttempts && !placed)
+        {
+
+            carPos = new Vector3(Random.Range(minX, maxX), 0, _carZ);
+
+            if (!_previousPositions.Any(p => Vector3.Distance(carPos, p) < 7.5f))
+            {
+                _previousPositions.Add(carPos);
+                placed = true;
+            }
+
+            attempts++;
+        }
+
+        return _previousPositions;
     }
 
     GameObject GenerateBlock(MateralSelector _materialSelector)
