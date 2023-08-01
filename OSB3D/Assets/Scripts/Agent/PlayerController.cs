@@ -5,8 +5,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     float[] actions = new float[5];
+    bool[] extraActions = new bool[5];
 
-    private void Start() {
+    private void Start() 
+    {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -18,8 +20,22 @@ public class PlayerController : MonoBehaviour
         actions[2] = Input.GetAxisRaw("Mouse X");
         actions[3] = Input.GetAxisRaw("Mouse Y");
         actions[4] = System.Convert.ToSingle(Input.GetKey(KeyCode.Space));
-        return actions;
 
+        //For manual control
+        //actions[5] = System.Convert.ToSingle(Input.GetKey(KeyCode.V)); 
+        return actions;
+    }
+
+    public bool[] ExtraInput()
+    {
+        extraActions[0] = Input.GetKey(KeyCode.V);
+       
+        
+        
+        return extraActions; 
+    
+    
+    
     }
 
 }

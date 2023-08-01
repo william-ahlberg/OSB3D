@@ -84,7 +84,7 @@ public class LevelController : MonoBehaviour
                 {
                     float parkOrBlock = Random.Range(0.00f, 1.00f);
 
-                    Debug.Log("ParkOrBlock nr: " + parkOrBlock.ToString());
+                    //Debug.Log("ParkOrBlock nr: " + parkOrBlock.ToString());
 
                     if (parkOrBlock < 0.15)
                     {
@@ -248,6 +248,7 @@ public class LevelController : MonoBehaviour
     }
 
     //Function to get all building types in Assets>Prefabs>Buildings (in each folder for each type)
+
     List<List<GameObject>> GetBuildlings(List<string> _buildingCodes)
     {
         List<List<GameObject>> buildingLists = new List<List<GameObject>>();
@@ -264,7 +265,7 @@ public class LevelController : MonoBehaviour
              index++; 
         }
         foreach (var kvp in buildingTypes) {
-            Debug.Log(("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
+            //Debug.Log(("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
         }
         return buildingLists;
     }
@@ -272,9 +273,11 @@ public class LevelController : MonoBehaviour
     //Function to read objects from a directory
     List<GameObject> FromDirectory(string _path)
     {
+
         List<GameObject> tempList = new();
 
         //Finds guids for all prefabs in folders
+
         string[] guids = AssetDatabase.FindAssets("t:prefab", new string[] { _path });
 
         foreach (string guid in guids)

@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class AgentController : MonoBehaviour
 {
-/*
-Defines the agent movement physics
-*/
-
     [Header("Movement")]
     [SerializeField] float moveSpeed = 100f;
     [SerializeField] float maxSpeed = 10f;
@@ -16,42 +12,42 @@ Defines the agent movement physics
     [SerializeField] float jumpForce = 10f;
     [SerializeField] float jumpCooldown = 0.25f;
     [SerializeField] float airMultiplier = 0.01f;
-    [SerializeField] float sensitivityX = 400f;
-    [SerializeField] float sensitivityY = 400f;
+    [SerializeField] float sensitivityX = 100f;
+    [SerializeField] float sensitivityY = 100f;
 
-
+    private float agentHeight = 1.8f;
 
     bool readyToJump;
     bool onGround;
     [SerializeField] LayerMask groundLayer;
-    
+
     [SerializeField] bool flyMode = false;
     [SerializeField] bool manualInput = true;
-    
+
     [SerializeField] Transform forwardFace;
     [SerializeField] Transform head;
-
+    [SerializeField] Transform body;
     float horizontalInput;
     float verticalInput;
     Vector3 moveDirection;
     PlayerController playerController;
-
     Rigidbody rb;
 
     float[] actions;
 
-
     private float rotationX;
     private float rotationY;
 
+
+    
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
 
         playerController = GetComponent<PlayerController>();
-
         readyToJump = true;
+
     }
 
     private void Update()
@@ -66,7 +62,7 @@ Defines the agent movement physics
         {
             Debug.Log("Agent actionbuffer not implemented.");
         }
-        
+
         SpeedControl();
         // handle drag
 
@@ -86,13 +82,13 @@ Defines the agent movement physics
         Rotate(actions);
 
         // on ground
-        if(onGround)
+        if (onGround)
         {
             //Debug.Log("On the ground");
             rb.AddForce(moveDirection.normalized * moveSpeed, ForceMode.Force);
         }
         // in air
-        else if(!onGround)
+        else if (!onGround)
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * airMultiplier, ForceMode.Force);
         }
@@ -121,7 +117,7 @@ Defines the agent movement physics
 
     private bool CheckGround()
     {
-        return Physics.Raycast(transform.position, Vector3.down, 1.7f + 0.3f, groundLayer);
+        return Physics.Raycast(transform.position, Vector3.down, agentHeight, groundLayer);
     }
 
     private void FixedUpdate()
@@ -135,7 +131,7 @@ Defines the agent movement physics
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         // limit velocity if needed
-        if(flatVel.magnitude > moveSpeed)
+        if (flatVel.magnitude > moveSpeed)
         {
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
             rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
@@ -149,10 +145,11 @@ Defines the agent movement physics
         rotationX -= mouseY;
         rotationX = Mathf.Clamp(rotationX, -90f, 90f);
         rotationY = rotationY % 360f;
-        head.rotation = Quaternion.Euler(rotationX,rotationY,0);
-        forwardFace.rotation = Quaternion.Euler(0, rotationY, 0);
-    }
 
+        head.rotation = Quaternion.Euler(rotationX, rotationY, 0);
+        forwardFace.rotation = Quaternion.Euler(0, rotationY, 0);
+        body.rotation = forwardFace.rotation;
+    }
 
 
     private void Jump()

@@ -17,8 +17,10 @@ public class MateralSelector
         materials = new List<List<Material>>();
         for (int i = 0; i < materialFolders.Count; i++)
         {
+
             List<Material> tempList = LoadMaterials(materialFolders[i]);
             materials.Add(tempList);
+
         }
     }
 
@@ -41,6 +43,7 @@ public class MateralSelector
 
         return allMaterials;
     }
+
 
     public void SetMaterials(GameObject _prefab)
     {
