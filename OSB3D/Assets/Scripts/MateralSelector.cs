@@ -55,9 +55,11 @@ public class MateralSelector
             prefabMaterials[0] = materials[0][Random.Range(0, materials[0].Count)];  //Roof
             prefabMaterials[1] = materials[1][Random.Range(0, materials[1].Count)]; //Plinth
             prefabMaterials[2] = materials[2][Random.Range(0, materials[2].Count)]; //Facade
-            prefabMaterials[3] = materials[3][Random.Range(0, materials[3].Count)]; //Window
-            prefabMaterials[5] = materials[3][Random.Range(0, materials[3].Count)]; //DoorFrame
-            prefabMaterials[8] = materials[3][Random.Range(0, materials[3].Count)]; //DoorPanel
+
+            int windowDoor = Random.Range(0, materials[3].Count);
+            prefabMaterials[3] = materials[3][windowDoor]; //Window
+            prefabMaterials[5] = materials[3][windowDoor]; //DoorFrame
+            prefabMaterials[8] = materials[3][windowDoor]; //DoorPanel
             renderer.materials = prefabMaterials;
         }
     }

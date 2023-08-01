@@ -6,18 +6,27 @@ using UnityEngine;
 
 public class LevelController : MonoBehaviour
 {
-    [Header("City setup")]
-    public int seed; 
-    public int blockCountX;
-    public int blockCountZ;
+    [Header("City Setup")]
+    [SerializeField] int seed;
+    [SerializeField] int blockCountX;
+    [SerializeField] int blockCountZ;
+
+    [Header("Park Ratio - a number between 0.0 and 1.0")]
+    [SerializeField] float parkRatio;
+
+    [Header("Car Generation")]
+    [SerializeField] bool parkedPosition;
+    [SerializeField] int carMin;
+    [SerializeField] int carMax;
+    [SerializeField] int maxAttempts;
 
     [Header("Block .txt-files")]
-    public List<TextAsset> blockFiles;
+    [SerializeField] List<TextAsset> blockFiles;
 
-    [Header("Referenced prefabs")]
-    public GameObject road;
-    public GameObject crossing;
-    public GameObject groundPlate;
+    [Header("Referenced Prefabs")]
+    [SerializeField] GameObject road;
+    [SerializeField] GameObject crossing;
+    [SerializeField] GameObject groundPlate;
 
     Dictionary<string, int> buildingTypes;
     List<List<GameObject>> buildings;
@@ -28,7 +37,8 @@ public class LevelController : MonoBehaviour
 
     void Start()
     {
-        CultureInfo englishUSCulture = new CultureInfo("en-US"); // For Swedish computers to accept dot decimal seperation
+        //For all language computers to accept dot decimal seperation
+        CultureInfo englishUSCulture = new CultureInfo("en-US"); 
 
         System.Threading.Thread.CurrentThread.CurrentCulture = englishUSCulture;
 
@@ -84,9 +94,7 @@ public class LevelController : MonoBehaviour
                 {
                     float parkOrBlock = Random.Range(0.00f, 1.00f);
 
-                    //Debug.Log("ParkOrBlock nr: " + parkOrBlock.ToString());
-
-                    if (parkOrBlock < 0.15)
+                    if (parkOrBlock < parkRatio)
                     {
                         int choosePark = Random.Range(0, parks.Count); 
                         newInstance = Instantiate(parks[choosePark]);
@@ -143,14 +151,14 @@ public class LevelController : MonoBehaviour
         GameObject newRoad = Instantiate(road);
         newRoad.transform.parent = roadObject.transform;
 
-        int carNr = Random.Range(0, 15);
+        int carNr = Random.Range(carMin, carMax);
 
         List<Vector3> carPositions = CarPositions(carNr);
 
         for (int k = 0; k < carPositions.Count; k++)
         {
             float carRot;
-            if (carPositions[k].z == 3) carRot = -90;
+            if (carPositions[k].z > 0) carRot = -90;
             else carRot = 90; 
 
             int carIndex = Random.Range(0, cars.Count);
@@ -168,6 +176,9 @@ public class LevelController : MonoBehaviour
         List<Vector3> carsDir1 = new();
         List<Vector3> carsDir2 = new();
 
+        float carZ;
+        if (parkedPosition) carZ = 4.8f;
+        else carZ = 3.0f; 
 
         for (var i = 0; i < _carNr; i++)
         {
@@ -175,12 +186,12 @@ public class LevelController : MonoBehaviour
 
             if (carDirection == 0)
             {
-                carsDir1 = FindCarPosition(carsDir1, -3);
+                carsDir1 = FindCarPosition(carsDir1, carZ * -1.0f);
             }
 
             else
             {
-                carsDir1 = FindCarPosition(carsDir1, 3);
+                carsDir1 = FindCarPosition(carsDir1, carZ);
             }
         }
 
@@ -192,7 +203,6 @@ public class LevelController : MonoBehaviour
     {
         float minX = -46.0f;
         float maxX = 46.0f;
-        int maxAttempts = 10;
         int attempts = 0;
         bool placed = false;
 
@@ -264,9 +274,7 @@ public class LevelController : MonoBehaviour
              buildingLists.Add(objectsDirectory);
              index++; 
         }
-        foreach (var kvp in buildingTypes) {
-            //Debug.Log(("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
-        }
+
         return buildingLists;
     }
 
@@ -313,12 +321,11 @@ public class LevelController : MonoBehaviour
                     int typeIndex = buildingTypes[info[0]];
                     templateBlock.Add(new Building(typeIndex, new Vector3(float.Parse(info[1]), float.Parse(info[2]), float.Parse(info[3])), float.Parse(info[4])));
                 }
-
             }
 
             templates.Add(templateBlock);
         }
-
+        
         return templates;
     }
 

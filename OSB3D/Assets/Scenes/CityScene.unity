@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1991,9 +1991,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0a26f27785a42e4b97aa63da2bfb505, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  head: {fileID: 845986622}
---- !u!81 &1609095048
-AudioListener:
+--- !u!114 &1691376649
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2148,6 +2147,11 @@ MonoBehaviour:
   seed: 12
   blockCountX: 5
   blockCountZ: 5
+  parkRatio: 0.15
+  parkedPosition: 1
+  carMin: 0
+  carMax: 8
+  maxAttempts: 12
   blockFiles:
   - {fileID: 4900000, guid: e5178256e9a64b648aa3306bf0452684, type: 3}
   - {fileID: 4900000, guid: eb841229e89d8bf4cbb25c2036f551cf, type: 3}
