@@ -4,6 +4,7 @@ using UnityEditor;
 using System.Globalization;
 using UnityEngine;
 
+
 public class LevelController : MonoBehaviour
 {
     [Header("City Setup")]
@@ -56,8 +57,13 @@ public class LevelController : MonoBehaviour
         buildings = GetBuildlings(buildingCodes);
         blocks = TemplateBlocks();
 
-        parks = FromDirectory("Assets/Prefabs/Parks");
-        cars = FromDirectory("Assets/Prefabs/Cars");
+        //parks = FromDirectory("Assets/Prefabs/Parks");
+        //cars = FromDirectory("Assets/Prefabs/Cars");
+        parks = FromDirectory("Prefabs/Parks");
+        cars = FromDirectory("Prefabs/Cars");
+        //parks = Resources.Load<List<GameObject>>("Prefabs/Parks");
+        //parks = Resources.Load<List<GameObject>>("Prefabs/Cars");
+
 
         MateralSelector materialSelector = new MateralSelector(seed);
         GenerateCity(blockSize, roadWidth, materialSelector);
@@ -265,7 +271,7 @@ public class LevelController : MonoBehaviour
         foreach (string buildingType in _buildingCodes)
         {
             buildingTypes.Add(buildingType, index);
-            string directory = "Assets/Prefabs/Buildings/" + buildingType;
+            string directory = "Prefabs/Buildings/" + buildingType;
 
             List<GameObject> objectsDirectory = FromDirectory(directory);
 
@@ -279,19 +285,7 @@ public class LevelController : MonoBehaviour
     //Function to read objects from a directory
     List<GameObject> FromDirectory(string _path)
     {
-        List<GameObject> tempList = new();
-
-        //Finds guids for all prefabs in folders
-        string[] guids = AssetDatabase.FindAssets("t:prefab", new string[] { _path });
-
-        foreach (string guid in guids)
-        {
-            //loads objects from guid and add to list
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            var buildingPrefab = AssetDatabase.LoadAssetAtPath(path, typeof(GameObject));
-            tempList.Add((GameObject)buildingPrefab);
-        }
-
+        var tempList = Resources.LoadAll(_path, typeof(GameObject)).OfType<GameObject>().ToList();
         return tempList; 
     }
 
