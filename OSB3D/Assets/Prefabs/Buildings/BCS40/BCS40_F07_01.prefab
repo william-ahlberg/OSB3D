@@ -73,7 +73,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8135818067142198301}
-  m_Mesh: {fileID: -4279949230804140009, guid: a6d886e47ed47ce48b5d3e43eeb02b06, type: 3}
+  m_Mesh: {fileID: 8527302693396030869, guid: 21f4b4a56b85ef046b4ff985353b99dd, type: 3}
 --- !u!23 &6221728592362891173
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -135,5 +135,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.4015, y: 0.25499994, z: 0.2569999}
+  m_Size: {x: 0.4015, y: 0.2501, z: 0.2569999}
   m_Center: {x: -0.00075000525, y: 0, z: -0.0015000028}
