@@ -6,34 +6,34 @@ using UnityEngine.Rendering;
 public class DoorOpen : MonoBehaviour
 {
     [SerializeField] Animator doorAnimator;
-    [SerializeField] bool openTrigger;
+    [SerializeField] Material buttonMaterial;
+
+    private void Start()
+    {
+        
+    }
 
     void OnTriggerEnter(Collider _collider) 
     {
-        
-
         if(_collider.gameObject.tag == "Player")
-        {
+       {
             
-
             bool opened = doorAnimator.GetBool("Opened");
 
 
-            if (!opened && openTrigger)
+            if (!opened)
             {
-                Debug.Log("opening");
-
                 doorAnimator.SetTrigger("TriggerOpen");
                 doorAnimator.SetBool("Opened", true);
+                buttonMaterial.color = Color.green; 
             }
 
-            else if(opened && !openTrigger)
+            else if(opened)
             {
-                Debug.Log("closing");
-
                 doorAnimator.SetTrigger("TriggerClose");
                 doorAnimator.SetBool("Opened", false);
-            }
+                buttonMaterial.color = Color.red;
+        }
         }
     }
 }
