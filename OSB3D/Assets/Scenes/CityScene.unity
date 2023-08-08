@@ -368,7 +368,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7799802082301009339, guid: 4e375f0103b52564aab24819b604a835, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e375f0103b52564aab24819b604a835, type: 3}
@@ -434,7 +434,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8653314378726140186, guid: d0c7fd89e9c5a9148869da60a75f30e6, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d0c7fd89e9c5a9148869da60a75f30e6, type: 3}
@@ -1979,13 +1979,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1176038553}
     m_Modifications:
+    - target: {fileID: 2242903679503741802, guid: a792be091242e674f97998050e3e7238, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308848961626344016, guid: a792be091242e674f97998050e3e7238, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3663085481927402629, guid: a792be091242e674f97998050e3e7238, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7608264914060715283, guid: a792be091242e674f97998050e3e7238, type: 3}
       propertyPath: m_Name
       value: EdgePark
       objectReference: {fileID: 0}
     - target: {fileID: 7608264914060715283, guid: a792be091242e674f97998050e3e7238, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8427922302371080228, guid: a792be091242e674f97998050e3e7238, type: 3}
       propertyPath: m_RootOrder
