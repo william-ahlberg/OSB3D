@@ -57,19 +57,14 @@ public class LevelController : MonoBehaviour
         buildings = GetBuildlings(buildingCodes);
         blocks = TemplateBlocks();
 
-        //parks = FromDirectory("Assets/Prefabs/Parks");
-        //cars = FromDirectory("Assets/Prefabs/Cars");
         parks = FromDirectory("Prefabs/Parks");
         cars = FromDirectory("Prefabs/Cars");
-        //parks = Resources.Load<List<GameObject>>("Prefabs/Parks");
-        //parks = Resources.Load<List<GameObject>>("Prefabs/Cars");
-
 
         MateralSelector materialSelector = new MateralSelector(seed);
         GenerateCity(blockSize, roadWidth, materialSelector);
     }
 
-    //Main function to generate city
+    //Main method to generate city
     void GenerateCity(float _blockSize, float _roadWidth, MateralSelector _materialSelector)
     {
         //adds to count for roads and crossings
@@ -262,7 +257,7 @@ public class LevelController : MonoBehaviour
         return block;
     }
 
-    //Function to get all building types in Assets>Prefabs>Buildings (in each folder for each type)
+    //Method to get all building types in Assets>Prefabs>Buildings (in each folder for each type)
     List<List<GameObject>> GetBuildlings(List<string> _buildingCodes)
     {
         List<List<GameObject>> buildingLists = new List<List<GameObject>>();
@@ -282,15 +277,14 @@ public class LevelController : MonoBehaviour
         return buildingLists;
     }
 
-    //Function to read objects from a directory
+    //Method to read objects from a directory in resources
     List<GameObject> FromDirectory(string _path)
     {
         var tempList = Resources.LoadAll(_path, typeof(GameObject)).OfType<GameObject>().ToList();
         return tempList; 
     }
 
-    /*Function below reads type, position and rotation for each block type from .txt files. 
-      Info is read as strings and converted to numbers, maybe other ways to store the block information could be better? */
+    //Method below reads type, position and rotation for each block type from .txt files
 
     List<List<Building>> TemplateBlocks()
     {

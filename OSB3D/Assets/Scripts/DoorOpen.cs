@@ -10,7 +10,7 @@ public class DoorOpen : MonoBehaviour
 
     private void Start()
     {
-        
+        buttonMaterial.color = Color.red;
     }
 
     void OnTriggerEnter(Collider _collider) 
