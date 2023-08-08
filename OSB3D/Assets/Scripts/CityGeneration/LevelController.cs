@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 using System.Globalization;
 using UnityEngine;
-
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class LevelController : MonoBehaviour
 {
@@ -27,6 +27,10 @@ public class LevelController : MonoBehaviour
     [SerializeField] GameObject road;
     [SerializeField] GameObject crossing;
     [SerializeField] GameObject groundPlate;
+
+    [SerializeField] GameObject edgeBlock;
+    [SerializeField] GameObject edgePark;
+    [SerializeField] GameObject edgeRoad;
 
     Dictionary<string, int> buildingTypes;
     List<List<GameObject>> buildings;
@@ -81,6 +85,7 @@ public class LevelController : MonoBehaviour
 
         int roadNr = 0; 
 
+
         Random.InitState(seed);
 
         for (int i = 0; i < loopX; i++)
@@ -105,11 +110,29 @@ public class LevelController : MonoBehaviour
                         newInstance = GenerateBlock(_materialSelector);
                     }
 
-                    newInstance.transform.Translate(new Vector3(currentPosX, 0, currentPosZ));
+                    Vector3 blockPos = new Vector3(currentPosX, 0, currentPosZ); 
+                    newInstance.transform.Translate(blockPos);
 
                     float rotateBlock = Random.Range(0, 4);
                     rotateBlock *= 90;
                     newInstance.transform.Rotate(0, rotateBlock, 0, Space.World);
+
+                    List<float> edgeRotations = new List<float>();
+
+                    if (j == 0) edgeRotations.Add(-90);
+                    if (j == loopZ - 1) edgeRotations.Add(90);
+                    if (i == 0) edgeRotations.Add(0);
+                    if (i == loopX - 1) edgeRotations.Add(180);
+
+                    for (int k = 0; k < edgeRotations.Count; k++)
+                    {
+                        GameObject edgeObject;
+                        if(parkOrBlock < parkRatio) edgeObject = Instantiate(edgePark);
+                        else edgeObject = Instantiate(edgeBlock);
+                        edgeObject.transform.Translate(blockPos);
+                        edgeObject.transform.Rotate(0, edgeRotations[k], 0, Space.World);
+                        edgeObject.transform.parent = newInstance.transform;
+                    }
                 }
 
                 //if both uneven, instantiate a crossing
@@ -122,10 +145,25 @@ public class LevelController : MonoBehaviour
                 //otherwise, instantiate a road
                 else
                 {
-                    newInstance = GenerateRoad(roadNr, currentPosX, currentPosZ);
-                    newInstance.transform.Translate(new Vector3(currentPosX, 0, currentPosZ));
+                    newInstance = GenerateRoad(roadNr);
+                    Vector3 roadPosition = new Vector3(currentPosX, 0, currentPosZ);
+                    newInstance.transform.Translate(roadPosition);
                     newInstance.transform.Rotate(0, yRotation, 0, Space.World);
                     roadNr++;
+
+                    if (i == 0 || j == 0 || i == loopX - 1 || j == loopZ - 1)
+                    {
+                        float edgeRotation = 0; 
+
+                        if (j == 0) edgeRotation  = - 90;
+                        else if (j == loopZ - 1) edgeRotation= 90;
+                        else if (i == loopX - 1) edgeRotation = 180;
+
+                        GameObject edgeObject = Instantiate(edgeRoad);
+                        edgeObject.transform.Translate(roadPosition);
+                        edgeObject.transform.Rotate(0, edgeRotation, 0, Space.World);
+                        edgeObject.transform.parent = newInstance.transform;
+                    }
                 }
 
                 //placed all instances in the active game object
@@ -143,7 +181,7 @@ public class LevelController : MonoBehaviour
         }
     }
 
-    GameObject GenerateRoad(int _roadnr,  float _currentPosX, float _currentPosZ)
+    GameObject GenerateRoad(int _roadnr)
     {
         string roadName = "Road" + _roadnr.ToString();
         GameObject roadObject = new(roadName);
