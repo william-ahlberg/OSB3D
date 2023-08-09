@@ -15,7 +15,7 @@ public class AgentController : MonoBehaviour
     [SerializeField] float sensitivityX = 100f;
     [SerializeField] float sensitivityY = 100f;
 
-    private float agentHeight = 1.8f;
+    private float agentHeight = 1f;
 
     bool readyToJump;
     bool onGround;
