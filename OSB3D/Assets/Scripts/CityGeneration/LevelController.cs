@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 using System.Globalization;
 using UnityEngine;
-
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class LevelController : MonoBehaviour
 {
@@ -27,6 +27,10 @@ public class LevelController : MonoBehaviour
     [SerializeField] GameObject road;
     [SerializeField] GameObject crossing;
     [SerializeField] GameObject groundPlate;
+
+    [SerializeField] GameObject edgeBlock;
+    [SerializeField] GameObject edgePark;
+    [SerializeField] GameObject edgeRoad;
 
     Dictionary<string, int> buildingTypes;
     List<List<GameObject>> buildings;
@@ -57,19 +61,14 @@ public class LevelController : MonoBehaviour
         buildings = GetBuildlings(buildingCodes);
         blocks = TemplateBlocks();
 
-        //parks = FromDirectory("Assets/Prefabs/Parks");
-        //cars = FromDirectory("Assets/Prefabs/Cars");
         parks = FromDirectory("Prefabs/Parks");
         cars = FromDirectory("Prefabs/Cars");
-        //parks = Resources.Load<List<GameObject>>("Prefabs/Parks");
-        //parks = Resources.Load<List<GameObject>>("Prefabs/Cars");
-
 
         MateralSelector materialSelector = new MateralSelector(seed);
         GenerateCity(blockSize, roadWidth, materialSelector);
     }
 
-    //Main function to generate city
+    //Main method to generate city
     void GenerateCity(float _blockSize, float _roadWidth, MateralSelector _materialSelector)
     {
         //adds to count for roads and crossings
@@ -85,6 +84,7 @@ public class LevelController : MonoBehaviour
         float yRotation = 0;
 
         int roadNr = 0; 
+
 
         Random.InitState(seed);
 
@@ -110,11 +110,29 @@ public class LevelController : MonoBehaviour
                         newInstance = GenerateBlock(_materialSelector);
                     }
 
-                    newInstance.transform.Translate(new Vector3(currentPosX, 0, currentPosZ));
+                    Vector3 blockPos = new Vector3(currentPosX, 0, currentPosZ); 
+                    newInstance.transform.Translate(blockPos);
 
                     float rotateBlock = Random.Range(0, 4);
                     rotateBlock *= 90;
                     newInstance.transform.Rotate(0, rotateBlock, 0, Space.World);
+
+                    List<float> edgeRotations = new List<float>();
+
+                    if (j == 0) edgeRotations.Add(-90);
+                    if (j == loopZ - 1) edgeRotations.Add(90);
+                    if (i == 0) edgeRotations.Add(0);
+                    if (i == loopX - 1) edgeRotations.Add(180);
+
+                    for (int k = 0; k < edgeRotations.Count; k++)
+                    {
+                        GameObject edgeObject;
+                        if(parkOrBlock < parkRatio) edgeObject = Instantiate(edgePark);
+                        else edgeObject = Instantiate(edgeBlock);
+                        edgeObject.transform.Translate(blockPos);
+                        edgeObject.transform.Rotate(0, edgeRotations[k], 0, Space.World);
+                        edgeObject.transform.parent = newInstance.transform;
+                    }
                 }
 
                 //if both uneven, instantiate a crossing
@@ -127,10 +145,25 @@ public class LevelController : MonoBehaviour
                 //otherwise, instantiate a road
                 else
                 {
-                    newInstance = GenerateRoad(roadNr, currentPosX, currentPosZ);
-                    newInstance.transform.Translate(new Vector3(currentPosX, 0, currentPosZ));
+                    newInstance = GenerateRoad(roadNr);
+                    Vector3 roadPosition = new Vector3(currentPosX, 0, currentPosZ);
+                    newInstance.transform.Translate(roadPosition);
                     newInstance.transform.Rotate(0, yRotation, 0, Space.World);
                     roadNr++;
+
+                    if (i == 0 || j == 0 || i == loopX - 1 || j == loopZ - 1)
+                    {
+                        float edgeRotation = 0; 
+
+                        if (j == 0) edgeRotation  = - 90;
+                        else if (j == loopZ - 1) edgeRotation= 90;
+                        else if (i == loopX - 1) edgeRotation = 180;
+
+                        GameObject edgeObject = Instantiate(edgeRoad);
+                        edgeObject.transform.Translate(roadPosition);
+                        edgeObject.transform.Rotate(0, edgeRotation, 0, Space.World);
+                        edgeObject.transform.parent = newInstance.transform;
+                    }
                 }
 
                 //placed all instances in the active game object
@@ -148,7 +181,7 @@ public class LevelController : MonoBehaviour
         }
     }
 
-    GameObject GenerateRoad(int _roadnr,  float _currentPosX, float _currentPosZ)
+    GameObject GenerateRoad(int _roadnr)
     {
         string roadName = "Road" + _roadnr.ToString();
         GameObject roadObject = new(roadName);
@@ -262,7 +295,7 @@ public class LevelController : MonoBehaviour
         return block;
     }
 
-    //Function to get all building types in Assets>Prefabs>Buildings (in each folder for each type)
+    //Method to get all building types in Assets>Prefabs>Buildings (in each folder for each type)
     List<List<GameObject>> GetBuildlings(List<string> _buildingCodes)
     {
         List<List<GameObject>> buildingLists = new List<List<GameObject>>();
@@ -282,15 +315,14 @@ public class LevelController : MonoBehaviour
         return buildingLists;
     }
 
-    //Function to read objects from a directory
+    //Method to read objects from a directory in resources
     List<GameObject> FromDirectory(string _path)
     {
         var tempList = Resources.LoadAll(_path, typeof(GameObject)).OfType<GameObject>().ToList();
         return tempList; 
     }
 
-    /*Function below reads type, position and rotation for each block type from .txt files. 
-      Info is read as strings and converted to numbers, maybe other ways to store the block information could be better? */
+    //Method below reads type, position and rotation for each block type from .txt files
 
     List<List<Building>> TemplateBlocks()
     {
