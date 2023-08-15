@@ -13,6 +13,7 @@ public class LevelController : MonoBehaviour
     [SerializeField] int blockCountZ;
     [Range(0.0f, 1.0f)]
     [SerializeField] float parkRatio;
+    [SerializeField] int placedDoors;
 
     [Header("Car Generation")]
     [SerializeField] bool parkedPosition;
@@ -38,6 +39,7 @@ public class LevelController : MonoBehaviour
 
     List<GameObject> parks;
     List<GameObject> cars;
+    int doorCounter; 
 
     void Start()
     {
@@ -49,11 +51,12 @@ public class LevelController : MonoBehaviour
         //fixed numbers, the size of the 3d-assets
         float blockSize = 105;
         float roadWidth = 20;
+        doorCounter = 0;
 
         List<string> buildingCodes = new List<string>() {"BCC30", "BCC40",
                                                           "BCS30", "BCS40",
                                                           "BD20", "BD30",
-                                                          "BP10",
+                                                          "BP05", "BP10",
                                                           "BR20", "BR30", "BR40",
                                                           "BRV20"};
         buildingTypes = new Dictionary<string, int>();
@@ -66,6 +69,17 @@ public class LevelController : MonoBehaviour
 
         MateralSelector materialSelector = new MateralSelector(seed);
         GenerateCity(blockSize, roadWidth, materialSelector);
+
+
+    }
+
+    void Update()
+    {
+       /* if (Input.GetKeyDown(KeyCode.V))
+        {
+            ScreenCapture.CaptureScreenshot("unityscreenshot" + System.DateTime.Now.ToString("hhmmss") + ".png", 4);
+            Debug.Log("A screenshot was taken!");
+        }*/
     }
 
     //Main method to generate city
@@ -286,10 +300,22 @@ public class LevelController : MonoBehaviour
             int options = buildings[type].Count;
             int chosen = Random.Range(0, options);
 
-            GameObject building = Instantiate(buildings[type][chosen], blocks[blocknr][i].Position, Quaternion.identity);
-            _materialSelector.SetMaterials(building);
-            building.transform.Rotate(0, blocks[blocknr][i].Rotation, 0, Space.World);
-            building.transform.parent = block.transform;
+            if ((type == 6 ||type == 7) && doorCounter <= placedDoors)
+            {
+                GameObject building = Instantiate(buildings[type][chosen], blocks[blocknr][i].Position, Quaternion.identity);
+                _materialSelector.SetMaterials(building);
+                building.transform.Rotate(0, blocks[blocknr][i].Rotation, 0, Space.World);
+                building.transform.parent = block.transform;
+                doorCounter++;
+            }
+
+            else if(type != 6 && type != 7)
+            {
+                GameObject building = Instantiate(buildings[type][chosen], blocks[blocknr][i].Position, Quaternion.identity);
+                _materialSelector.SetMaterials(building);
+                building.transform.Rotate(0, blocks[blocknr][i].Rotation, 0, Space.World);
+                building.transform.parent = block.transform;
+            }
         }
 
         return block;
