@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 34955111}
   m_Layer: 0
   m_Name: Body
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -151,12 +151,12 @@ Transform:
   m_GameObject: {fileID: 34955109}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.6, y: 1.4, z: 0.6}
+  m_LocalScale: {x: 0.6, y: 0.7, z: 0.6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 953597817}
   m_Father: {fileID: 1993042068}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &34955111
 CapsuleCollider:
@@ -233,7 +233,7 @@ GameObject:
   - component: {fileID: 175351856}
   m_Layer: 0
   m_Name: ForwardFace
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -245,13 +245,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 175351855}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1993042068}
-  m_RootOrder: 0
+  m_Father: {fileID: 845986622}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &311712702
 GameObject:
@@ -474,7 +474,7 @@ Transform:
   m_Children:
   - {fileID: 1609095046}
   m_Father: {fileID: 1993042068}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &511781423
 MonoBehaviour:
@@ -505,7 +505,7 @@ GameObject:
   - component: {fileID: 631975401}
   m_Layer: 3
   m_Name: Right Eye
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -755,7 +755,7 @@ GameObject:
   - component: {fileID: 845986623}
   m_Layer: 0
   m_Name: Head
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -768,14 +768,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 845986621}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0.894, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 631975400}
   - {fileID: 1013354770}
+  - {fileID: 175351856}
   m_Father: {fileID: 1993042068}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &845986623
 SphereCollider:
@@ -1165,7 +1166,7 @@ GameObject:
   - component: {fileID: 1013354771}
   m_Layer: 3
   m_Name: Left Eye
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1712,6 +1713,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1856633431}
   - component: {fileID: 1856633432}
+  - component: {fileID: 1856633433}
   m_Layer: 0
   m_Name: GameInstance
   m_TagString: Untagged
@@ -1747,8 +1749,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seed: 12
-  blockCountX: 5
-  blockCountZ: 3
+  blockCountX: 10
+  blockCountZ: 10
   parkRatio: 0.15
   parkedPosition: 1
   carMin: 0
@@ -1766,6 +1768,19 @@ MonoBehaviour:
   edgeBlock: {fileID: 5917777203468375160, guid: 54285ac9cc2a1af49af24014232e5ce9, type: 3}
   edgePark: {fileID: 7608264914060715283, guid: a792be091242e674f97998050e3e7238, type: 3}
   edgeRoad: {fileID: 2459527140847304220, guid: 1d2d6a24fccb4784d9355da4c6eed64c, type: 3}
+--- !u!114 &1856633433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1856633430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47f31f8f428d54242b3d79764b932dcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberOfBugs: 1
 --- !u!1 &1891355897
 GameObject:
   m_ObjectHideFlags: 0
@@ -1816,7 +1831,7 @@ GameObject:
   - component: {fileID: 1993042075}
   m_Layer: 0
   m_Name: Agent
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1833,7 +1848,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 175351856}
   - {fileID: 34955110}
   - {fileID: 845986622}
   - {fileID: 511781422}
@@ -1859,13 +1873,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1993042067}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22638edd74243e842b82f28439ea254f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStepHeight: 0.7
-  minStepDepth: 0.7
+  maxStepHeight: 0.2
+  minStepDepth: 0.2
   forwardFace: {fileID: 175351856}
 --- !u!54 &1993042071
 Rigidbody:
@@ -1895,19 +1909,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c738edb962945a44db64f3cf6f36f2a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 70
-  maxSpeed: 0
+  <moveSpeed>k__BackingField: 100
+  <jumpForce>k__BackingField: 10
   gravityScale: 10
   groundDrag: 5
-  jumpForce: 10
   jumpCooldown: 0.25
   airMultiplier: 0.1
-  sensitivityX: 400
-  sensitivityY: 400
+  sensitivityX: 200
+  sensitivityY: 200
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  flyMode: 0
   manualInput: 1
   forwardFace: {fileID: 175351856}
   head: {fileID: 845986622}

@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class AgentController : MonoBehaviour
 {
-    [Header("Movement")]
-    [SerializeField] float moveSpeed = 100f;
-    [SerializeField] float maxSpeed = 10f;
+    [field: SerializeField] public float moveSpeed { get; set; } = 200f;
+    [field: SerializeField] public float jumpForce { get; set; } = 10f;
+
     [SerializeField] float gravityScale = 1f;
     [SerializeField] float groundDrag = 5f;
-    [SerializeField] float jumpForce = 10f;
+    
+    
     [SerializeField] float jumpCooldown = 0.25f;
     [SerializeField] float airMultiplier = 0.01f;
-    [SerializeField] float sensitivityX = 100f;
-    [SerializeField] float sensitivityY = 100f;
+    [SerializeField] float sensitivityX = 200f;
+    [SerializeField] float sensitivityY = 200f;
 
     private float agentHeight = 1f;
 
@@ -21,7 +22,6 @@ public class AgentController : MonoBehaviour
     bool onGround;
     [SerializeField] LayerMask groundLayer;
 
-    [SerializeField] bool flyMode = false;
     [SerializeField] bool manualInput = true;
 
     [SerializeField] Transform forwardFace;
@@ -105,14 +105,7 @@ public class AgentController : MonoBehaviour
             Invoke(nameof(ResetJump), jumpCooldown);
 
         }
-        CheckEdge();
 
-    }
-
-    private bool CheckEdge()
-    {
-        //Debug.Log(Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, Mathf.Infinity, groundLayer));
-        return true;
     }
 
     private bool CheckGround()
@@ -166,12 +159,6 @@ public class AgentController : MonoBehaviour
     private void ResetVelocity()
     {
         rb.velocity = Vector3.zero;
-    }
-
-    private void Fly(int direction)
-
-    {
-        transform.position += direction * Vector3.up * 10f * Time.deltaTime;
     }
 
 }
