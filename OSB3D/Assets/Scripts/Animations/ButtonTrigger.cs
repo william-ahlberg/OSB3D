@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class ButtonTrigger : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] Renderer buttonRenderer;
+
+    private void Start()
     {
-        
+        buttonRenderer.material.color = Color.white;
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnTriggerEnter(Collider _collider)
     {
-        
+        if(_collider.CompareTag("Player"))
+        {
+            string name = this.name;
+            Debug.Log(name);
+            int buttonNr = int.Parse(name);
+            bool on = MoveElevator.ButtonPressed(buttonNr);
+
+            if (on) buttonRenderer.material.color = Color.green;
+            else buttonRenderer.material.color = Color.white; 
+        }
     }
 }

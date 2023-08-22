@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Globalization;
 using Unity.MLAgents;
 
-public class Elevator : MonoBehaviour
+public class VerticalObject : MonoBehaviour
 {
     [SerializeField] GameObject elevatorFrame;
     [SerializeField] GameObject elevator;
@@ -56,11 +56,6 @@ public class Elevator : MonoBehaviour
         Vector3 elevatorPosition = new Vector3(transform.position.x - (size.x / 2 * 100) - (elevatorFrame.transform.localScale.x * 2), 0, transform.position.z);
         elevatorObject.transform.Translate(elevatorPosition);
 
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        Debug.Log(other.tag);
     }
 }
 
