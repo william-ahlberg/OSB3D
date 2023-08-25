@@ -1749,9 +1749,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seed: 12
-  blockCountX: 10
-  blockCountZ: 10
-  parkRatio: 0.15
+  blockCountX: 3
+  blockCountZ: 3
+  parkRatio: 0.3
   parkedPosition: 1
   carMin: 0
   carMax: 8
@@ -1780,7 +1780,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47f31f8f428d54242b3d79764b932dcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfBugs: 1
+  numberOfBugs: 500
 --- !u!1 &1891355897
 GameObject:
   m_ObjectHideFlags: 0
