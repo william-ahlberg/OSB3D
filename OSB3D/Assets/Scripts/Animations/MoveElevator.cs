@@ -4,30 +4,37 @@ using UnityEngine;
 
 public class MoveElevator : MonoBehaviour
 {
-    [SerializeField] float speed; 
+    [SerializeField] float speed;
 
     static bool powerOn;
     static bool goUp;
-    static bool goDown; 
+    static bool goDown;
     static bool moving;
 
-    Vector3 maxPos; 
-
+    public Vector3 maxPos;
+    public float buildingHeight; 
 
     private void Start()
     {
         powerOn = false;
-        goUp = false; 
+        goUp = false;
         goDown = false;
         moving = false;
+    }
 
-        maxPos = new Vector3(transform.position.x, 10, transform.position.z);
+    public void SetMaxPosition()
+    {
+        maxPos = new Vector3(transform.position.x, buildingHeight, transform.position.z);
+    }
+
+    public void SetBuildingHeight(float _buildingHeight)
+    {
+        buildingHeight  = _buildingHeight;  
     }
 
     private void Update()
     {
-
-        if (moving) 
+        if (moving)
         {
             Debug.Log("y pos: " + transform.position.y);
 
@@ -43,11 +50,12 @@ public class MoveElevator : MonoBehaviour
                     goUp = false;
                     moving = false;
                 }
+
             }
 
-            else if (goDown  && transform.position.z > 0)
+            else if (goDown && transform.position.z > 0)
             {
-                if(Vector3.Distance(transform.position, new Vector3(transform.position.x, 0f, transform.position.z)) > 0.001f)
+                if (Vector3.Distance(transform.position, new Vector3(transform.position.x, 0f, transform.position.z)) > 0.001f)
                 {
                     transform.position -= new Vector3(0, speed * Time.deltaTime, 0);
 
@@ -62,17 +70,15 @@ public class MoveElevator : MonoBehaviour
         }
     }
 
-
-
     public static bool ButtonPressed(int _buttonNr)
     {
-        bool toReturn = false; 
+        bool toReturn = false;
 
-        switch(_buttonNr)
+        switch (_buttonNr)
         {
             case 0:
                 powerOn = !powerOn;
-                toReturn = powerOn; 
+                toReturn = powerOn;
                 break;
 
             case 1:
@@ -83,7 +89,7 @@ public class MoveElevator : MonoBehaviour
                     toReturn = true;
                 }
 
-                else toReturn = false; 
+                else toReturn = false;
                 break;
 
             case 2:
@@ -93,7 +99,7 @@ public class MoveElevator : MonoBehaviour
                     toReturn = true;
                 }
 
-                else toReturn = false; 
+                else toReturn = false;
                 break;
 
             case 3:
@@ -104,7 +110,7 @@ public class MoveElevator : MonoBehaviour
                     toReturn = true;
                 }
 
-                else toReturn = false; 
+                else toReturn = false;
 
                 break;
 
