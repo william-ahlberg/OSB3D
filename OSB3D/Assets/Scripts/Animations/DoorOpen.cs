@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 public class DoorOpen : MonoBehaviour
 {
-    [SerializeField] Animator doorAnimator;
+    [SerializeField] Animator[] doorAnimator;
     [SerializeField] Material buttonMaterial;
 
     private void Start()
@@ -18,20 +18,26 @@ public class DoorOpen : MonoBehaviour
         if(_collider.gameObject.tag == "Player")
        {
             
-            bool opened = doorAnimator.GetBool("Opened");
+            bool opened = doorAnimator[0].GetBool("Opened");
 
 
             if (!opened)
             {
-                doorAnimator.SetTrigger("TriggerOpen");
-                doorAnimator.SetBool("Opened", true);
+                for (int i = 0; i < doorAnimator.Length; i++)
+                {
+                    doorAnimator[i].SetTrigger("TriggerOpen");
+                    doorAnimator[i].SetBool("Opened", true);
+                }
                 buttonMaterial.color = Color.green; 
             }
 
             else if(opened)
             {
-                doorAnimator.SetTrigger("TriggerClose");
-                doorAnimator.SetBool("Opened", false);
+                for(int i = 0;i < doorAnimator.Length; i++)
+                {
+                    doorAnimator[i].SetTrigger("TriggerClose");
+                    doorAnimator[i].SetBool("Opened", false);
+                }
                 buttonMaterial.color = Color.red;
         }
         }

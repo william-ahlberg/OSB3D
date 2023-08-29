@@ -110,7 +110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d63fd67604215d1408346c5883e904f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doorAnimator: {fileID: 2031587949753553079}
+  doorAnimator:
+  - {fileID: 2031587949753553079}
   buttonMaterial: {fileID: 2100000, guid: ddf2ea8ff7336714380c171d63e6a75a, type: 2}
 --- !u!1 &2020320860639606964
 GameObject:
@@ -123,7 +124,7 @@ GameObject:
   - component: {fileID: 8515170619576095850}
   m_Layer: 0
   m_Name: BP10_F01_01
-  m_TagString: Untagged
+  m_TagString: Bug
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -376,7 +377,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d63fd67604215d1408346c5883e904f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doorAnimator: {fileID: 2031587949753553079}
+  doorAnimator:
+  - {fileID: 2031587949753553079}
   buttonMaterial: {fileID: 2100000, guid: ddf2ea8ff7336714380c171d63e6a75a, type: 2}
 --- !u!1 &6221903266144971285
 GameObject:

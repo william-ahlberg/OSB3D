@@ -1,0 +1,23 @@
+{
+  "PhysicsBugs": [
+    {
+      "bugPosition": 1
+      [
+        [],
+        [],
+        [],
+    },
+    { "" },
+    {}
+  ],
+  "GadgetBugs": [
+    {},
+    {},
+    {}
+  ],
+  "GeometryBugs": [
+    {},
+    {},
+    {}
+  ]
+}

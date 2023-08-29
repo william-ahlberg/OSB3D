@@ -1,0 +1,17 @@
+{
+  "PhysicsBugs": [
+    {"numberOfBugs": 1},
+    {""},
+    {}
+  ],
+  "GadgetBugs": [
+    {},
+    {},
+    {}
+  ],
+  "GeometryBugs": [
+    {},
+    {},
+    {}
+  ]
+}

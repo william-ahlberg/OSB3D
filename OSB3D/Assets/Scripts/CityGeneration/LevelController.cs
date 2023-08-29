@@ -4,6 +4,8 @@ using UnityEditor;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.ProBuilder.MeshOperations;
+using static UnityEditor.Progress;
+using Unity.VisualScripting.Antlr3.Runtime;
 
 public class LevelController : MonoBehaviour
 {
@@ -53,7 +55,7 @@ public class LevelController : MonoBehaviour
         List<string> buildingCodes = new List<string>() {"BCC30", "BCC40",
                                                           "BCS30", "BCS40",
                                                           "BD20", "BD30",
-                                                          "BP10",
+                                                          "BP05","BP10", "BP15", "BP20",
                                                           "BR20", "BR30", "BR40",
                                                           "BRV20"};
         buildingTypes = new Dictionary<string, int>();
@@ -66,6 +68,15 @@ public class LevelController : MonoBehaviour
 
         MateralSelector materialSelector = new MateralSelector(seed);
         GenerateCity(blockSize, roadWidth, materialSelector);
+    }
+
+    void Update()
+    {
+       /* if (Input.GetKeyDown(KeyCode.V))
+        {
+            ScreenCapture.CaptureScreenshot("unityscreenshot" + System.DateTime.Now.ToString("hhmmss") + ".png", 4);
+            Debug.Log("A screenshot was taken!");
+        }*/
     }
 
     //Main method to generate city
@@ -97,32 +108,62 @@ public class LevelController : MonoBehaviour
                 //if both even, instatiate a block or park
                 if ((i % 2 == 0) && (j % 2 == 0))
                 {
+
+                    float rotateBlock = Random.Range(0, 4);
+                    rotateBlock *= 90;
+                    //float rotateBlock = 0;
+
+                    List<float> edgeRotations = new List<float>();
+                    List<int> blockEdges = new List<int>();
+
+                    if (j == 0)
+                    {
+                        edgeRotations.Add(-90);
+
+                        //blockEdges.Add(3);
+                        blockEdges.Add(EdgeBlocked(3, rotateBlock));
+                    }
+                    if (j == loopZ - 1)
+                    {
+                        edgeRotations.Add(90);
+
+                        //blockEdges.Add(1);
+                        blockEdges.Add(EdgeBlocked(1, rotateBlock));
+                    }
+                    if (i == 0)
+                    {
+                        edgeRotations.Add(0);
+
+                        //blockEdges.Add(0);
+                        blockEdges.Add(EdgeBlocked(0, rotateBlock));
+                    }
+                    if (i == loopX - 1)
+                    {
+                        edgeRotations.Add(180);
+
+                        //blockEdges.Add(2);
+                        blockEdges.Add(EdgeBlocked(2, rotateBlock));
+                    }
+
                     float parkOrBlock = Random.Range(0.00f, 1.00f);
 
                     if (parkOrBlock < parkRatio)
                     {
+                        Debug.Log("New park");
                         int choosePark = Random.Range(0, parks.Count); 
                         newInstance = Instantiate(parks[choosePark]);
                     }
 
                     else
                     {
-                        newInstance = GenerateBlock(_materialSelector);
+                        Debug.Log("blockedlist: " + blockEdges.Count);
+                        newInstance = GenerateBlock(_materialSelector, blockEdges);
                     }
 
                     Vector3 blockPos = new Vector3(currentPosX, 0, currentPosZ); 
                     newInstance.transform.Translate(blockPos);
 
-                    float rotateBlock = Random.Range(0, 4);
-                    rotateBlock *= 90;
-                    newInstance.transform.Rotate(0, rotateBlock, 0, Space.World);
-
-                    List<float> edgeRotations = new List<float>();
-
-                    if (j == 0) edgeRotations.Add(-90);
-                    if (j == loopZ - 1) edgeRotations.Add(90);
-                    if (i == 0) edgeRotations.Add(0);
-                    if (i == loopX - 1) edgeRotations.Add(180);
+                   newInstance.transform.Rotate(0, rotateBlock, 0, Space.World);
 
                     for (int k = 0; k < edgeRotations.Count; k++)
                     {
@@ -145,6 +186,7 @@ public class LevelController : MonoBehaviour
                 //otherwise, instantiate a road
                 else
                 {
+
                     newInstance = GenerateRoad(roadNr);
                     Vector3 roadPosition = new Vector3(currentPosX, 0, currentPosZ);
                     newInstance.transform.Translate(roadPosition);
@@ -179,6 +221,18 @@ public class LevelController : MonoBehaviour
             if (yRotation == 0) yRotation = 90;
             else yRotation = 0; 
         }
+    }
+
+    int EdgeBlocked(int _startEdge, float _rotation)
+    {
+        int blockEdge;
+
+        if (_rotation == 270) blockEdge = (_startEdge + 1) % 4;
+        else if (_rotation == 180) blockEdge = (_startEdge + 2) % 4;
+        else if (_rotation == 90) blockEdge = (_startEdge + 3) % 4;
+        else blockEdge = _startEdge;
+
+        return blockEdge;
     }
 
     GameObject GenerateRoad(int _roadnr)
@@ -263,12 +317,14 @@ public class LevelController : MonoBehaviour
         return _previousPositions;
     }
 
-    GameObject GenerateBlock(MateralSelector _materialSelector)
+    GameObject GenerateBlock(MateralSelector _materialSelector, List<int> _blockedEdges)
     {
         GameObject block;
 
         //randomizes which block to create
         int blocknr = Random.Range(0, blocks.Count);
+        //int blocknr = 1;
+        Debug.Log("New block nr: " + blocknr); 
 
         //Creates empty parent GameObject
         string blockName = "Block" + blocknr.ToString();
@@ -279,6 +335,15 @@ public class LevelController : MonoBehaviour
         GameObject ground = Instantiate(groundPlate);
         ground.transform.parent = block.transform;
 
+        List<GameObject> doorObjects = new List<GameObject>();
+        List<Building> doors = new List<Building>();
+
+        for (int j = 0; j < _blockedEdges.Count; j++)
+        {
+            Debug.Log("blockedEdges: " + _blockedEdges[j]);
+
+        }
+
         //loop to instantiate all buildings in the block
         for (int i = 0; i < blocks[blocknr].Count; i++)
         {
@@ -286,11 +351,55 @@ public class LevelController : MonoBehaviour
             int options = buildings[type].Count;
             int chosen = Random.Range(0, options);
 
-            GameObject building = Instantiate(buildings[type][chosen], blocks[blocknr][i].Position, Quaternion.identity);
-            _materialSelector.SetMaterials(building);
-            building.transform.Rotate(0, blocks[blocknr][i].Rotation, 0, Space.World);
-            building.transform.parent = block.transform;
+            
+
+            if(blocks[blocknr][i].IsPassage)
+            {
+                bool connectedEdge = true;
+
+                for (int k = 0; k < blocks[blocknr][i].Edges.Count; k++)
+                {
+                    int onEdge = blocks[blocknr][i].Edges[k];
+                    Debug.Log("onEdge: " + onEdge);
+                    
+
+                    for (int m = 0; m < _blockedEdges.Count; m++)
+                    {
+                        Debug.Log("blockedEdge: " + _blockedEdges[m]);
+
+                        if (_blockedEdges[m] == onEdge)
+                        {
+                            connectedEdge = false;
+                            Debug.Log("SKIP THIS!");
+                        }
+                    }
+                }
+
+
+
+                if(connectedEdge)
+                {
+                    doorObjects.Add(buildings[type][chosen]);
+                    doors.Add(blocks[blocknr][i]);
+                }
+            }
+
+            else
+            {
+                GameObject building = Instantiate(buildings[type][chosen], blocks[blocknr][i].Position, Quaternion.identity);
+                _materialSelector.SetMaterials(building);
+                building.transform.Rotate(0, blocks[blocknr][i].Rotation, 0, Space.World);
+                building.transform.parent = block.transform;
+            }
         }
+
+        int chosenDoor = Random.Range(0, doors.Count);
+        Debug.Log("doorObjects: " + doorObjects.Count);
+
+        GameObject door = Instantiate(doorObjects[chosenDoor], doors[chosenDoor].Position, Quaternion.identity);
+        _materialSelector.SetMaterials(door);
+        door.transform.Rotate(0, doors[chosenDoor].Rotation, 0, Space.World);
+        door.transform.parent = block.transform;
 
         return block;
     }
@@ -341,7 +450,24 @@ public class LevelController : MonoBehaviour
                 if (info.Count == 5)
                 {
                     int typeIndex = buildingTypes[info[0]];
-                    templateBlock.Add(new Building(typeIndex, new Vector3(float.Parse(info[1]), float.Parse(info[2]), float.Parse(info[3])), float.Parse(info[4])));
+
+                    bool isPassage = false; 
+                    if(info[0].Substring(0,2) == "BP") isPassage = true;
+
+                    Vector3 position = new Vector3(float.Parse(info[1]), float.Parse(info[2]), float.Parse(info[3]));
+
+                    List<int> edges = new List<int>();
+
+                    string substring = info[0].Substring(0, 2); 
+                    if(substring != "BD")
+                    {
+                        if (position.x < -30) edges.Add(0);
+                        if (position.z > 30) edges.Add(1);
+                        if (position.x > 30) edges.Add(2);
+                        if (position.z < -30) edges.Add(3);
+                    }
+
+                    templateBlock.Add(new Building(typeIndex, position, float.Parse(info[4]), isPassage, edges));
                 }
             }
 
@@ -360,15 +486,22 @@ public struct Building
     private int typeIndex;
     private Vector3 position;
     private float yRotation;
+    private bool passage;
+    private List<int> edges; 
 
-    public Building(int _typeIndex, Vector3 _Position, float _yRotation)
+    public Building(int _typeIndex, Vector3 _Position, float _yRotation, bool _passage, List<int> _onEdges)
     {
         this.typeIndex = _typeIndex;
         this.position = _Position;
         this.yRotation = _yRotation;
+        this.passage = _passage;
+        this.edges = _onEdges;
     }
 
     public int TypeIndex { get { return this.typeIndex; } }
     public Vector3 Position { get { return this.position; } }
     public float Rotation { get { return this.yRotation; } }
+    public bool IsPassage { get { return this.passage; } }
+
+    public List<int> Edges { get { return this.edges; } }
 }
