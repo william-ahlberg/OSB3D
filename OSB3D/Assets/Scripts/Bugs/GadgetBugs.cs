@@ -37,7 +37,7 @@ public class GadgetBugs : MonoBehaviour
     private void DisableDoor()
     {
         
-        doors[Random.Range(0, doors.Length - 1)].GetComponentInChildren<Collider>
+        
 
 
     }

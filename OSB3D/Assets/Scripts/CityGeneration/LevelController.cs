@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿//using System;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
-using System.Globalization;
-using UnityEngine;
-using UnityEngine.ProBuilder.MeshOperations;
-using static UnityEditor.Progress;
+using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime;
+using UnityEditor;
+using UnityEngine;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class LevelController : MonoBehaviour
 {
@@ -16,72 +17,93 @@ public class LevelController : MonoBehaviour
     [Range(0.0f, 1.0f)]
     [SerializeField] float parkRatio;
 
+    [Header("Vertical connection")]
+
+
     [Header("Car Generation")]
     [SerializeField] bool parkedPosition;
     [SerializeField] int carMin;
     [SerializeField] int carMax;
     [SerializeField] int maxAttempts;
 
-    [Header("Block .txt-files")]
-    [SerializeField] List<TextAsset> blockFiles;
-
     [Header("Referenced Prefabs")]
     [SerializeField] GameObject road;
     [SerializeField] GameObject crossing;
-    [SerializeField] GameObject groundPlate;
 
     [SerializeField] GameObject edgeBlock;
     [SerializeField] GameObject edgePark;
     [SerializeField] GameObject edgeRoad;
 
-    Dictionary<string, int> buildingTypes;
-    List<List<GameObject>> buildings;
-    List<List<Building>> blocks;
-
     List<GameObject> parks;
     List<GameObject> cars;
 
+    BlockGenerator blockGenerator;
+
     void Start()
     {
-        //For all language computers to accept dot decimal seperation
-        CultureInfo englishUSCulture = new CultureInfo("en-US"); 
-
-        System.Threading.Thread.CurrentThread.CurrentCulture = englishUSCulture;
-
         //fixed numbers, the size of the 3d-assets
         float blockSize = 105;
         float roadWidth = 20;
 
-        List<string> buildingCodes = new List<string>() {"BCC30", "BCC40",
-                                                          "BCS30", "BCS40",
-                                                          "BD20", "BD30",
-                                                          "BP05","BP10", "BP15", "BP20",
-                                                          "BR20", "BR30", "BR40",
-                                                          "BRV20"};
-        buildingTypes = new Dictionary<string, int>();
+        parks = Utility.FromDirectory("Prefabs/Parks");
+        cars = Utility.FromDirectory("Prefabs/Cars");
 
-        buildings = GetBuildlings(buildingCodes);
-        blocks = TemplateBlocks();
-
-        parks = FromDirectory("Prefabs/Parks");
-        cars = FromDirectory("Prefabs/Cars");
-
-        MateralSelector materialSelector = new MateralSelector(seed);
-        GenerateCity(blockSize, roadWidth, materialSelector);
+        blockGenerator = GetComponent<BlockGenerator>();
+        GenerateCity(blockSize, roadWidth);
     }
 
     void Update()
     {
-       /* if (Input.GetKeyDown(KeyCode.V))
-        {
-            ScreenCapture.CaptureScreenshot("unityscreenshot" + System.DateTime.Now.ToString("hhmmss") + ".png", 4);
-            Debug.Log("A screenshot was taken!");
-        }*/
+        /* if (Input.GetKeyDown(KeyCode.V))
+         {
+             ScreenCapture.CaptureScreenshot("unityscreenshot" + System.DateTime.Now.ToString("hhmmss") + ".png", 4);
+             Debug.Log("A screenshot was taken!");
+         }*/
     }
 
     //Main method to generate city
-    void GenerateCity(float _blockSize, float _roadWidth, MateralSelector _materialSelector)
+    void GenerateCity(float _blockSize, float _roadWidth)
     {
+        Random.InitState(seed);
+
+        int totalBlocks = blockCountX * blockCountZ;
+        int nrParks = (int) parkRatio * totalBlocks;
+
+        List<int> parkBlocks = new();
+        int counter = 0;
+        bool added = false;
+
+        for (int i = 0; i < nrParks; i++)
+        {
+            while (counter < 1000 && !added)
+            {
+                int index = Random.Range(0, totalBlocks);
+                if (!parkBlocks.Contains(index))
+                {
+                    parkBlocks.Add(index);
+                    added = true; 
+                }
+                counter++;
+            }
+        }
+
+        int elevatorBlock = 0;
+        counter = 0;
+        added = false;
+
+        while (counter < 100 && !added)
+        {
+            int index = Random.Range(0, totalBlocks);
+            if (!parkBlocks.Contains(index))
+            {
+                elevatorBlock = index;
+                added = true;
+            }
+            counter++;
+        }
+
+        int blockCounter = 0; 
+
         //adds to count for roads and crossings
         int loopX = blockCountX * 2 - 1;
         int loopZ = blockCountZ * 2 - 1;
@@ -94,10 +116,7 @@ public class LevelController : MonoBehaviour
         float currentPosZ = 0;
         float yRotation = 0;
 
-        int roadNr = 0; 
-
-
-        Random.InitState(seed);
+        int roadNr = 0;
 
         for (int i = 0; i < loopX; i++)
         {
@@ -108,102 +127,77 @@ public class LevelController : MonoBehaviour
                 //if both even, instatiate a block or park
                 if ((i % 2 == 0) && (j % 2 == 0))
                 {
+                    bool isPark = false;
+                    if (parkBlocks.Contains(blockCounter)) isPark = true;
+
+                    bool addElevator = false;
+                    if (elevatorBlock == blockCounter) addElevator = true;
 
                     float rotateBlock = Random.Range(0, 4);
                     rotateBlock *= 90;
-                    //float rotateBlock = 0;
 
-                    List<float> edgeRotations = new List<float>();
-                    List<int> blockEdges = new List<int>();
+                    List<System.Tuple<int, float>> edges = new();
+                    List<int> blockedEdges = new();
 
                     if (j == 0)
                     {
-                        edgeRotations.Add(-90);
-
-                        //blockEdges.Add(3);
-                        blockEdges.Add(EdgeBlocked(3, rotateBlock));
+                        edges.Add(new System.Tuple<int, float>(3, -90));
+                        blockedEdges.Add(EdgeBlocked(3, rotateBlock));
                     }
                     if (j == loopZ - 1)
-                    {
-                        edgeRotations.Add(90);
-
-                        //blockEdges.Add(1);
-                        blockEdges.Add(EdgeBlocked(1, rotateBlock));
+                    { 
+                        edges.Add(new System.Tuple<int, float>(1, 90));
+                        blockedEdges.Add(EdgeBlocked(1, rotateBlock));
                     }
-                    if (i == 0)
+                    if (i == 0) 
                     {
-                        edgeRotations.Add(0);
-
-                        //blockEdges.Add(0);
-                        blockEdges.Add(EdgeBlocked(0, rotateBlock));
+                        edges.Add(new System.Tuple<int, float>(0, 0));
+                        blockedEdges.Add(EdgeBlocked(0, rotateBlock));
                     }
-                    if (i == loopX - 1)
+                    if (i == loopX - 1) 
                     {
-                        edgeRotations.Add(180);
-
-                        //blockEdges.Add(2);
-                        blockEdges.Add(EdgeBlocked(2, rotateBlock));
+                        edges.Add(new System.Tuple<int, float>(2, 180));
+                        blockedEdges.Add(EdgeBlocked(2, rotateBlock));
                     }
+                    Vector3 blockPos = new(currentPosX, 0, currentPosZ);
 
-                    float parkOrBlock = Random.Range(0.00f, 1.00f);
+                    GameObject edgeType;
 
-                    if (parkOrBlock < parkRatio)
+                    if (isPark)
                     {
-                        Debug.Log("New park");
-                        int choosePark = Random.Range(0, parks.Count); 
-                        newInstance = Instantiate(parks[choosePark]);
+                        newInstance = AddPark(blockPos, rotateBlock);
+                        edgeType = edgePark;
                     }
 
                     else
                     {
-                        Debug.Log("blockedlist: " + blockEdges.Count);
-                        newInstance = GenerateBlock(_materialSelector, blockEdges);
+                        newInstance = AddBlock(blockedEdges, blockPos, rotateBlock, addElevator);
+                        edgeType = edgeBlock;
                     }
 
-                    Vector3 blockPos = new Vector3(currentPosX, 0, currentPosZ); 
-                    newInstance.transform.Translate(blockPos);
+                    if(edges.Count > 0) AddEdges(newInstance, edges, edgeType, blockPos);
 
-                   newInstance.transform.Rotate(0, rotateBlock, 0, Space.World);
-
-                    for (int k = 0; k < edgeRotations.Count; k++)
-                    {
-                        GameObject edgeObject;
-                        if(parkOrBlock < parkRatio) edgeObject = Instantiate(edgePark);
-                        else edgeObject = Instantiate(edgeBlock);
-                        edgeObject.transform.Translate(blockPos);
-                        edgeObject.transform.Rotate(0, edgeRotations[k], 0, Space.World);
-                        edgeObject.transform.parent = newInstance.transform;
-                    }
+                    blockCounter++;
                 }
 
                 //if both uneven, instantiate a crossing
                 else if ((i % 2 != 0) && (j % 2 != 0))
                 {
-
-                    newInstance = Instantiate(crossing, new Vector3(currentPosX+_roadWidth/2, 0, currentPosZ+ _roadWidth / 2), Quaternion.identity);
+                    newInstance = Instantiate(crossing, new Vector3(currentPosX + _roadWidth / 2, 0, currentPosZ + _roadWidth / 2), Quaternion.identity);
                 }
 
                 //otherwise, instantiate a road
                 else
                 {
-
                     newInstance = GenerateRoad(roadNr);
-                    Vector3 roadPosition = new Vector3(currentPosX, 0, currentPosZ);
+                    Vector3 roadPosition = new(currentPosX, 0, currentPosZ);
                     newInstance.transform.Translate(roadPosition);
                     newInstance.transform.Rotate(0, yRotation, 0, Space.World);
                     roadNr++;
 
                     if (i == 0 || j == 0 || i == loopX - 1 || j == loopZ - 1)
                     {
-                        float edgeRotation = 0; 
-
-                        if (j == 0) edgeRotation  = - 90;
-                        else if (j == loopZ - 1) edgeRotation= 90;
-                        else if (i == loopX - 1) edgeRotation = 180;
-
-                        GameObject edgeObject = Instantiate(edgeRoad);
-                        edgeObject.transform.Translate(roadPosition);
-                        edgeObject.transform.Rotate(0, edgeRotation, 0, Space.World);
+                        GameObject edgeObject = RoadEdge(i, j, loopX, loopZ, roadPosition);
                         edgeObject.transform.parent = newInstance.transform;
                     }
                 }
@@ -219,21 +213,82 @@ public class LevelController : MonoBehaviour
 
             //changes rotation every new x loop
             if (yRotation == 0) yRotation = 90;
-            else yRotation = 0; 
+            else yRotation = 0;
         }
     }
 
-    int EdgeBlocked(int _startEdge, float _rotation)
+    GameObject RoadEdge(int _i, int _j, int _loopX, int _loopZ, Vector3 _roadPosition)
     {
-        int blockEdge;
+        float edgeRotation = 0;
 
-        if (_rotation == 270) blockEdge = (_startEdge + 1) % 4;
-        else if (_rotation == 180) blockEdge = (_startEdge + 2) % 4;
-        else if (_rotation == 90) blockEdge = (_startEdge + 3) % 4;
-        else blockEdge = _startEdge;
+        if (_j == 0) edgeRotation = -90;
+        else if (_j == _loopZ - 1) edgeRotation = 90;
+        else if (_i == _loopX - 1) edgeRotation = 180;
 
-        return blockEdge;
+        GameObject edge = Instantiate(edgeRoad);
+        edge.transform.Translate(_roadPosition);
+        edge.transform.Rotate(0, edgeRotation, 0, Space.World);
+
+        return edge;
     }
+
+    GameObject AddPark(Vector3 _blockPos, float _rotateBlock)
+    {
+        GameObject gameObject;
+        int choosePark = Random.Range(0, parks.Count);
+        gameObject = Instantiate(parks[choosePark]);
+        gameObject.transform.Translate(_blockPos);
+        gameObject.transform.Rotate(0, _rotateBlock, 0, Space.World);
+        return gameObject;
+    }
+
+    GameObject AddBlock(List<int> blockedEdges, Vector3 _blockPos, float _rotateBlock, bool _addElevator)
+    {
+        GameObject gameObject;
+
+        gameObject = blockGenerator.GenerateBlock(blockedEdges, _addElevator);
+        gameObject.transform.Translate(_blockPos);
+        gameObject.transform.Rotate(0, _rotateBlock, 0, Space.World);
+
+        if(_addElevator) GameObject.Find("Elevator(Clone)").GetComponent<MoveElevator>().SetMaxPosition();
+
+        return gameObject;
+    }
+
+    GameObject AddEdges(GameObject _gameObject, List<System.Tuple<int, float>> blockedEdges, GameObject _edgeType, Vector3 _blockPos)
+    {
+        for (int k = 0; k < blockedEdges.Count; k++)
+        {
+            GameObject edgeObject = Instantiate(_edgeType);
+            edgeObject.transform.Translate(_blockPos);
+            edgeObject.transform.Rotate(0, blockedEdges[k].Item2, 0, Space.World);
+            edgeObject.transform.parent = gameObject.transform;
+        }
+
+        return _gameObject;
+    }
+
+  List<System.Tuple<int, float>> BlockEdge(List<System.Tuple<int, float>> _blockedEdges, int _edgeIndex, float _rotateBlock, float _direction)
+  {
+
+      int blockedEdge = EdgeBlocked(_edgeIndex, _rotateBlock);
+      _blockedEdges.Add(new System.Tuple<int, float>(blockedEdge, _direction)); ;
+
+      return _blockedEdges;
+  }
+
+
+  int EdgeBlocked(int _startEdge, float _rotation)
+  {
+      int blockEdge;
+
+      if (_rotation == 270) blockEdge = (_startEdge + 1) % 4;
+      else if (_rotation == 180) blockEdge = (_startEdge + 2) % 4;
+      else if (_rotation == 90) blockEdge = (_startEdge + 3) % 4;
+      else blockEdge = _startEdge;
+
+      return blockEdge;
+  }
 
     GameObject GenerateRoad(int _roadnr)
     {
@@ -251,7 +306,7 @@ public class LevelController : MonoBehaviour
         {
             float carRot;
             if (carPositions[k].z > 0) carRot = -90;
-            else carRot = 90; 
+            else carRot = 90;
 
             int carIndex = Random.Range(0, cars.Count);
             GameObject newCar = Instantiate(cars[carIndex], new Vector3(carPositions[k].x, 0, carPositions[k].z), Quaternion.identity);
@@ -259,7 +314,7 @@ public class LevelController : MonoBehaviour
             newCar.transform.parent = roadObject.transform;
         }
 
-        return roadObject; 
+        return roadObject;
     }
 
     List<Vector3> CarPositions(int _carNr)
@@ -270,7 +325,7 @@ public class LevelController : MonoBehaviour
 
         float carZ;
         if (parkedPosition) carZ = 4.8f;
-        else carZ = 3.0f; 
+        else carZ = 3.0f;
 
         for (var i = 0; i < _carNr; i++)
         {
@@ -291,7 +346,7 @@ public class LevelController : MonoBehaviour
         return carsDir1;
     }
 
-    List<Vector3> FindCarPosition(List<Vector3> _previousPositions, float _carZ)
+    List<Vector3> FindCarPosition(List<Vector3> _carPositions, float _carZ)
     {
         float minX = -46.0f;
         float maxX = 46.0f;
@@ -305,203 +360,15 @@ public class LevelController : MonoBehaviour
 
             carPos = new Vector3(Random.Range(minX, maxX), 0, _carZ);
 
-            if (!_previousPositions.Any(p => Vector3.Distance(carPos, p) < 7.5f))
+            if (!_carPositions.Any(p => Vector3.Distance(carPos, p) < 7.5f))
             {
-                _previousPositions.Add(carPos);
+                _carPositions.Add(carPos);
                 placed = true;
             }
 
             attempts++;
         }
 
-        return _previousPositions;
+        return _carPositions;
     }
-
-    GameObject GenerateBlock(MateralSelector _materialSelector, List<int> _blockedEdges)
-    {
-        GameObject block;
-
-        //randomizes which block to create
-        int blocknr = Random.Range(0, blocks.Count);
-        //int blocknr = 1;
-        Debug.Log("New block nr: " + blocknr); 
-
-        //Creates empty parent GameObject
-        string blockName = "Block" + blocknr.ToString();
-        block = new GameObject(blockName);
-        block.transform.parent = this.transform;
-
-        //Instantiate ground
-        GameObject ground = Instantiate(groundPlate);
-        ground.transform.parent = block.transform;
-
-        List<GameObject> doorObjects = new List<GameObject>();
-        List<Building> doors = new List<Building>();
-
-        for (int j = 0; j < _blockedEdges.Count; j++)
-        {
-            Debug.Log("blockedEdges: " + _blockedEdges[j]);
-
-        }
-
-        //loop to instantiate all buildings in the block
-        for (int i = 0; i < blocks[blocknr].Count; i++)
-        {
-            int type = blocks[blocknr][i].TypeIndex;
-            int options = buildings[type].Count;
-            int chosen = Random.Range(0, options);
-
-            
-
-            if(blocks[blocknr][i].IsPassage)
-            {
-                bool connectedEdge = true;
-
-                for (int k = 0; k < blocks[blocknr][i].Edges.Count; k++)
-                {
-                    int onEdge = blocks[blocknr][i].Edges[k];
-                    Debug.Log("onEdge: " + onEdge);
-                    
-
-                    for (int m = 0; m < _blockedEdges.Count; m++)
-                    {
-                        Debug.Log("blockedEdge: " + _blockedEdges[m]);
-
-                        if (_blockedEdges[m] == onEdge)
-                        {
-                            connectedEdge = false;
-                            Debug.Log("SKIP THIS!");
-                        }
-                    }
-                }
-
-
-
-                if(connectedEdge)
-                {
-                    doorObjects.Add(buildings[type][chosen]);
-                    doors.Add(blocks[blocknr][i]);
-                }
-            }
-
-            else
-            {
-                GameObject building = Instantiate(buildings[type][chosen], blocks[blocknr][i].Position, Quaternion.identity);
-                _materialSelector.SetMaterials(building);
-                building.transform.Rotate(0, blocks[blocknr][i].Rotation, 0, Space.World);
-                building.transform.parent = block.transform;
-            }
-        }
-
-        int chosenDoor = Random.Range(0, doors.Count);
-        Debug.Log("doorObjects: " + doorObjects.Count);
-
-        GameObject door = Instantiate(doorObjects[chosenDoor], doors[chosenDoor].Position, Quaternion.identity);
-        _materialSelector.SetMaterials(door);
-        door.transform.Rotate(0, doors[chosenDoor].Rotation, 0, Space.World);
-        door.transform.parent = block.transform;
-
-        return block;
-    }
-
-    //Method to get all building types in Assets>Prefabs>Buildings (in each folder for each type)
-    List<List<GameObject>> GetBuildlings(List<string> _buildingCodes)
-    {
-        List<List<GameObject>> buildingLists = new List<List<GameObject>>();
-        int index = 0;
-
-        foreach (string buildingType in _buildingCodes)
-        {
-            buildingTypes.Add(buildingType, index);
-            string directory = "Prefabs/Buildings/" + buildingType;
-
-            List<GameObject> objectsDirectory = FromDirectory(directory);
-
-             buildingLists.Add(objectsDirectory);
-             index++; 
-        }
-
-        return buildingLists;
-    }
-
-    //Method to read objects from a directory in resources
-    List<GameObject> FromDirectory(string _path)
-    {
-        var tempList = Resources.LoadAll(_path, typeof(GameObject)).OfType<GameObject>().ToList();
-        return tempList; 
-    }
-
-    //Method below reads type, position and rotation for each block type from .txt files
-
-    List<List<Building>> TemplateBlocks()
-    {
-        List<List<Building>> templates = new List<List<Building>>();
-
-        foreach (TextAsset blockFile in blockFiles)
-        {
-            List<Building> templateBlock = new List<Building>();
-            string txtFile = blockFile.ToString();
-            List<string> lines = new List<string>(txtFile.Split('\n'));
-
-            foreach (string line in lines.Skip(1))
-            {
-                List<string> info = new List<string>(line.Split(','));
-
-                if (info.Count == 5)
-                {
-                    int typeIndex = buildingTypes[info[0]];
-
-                    bool isPassage = false; 
-                    if(info[0].Substring(0,2) == "BP") isPassage = true;
-
-                    Vector3 position = new Vector3(float.Parse(info[1]), float.Parse(info[2]), float.Parse(info[3]));
-
-                    List<int> edges = new List<int>();
-
-                    string substring = info[0].Substring(0, 2); 
-                    if(substring != "BD")
-                    {
-                        if (position.x < -30) edges.Add(0);
-                        if (position.z > 30) edges.Add(1);
-                        if (position.x > 30) edges.Add(2);
-                        if (position.z < -30) edges.Add(3);
-                    }
-
-                    templateBlock.Add(new Building(typeIndex, position, float.Parse(info[4]), isPassage, edges));
-                }
-            }
-
-            templates.Add(templateBlock);
-        }
-        
-        return templates;
-    }
-
-
-}
-
-//struct with the information for each building
-public struct Building
-{
-    private int typeIndex;
-    private Vector3 position;
-    private float yRotation;
-    private bool passage;
-    private List<int> edges; 
-
-    public Building(int _typeIndex, Vector3 _Position, float _yRotation, bool _passage, List<int> _onEdges)
-    {
-        this.typeIndex = _typeIndex;
-        this.position = _Position;
-        this.yRotation = _yRotation;
-        this.passage = _passage;
-        this.edges = _onEdges;
-    }
-
-    public int TypeIndex { get { return this.typeIndex; } }
-    public Vector3 Position { get { return this.position; } }
-    public float Rotation { get { return this.yRotation; } }
-    public bool IsPassage { get { return this.passage; } }
-
-    public List<int> Edges { get { return this.edges; } }
 }
