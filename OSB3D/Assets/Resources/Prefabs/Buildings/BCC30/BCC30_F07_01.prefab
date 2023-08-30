@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 366484624657593061}
   - component: {fileID: 5448973491035845568}
   - component: {fileID: 5590331417056641036}
-  - component: {fileID: 7785174687809025874}
+  - component: {fileID: 597811061686039443}
   m_Layer: 0
   m_Name: BCC30_F07_01_import
   m_TagString: Untagged
@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1067228290607614202}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 12.3, z: 0}
+  m_LocalPosition: {x: 0, y: 12.28, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -92,7 +92,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7785174687809025874
+--- !u!65 &597811061686039443
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,8 +103,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.3005, y: 0.2502, z: 0.257}
-  m_Center: {x: 0.00025001162, y: -3.7252642e-11, z: -0.0015000179}
+  m_Size: {x: 0.3005, y: 0.25, z: 0.24980004}
+  m_Center: {x: 0.00025001168, y: 0, z: 0.0020999988}
 --- !u!1 &8345391912427383332
 GameObject:
   m_ObjectHideFlags: 0
