@@ -14,7 +14,7 @@ public class PlaceElevator : MonoBehaviour
     [SerializeField] GameObject elevator;
     [SerializeField] GameObject elevatorFrame;
 
-    public GameObject AddVerticalObject(System.Tuple<GameObject, Building> _building, Vector3 _direction)
+    public GameObject AddElevator(System.Tuple<GameObject, Building> _building, Vector3 _direction)
     {
         int floors = FloorsFromName(_building.Item1);
         Vector3 buildingSize = BuildingSize(_building.Item1);
@@ -24,7 +24,6 @@ public class PlaceElevator : MonoBehaviour
         Vector3 scaleVector = new(1, floorHeight, 1);
 
         GameObject gameObject = ElevatorFrame(floors);
-
         gameObject.transform.localScale = scaleVector;
         gameObject.transform.parent = gameObject.transform;
 
@@ -36,35 +35,16 @@ public class PlaceElevator : MonoBehaviour
         elevatorObject.transform.Find("3").position += new Vector3(0, floors * floorHeight, 0);
         elevatorObject.transform.parent = gameObject.transform;
 
-        Debug.Log("direction: " + _direction);
-        Vector3 objectPosition = _building.Item2.Position;
-       
-        float buildingWidth;
-
-        if (_building.Item1.name.Substring(0, 3) == "BCC") buildingWidth = buildingSize.y * 100 / 2;
-        else buildingWidth = buildingSize.x * 100 / 2;
-
-        float addToPosition = System.Math.Abs(_direction.x) * buildingWidth + System.Math.Abs(_direction.z) * buildingWidth;
-        float elevatorWidth = elevatorFrame.transform.localScale.x * 2;
-        gameObject.transform.position = objectPosition + (_direction * (addToPosition + elevatorWidth / 2));
+        gameObject.transform.position = ElevatorPosition(_building.Item1.name, buildingSize, _direction, _building.Item2.Position);
 
         elevatorObject.GetComponent<MoveElevator>().SetBuildingHeight(buildingHeight);
 
         return gameObject;
     }
 
-    float ElevatorRotation(Vector3 _direction)
-    {
-        if (_direction.x == -1) return -90;
-        else if (_direction.x == 1) return 90;
-        else if (_direction.z == -1) return 180;
-        else return 0;
-    }
-
     int FloorsFromName(GameObject _building)
     {
         string name = _building.name;
-        Debug.Log("Building Name: " + name);
         return int.Parse(name.Substring(name.IndexOf("_F") + 2, 2));
     }
 
@@ -92,6 +72,26 @@ public class PlaceElevator : MonoBehaviour
         }
 
         return elevatorFrameObject;
+    }
+
+    float ElevatorRotation(Vector3 _direction)
+    {
+        if (_direction.x == -1) return -90;
+        else if (_direction.x == 1) return 90;
+        else if (_direction.z == -1) return 180;
+        else return 0;
+    }
+
+    Vector3 ElevatorPosition(string _buildingName, Vector3 _buildingSize, Vector3 _direction, Vector3 _buildingPosition)
+    {
+        float buildingWidth; 
+
+        if (_buildingName.Substring(0, 3) == "BCC") buildingWidth = _buildingSize.y * 100 / 2;
+        else buildingWidth = _buildingSize.x * 100 / 2;
+
+        float addToPosition = System.Math.Abs(_direction.x) * buildingWidth + System.Math.Abs(_direction.z) * buildingWidth;
+        float elevatorWidth = elevatorFrame.transform.localScale.x * 2;
+        return _buildingPosition + (_direction * (addToPosition + elevatorWidth / 2));
     }
 }
 

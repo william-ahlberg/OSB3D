@@ -69,38 +69,9 @@ public class LevelController : MonoBehaviour
         int totalBlocks = blockCountX * blockCountZ;
         int nrParks = (int) parkRatio * totalBlocks;
 
-        List<int> parkBlocks = new();
-        int counter = 0;
-        bool added = false;
+        List<int> parkBlocks = RandomParkBlocks(nrParks, totalBlocks);
 
-        for (int i = 0; i < nrParks; i++)
-        {
-            while (counter < 1000 && !added)
-            {
-                int index = Random.Range(0, totalBlocks);
-                if (!parkBlocks.Contains(index))
-                {
-                    parkBlocks.Add(index);
-                    added = true; 
-                }
-                counter++;
-            }
-        }
-
-        int elevatorBlock = 0;
-        counter = 0;
-        added = false;
-
-        while (counter < 100 && !added)
-        {
-            int index = Random.Range(0, totalBlocks);
-            if (!parkBlocks.Contains(index))
-            {
-                elevatorBlock = index;
-                added = true;
-            }
-            counter++;
-        }
+        int elevatorBlock = RandomElevatorBlock(totalBlocks, parkBlocks);
 
         int blockCounter = 0; 
 
@@ -136,29 +107,8 @@ public class LevelController : MonoBehaviour
                     float rotateBlock = Random.Range(0, 4);
                     rotateBlock *= 90;
 
-                    List<System.Tuple<int, float>> edges = new();
-                    List<int> blockedEdges = new();
+                    List<System.Tuple<int, float, int>> edges = CheckEdgeConditions(i, j, loopX, loopZ, rotateBlock);
 
-                    if (j == 0)
-                    {
-                        edges.Add(new System.Tuple<int, float>(3, -90));
-                        blockedEdges.Add(EdgeBlocked(3, rotateBlock));
-                    }
-                    if (j == loopZ - 1)
-                    { 
-                        edges.Add(new System.Tuple<int, float>(1, 90));
-                        blockedEdges.Add(EdgeBlocked(1, rotateBlock));
-                    }
-                    if (i == 0) 
-                    {
-                        edges.Add(new System.Tuple<int, float>(0, 0));
-                        blockedEdges.Add(EdgeBlocked(0, rotateBlock));
-                    }
-                    if (i == loopX - 1) 
-                    {
-                        edges.Add(new System.Tuple<int, float>(2, 180));
-                        blockedEdges.Add(EdgeBlocked(2, rotateBlock));
-                    }
                     Vector3 blockPos = new(currentPosX, 0, currentPosZ);
 
                     GameObject edgeType;
@@ -171,7 +121,7 @@ public class LevelController : MonoBehaviour
 
                     else
                     {
-                        newInstance = AddBlock(blockedEdges, blockPos, rotateBlock, addElevator);
+                        newInstance = AddBlock(edges, blockPos, rotateBlock, addElevator);
                         edgeType = edgeBlock;
                     }
 
@@ -217,19 +167,89 @@ public class LevelController : MonoBehaviour
         }
     }
 
-    GameObject RoadEdge(int _i, int _j, int _loopX, int _loopZ, Vector3 _roadPosition)
+    List<int> RandomParkBlocks(int _nrParks, int _totalBlocks)
     {
-        float edgeRotation = 0;
+        List<int> parkBlocks = new();
+        int counter = 0;
+        bool added = false;
 
-        if (_j == 0) edgeRotation = -90;
-        else if (_j == _loopZ - 1) edgeRotation = 90;
-        else if (_i == _loopX - 1) edgeRotation = 180;
+        for (int i = 0; i < _nrParks; i++)
+        {
+            while (counter < 1000 && !added)
+            {
+                int index = Random.Range(0, _totalBlocks);
+                if (!parkBlocks.Contains(index))
+                {
+                    parkBlocks.Add(index);
+                    added = true;
+                }
+                counter++;
+            }
+        }
+        return parkBlocks; ;
+    }
 
-        GameObject edge = Instantiate(edgeRoad);
-        edge.transform.Translate(_roadPosition);
-        edge.transform.Rotate(0, edgeRotation, 0, Space.World);
+    int RandomElevatorBlock(int _totalBlocks, List<int> _parkBlocks)
+    {
+        int chosenIndex = 0;
+        int counter = 0;
+        bool added = false;
 
-        return edge;
+        while (counter < 100 && !added)
+        {
+            int index = Random.Range(0, _totalBlocks);
+
+            if (!_parkBlocks.Contains(index))
+            {
+                chosenIndex = index;
+                added = true;
+            }
+            counter++;
+        }
+
+        return chosenIndex;
+    }
+
+    List<System.Tuple<int, float, int>> CheckEdgeConditions(int _i, int _j, int _loopX, int _loopZ, float _rotateBlock)
+    {
+        List<System.Tuple<int, float, int>> edges = new();
+        int blockedEdge;
+
+        if (_j == 0)
+        {
+            blockedEdge = EdgeBlocked(3, _rotateBlock);
+            edges.Add(new System.Tuple<int, float, int>(3, -90, blockedEdge));
+        }
+        if (_j == _loopZ - 1)
+        {
+            blockedEdge = EdgeBlocked(1, _rotateBlock);
+            edges.Add(new System.Tuple<int, float, int>(1, 90, blockedEdge));
+        }
+        if (_i == 0)
+        {
+            blockedEdge = EdgeBlocked(0, _rotateBlock);
+            edges.Add(new System.Tuple<int, float, int>(0, 0, blockedEdge));
+        }
+
+        if (_i == _loopX - 1)
+        {
+            blockedEdge = EdgeBlocked(2, _rotateBlock);
+            edges.Add(new System.Tuple<int, float, int>(2, 180, blockedEdge));
+        }
+
+        return edges; 
+    }
+
+    int EdgeBlocked(int _startEdge, float _rotation)
+    {
+        int blockEdge;
+
+        if (_rotation == 270) blockEdge = (_startEdge + 1) % 4;
+        else if (_rotation == 180) blockEdge = (_startEdge + 2) % 4;
+        else if (_rotation == 90) blockEdge = (_startEdge + 3) % 4;
+        else blockEdge = _startEdge;
+
+        return blockEdge;
     }
 
     GameObject AddPark(Vector3 _blockPos, float _rotateBlock)
@@ -242,53 +262,31 @@ public class LevelController : MonoBehaviour
         return gameObject;
     }
 
-    GameObject AddBlock(List<int> blockedEdges, Vector3 _blockPos, float _rotateBlock, bool _addElevator)
+    GameObject AddBlock(List<System.Tuple<int, float, int>> _edges, Vector3 _blockPos, float _rotateBlock, bool _addElevator)
     {
         GameObject gameObject;
 
-        gameObject = blockGenerator.GenerateBlock(blockedEdges, _addElevator);
+        gameObject = blockGenerator.GenerateBlock(_edges, _addElevator);
         gameObject.transform.Translate(_blockPos);
         gameObject.transform.Rotate(0, _rotateBlock, 0, Space.World);
 
-        if(_addElevator) GameObject.Find("Elevator(Clone)").GetComponent<MoveElevator>().SetMaxPosition();
+        if (_addElevator) GameObject.Find("Elevator(Clone)").GetComponent<MoveElevator>().SetMaxPosition();
 
         return gameObject;
     }
 
-    GameObject AddEdges(GameObject _gameObject, List<System.Tuple<int, float>> blockedEdges, GameObject _edgeType, Vector3 _blockPos)
+    GameObject AddEdges(GameObject _gameObject, List<System.Tuple<int, float, int>> _edges, GameObject _edgeType, Vector3 _blockPos)
     {
-        for (int k = 0; k < blockedEdges.Count; k++)
+        for (int k = 0; k < _edges.Count; k++)
         {
             GameObject edgeObject = Instantiate(_edgeType);
             edgeObject.transform.Translate(_blockPos);
-            edgeObject.transform.Rotate(0, blockedEdges[k].Item2, 0, Space.World);
+            edgeObject.transform.Rotate(0, _edges[k].Item2, 0, Space.World);
             edgeObject.transform.parent = gameObject.transform;
         }
 
         return _gameObject;
     }
-
-  List<System.Tuple<int, float>> BlockEdge(List<System.Tuple<int, float>> _blockedEdges, int _edgeIndex, float _rotateBlock, float _direction)
-  {
-
-      int blockedEdge = EdgeBlocked(_edgeIndex, _rotateBlock);
-      _blockedEdges.Add(new System.Tuple<int, float>(blockedEdge, _direction)); ;
-
-      return _blockedEdges;
-  }
-
-
-  int EdgeBlocked(int _startEdge, float _rotation)
-  {
-      int blockEdge;
-
-      if (_rotation == 270) blockEdge = (_startEdge + 1) % 4;
-      else if (_rotation == 180) blockEdge = (_startEdge + 2) % 4;
-      else if (_rotation == 90) blockEdge = (_startEdge + 3) % 4;
-      else blockEdge = _startEdge;
-
-      return blockEdge;
-  }
 
     GameObject GenerateRoad(int _roadnr)
     {
@@ -370,5 +368,20 @@ public class LevelController : MonoBehaviour
         }
 
         return _carPositions;
+    }
+
+    GameObject RoadEdge(int _i, int _j, int _loopX, int _loopZ, Vector3 _roadPosition)
+    {
+        float edgeRotation = 0;
+
+        if (_j == 0) edgeRotation = -90;
+        else if (_j == _loopZ - 1) edgeRotation = 90;
+        else if (_i == _loopX - 1) edgeRotation = 180;
+
+        GameObject edge = Instantiate(edgeRoad);
+        edge.transform.Translate(_roadPosition);
+        edge.transform.Rotate(0, edgeRotation, 0, Space.World);
+
+        return edge;
     }
 }

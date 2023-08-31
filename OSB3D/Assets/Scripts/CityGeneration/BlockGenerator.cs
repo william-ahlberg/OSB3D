@@ -16,7 +16,7 @@ public class BlockGenerator : MonoBehaviour
     List<List<Material>> materials;
     List<TextAsset> blockFiles;
 
-    PlaceElevator placeElevator; 
+    PlaceElevator placeElevator;
     void Awake()
     {
         CultureInfo englishUSCulture = new("en-US");
@@ -101,10 +101,10 @@ public class BlockGenerator : MonoBehaviour
         return templates;
     }
 
-    public GameObject GenerateBlock(List<int> _blockedEdges, bool _addElevator)
+    public GameObject GenerateBlock(List<System.Tuple<int, float, int>> _edges, bool _addElevator)
     {
         //randomizes which block to create
-         int blocknr = Random.Range(0, blocks.Count);
+        int blocknr = Random.Range(0, blocks.Count);
         //int blocknr = 1;
 
         //Creates empty parent GameObject
@@ -116,8 +116,8 @@ public class BlockGenerator : MonoBehaviour
         ground.transform.parent = block.transform;
 
         List<System.Tuple<GameObject, Building>> allBuildings = new();
-        List<System.Tuple<GameObject, Building>> doors = new();
-        List<System.Tuple<GameObject, Building>> forElevator = new();
+        List<int> doors = new();
+        List<int> forElevator = new();
         List<Vector3> directions = new();
 
         //loop to instantiate all buildings in the block
@@ -127,76 +127,79 @@ public class BlockGenerator : MonoBehaviour
             int options = buildings[type].Count;
             int chosen = Random.Range(0, options);
 
+            allBuildings.Add(new System.Tuple<GameObject, Building>(buildings[type][chosen], blocks[blocknr][i]));
+
             if (blocks[blocknr][i].IsPassage)
             {
-                bool connectedEdge = true;
-
-                for (int k = 0; k < blocks[blocknr][i].Edges.Count; k++)
-                {
-                    int onEdge = blocks[blocknr][i].Edges[k];
-
-                    for (int m = 0; m < _blockedEdges.Count; m++)
-                    {
-                        if (_blockedEdges[m] == onEdge)
-                        {
-                            connectedEdge = false;
-                        }
-                    }
-                }
+                bool connectedEdge = CheckEdges(blocks[blocknr][i].Edges, _edges);
 
                 if (connectedEdge)
                 {
-                    doors.Add(new System.Tuple<GameObject, Building>(buildings[type][chosen], blocks[blocknr][i]));
+                    doors.Add(i);
                 }
 
                 if (_addElevator)
                 {
                     if (i != 0)
                     {
-                        forElevator.Add(allBuildings[i - 1]);
-                        Vector3 direction = blocks[blocknr][i].Position - allBuildings[i - 1].Item2.Position;
+                        forElevator.Add(i - 1);
+                        Vector3 direction = allBuildings[i].Item2.Position - allBuildings[i - 1].Item2.Position;
                         if (System.Math.Abs(direction.x) > System.Math.Abs(direction.z)) direction = new Vector3(direction.x, 0, 0);
                         else direction = new Vector3(0, 0, direction.z);
                         direction.Normalize();
-                        directions.Add(direction);  
+                        directions.Add(direction);
                     }
                 }
             }
 
             else
             {
-                GameObject building = Instantiate(buildings[type][chosen], blocks[blocknr][i].Position, Quaternion.identity);
+                GameObject building = Instantiate(allBuildings[i].Item1, blocks[blocknr][i].Position, Quaternion.identity);
                 SetMaterials(building);
                 building.transform.Rotate(0, blocks[blocknr][i].Rotation, 0, Space.World);
                 building.transform.parent = block.transform;
             }
-
-            allBuildings.Add(new System.Tuple<GameObject, Building>(buildings[type][chosen], blocks[blocknr][i]));
         }
 
-        if(doors.Count > 0)
+        if (doors.Count > 0)
         {
             int chosenDoor = Random.Range(0, doors.Count);
-            GameObject door = Instantiate(doors[chosenDoor].Item1, doors[chosenDoor].Item2.Position, Quaternion.identity);
-            SetMaterials(door);
-            door.transform.Rotate(0, doors[chosenDoor].Item2.Rotation, 0, Space.World);
+            GameObject door = PlaceDoor(allBuildings, doors[chosenDoor]);
             door.transform.parent = block.transform;
         }
 
         if (forElevator.Count > 0)
         {
             int chosenPostition = Random.Range(0, forElevator.Count);
-            GameObject elevator = placeElevator.AddVerticalObject(forElevator[chosenPostition], directions[chosenPostition]);
+            GameObject elevator = placeElevator.AddElevator(allBuildings[forElevator[chosenPostition]], directions[chosenPostition]);
             elevator.transform.parent = block.transform;
         }
 
         return block;
     }
 
+    bool CheckEdges(List<int> _blockEdges, List<System.Tuple<int, float, int>> _outerEdgh)
+    {
+        bool connectedEdge = true;
+
+        for (int k = 0; k < _blockEdges.Count; k++)
+        {
+            int onEdge = _blockEdges[k];
+
+            for (int m = 0; m < _outerEdgh.Count; m++)
+            {
+                if (_outerEdgh[m].Item3 == onEdge)
+                {
+                    connectedEdge = false;
+                }
+            }
+        }
+
+        return connectedEdge;
+    }
+
     public void SetMaterials(GameObject _prefab)
     {
-        //OBS!! Should I copy or not? Or read straight from class?
-
         for (int i = 0; i < 4; i++)
         {
             MeshRenderer renderer = _prefab.GetComponentInChildren<MeshRenderer>();
@@ -220,6 +223,14 @@ public class BlockGenerator : MonoBehaviour
                 renderer.materials = prefabMaterials;
             }
         }
+    }
+
+    GameObject PlaceDoor(List<System.Tuple<GameObject, Building>> _allBuildings, int _index)
+    {
+        GameObject door = Instantiate(_allBuildings[_index].Item1, _allBuildings[_index].Item2.Position, Quaternion.identity);
+        SetMaterials(door);
+        door.transform.Rotate(0, _allBuildings[_index].Item2.Rotation, 0, Space.World);
+        return door;
     }
 }
 
