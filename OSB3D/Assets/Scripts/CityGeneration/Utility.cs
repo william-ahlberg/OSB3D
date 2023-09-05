@@ -14,7 +14,7 @@ public class Utility
         materials = new List<List<Material>>();
         for (int i = 0; i < materialFolders.Count; i++)
         {
-            List<Material> tempList = LoadMaterials(materialFolders[i]);
+            List<Material> tempList = LoadMaterials("Buildings/" + materialFolders[i]);
             materials.Add(tempList);
         }
 
@@ -37,9 +37,9 @@ public class Utility
         return tempList;
     }
 
-    static List<Material> LoadMaterials(string _folder)
+    public static List<Material> LoadMaterials(string _folder)
     {
-        string folderPath = "Materials/Buildings/" + _folder;
+        string folderPath = "Materials/" + _folder;
         List<Material> allMaterials = Resources.LoadAll(folderPath, typeof(Material)).Cast<Material>().ToList();
 
         return allMaterials;

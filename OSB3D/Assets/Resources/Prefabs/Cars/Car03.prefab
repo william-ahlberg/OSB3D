@@ -99,6 +99,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Car03_import
       objectReference: {fileID: 0}
+    - target: {fileID: 2401391212979406438, guid: 939b4ea508295b34eb56a83645f1a9f5, type: 3}
+      propertyPath: m_Materials.Array.data[3]
+      value: 
+      objectReference: {fileID: 2100000, guid: 8e3bf1125413c8c4aa1a8954b4766dd5, type: 2}
+    - target: {fileID: 6521959972463799669, guid: 939b4ea508295b34eb56a83645f1a9f5, type: 3}
+      propertyPath: m_Name
+      value: CarBody
+      objectReference: {fileID: 0}
+    - target: {fileID: 6521959972463799669, guid: 939b4ea508295b34eb56a83645f1a9f5, type: 3}
+      propertyPath: m_TagString
+      value: MaterialEdit
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 939b4ea508295b34eb56a83645f1a9f5, type: 3}
 --- !u!4 &2873872684073190240 stripped

@@ -95,10 +95,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6513575608552445315, guid: 2d8f5072d15c7f545aa4801383c0b850, type: 3}
+      propertyPath: m_TagString
+      value: MaterialEdit
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2d8f5072d15c7f545aa4801383c0b850, type: 3}
       propertyPath: m_Name
       value: Car01_import
       objectReference: {fileID: 0}
+    - target: {fileID: 9017072185221178700, guid: 2d8f5072d15c7f545aa4801383c0b850, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 8e3bf1125413c8c4aa1a8954b4766dd5, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d8f5072d15c7f545aa4801383c0b850, type: 3}
 --- !u!1 &6255917770833946680 stripped

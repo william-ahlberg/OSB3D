@@ -8,8 +8,11 @@ using UnityEditor;
 using UnityEngine;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
+
 public class LevelController : MonoBehaviour
 {
+    [SerializeField] Material testMaterial;
+
     [Header("City Setup")]
     [SerializeField] int seed;
     [SerializeField] int blockCountX;
@@ -34,8 +37,10 @@ public class LevelController : MonoBehaviour
     [SerializeField] GameObject edgePark;
     [SerializeField] GameObject edgeRoad;
 
+    GameObject city; 
     List<GameObject> parks;
     List<GameObject> cars;
+    List<Material> carMaterials; 
 
     BlockGenerator blockGenerator;
 
@@ -47,8 +52,11 @@ public class LevelController : MonoBehaviour
 
         parks = Utility.FromDirectory("Prefabs/Parks");
         cars = Utility.FromDirectory("Prefabs/Cars");
+        carMaterials = Utility.LoadMaterials("Cars");
 
         blockGenerator = GetComponent<BlockGenerator>();
+
+        city = new GameObject();
         GenerateCity(blockSize, roadWidth);
     }
 
@@ -61,13 +69,23 @@ public class LevelController : MonoBehaviour
          }*/
     }
 
+    public void ReGenerate()
+    {
+        GenerateCity(105, 20); 
+    }
+
     //Main method to generate city
     void GenerateCity(float _blockSize, float _roadWidth)
     {
+        Destroy(city);
+        city = new GameObject("City");
+        city.transform.parent = this.transform;
+
         Random.InitState(seed);
 
         int totalBlocks = blockCountX * blockCountZ;
-        int nrParks = (int) parkRatio * totalBlocks;
+        int nrParks = (int) (parkRatio * totalBlocks);
+        Debug.Log(nrParks);
 
         List<int> parkBlocks = RandomParkBlocks(nrParks, totalBlocks);
 
@@ -98,9 +116,6 @@ public class LevelController : MonoBehaviour
                 //if both even, instatiate a block or park
                 if ((i % 2 == 0) && (j % 2 == 0))
                 {
-                    bool isPark = false;
-                    if (parkBlocks.Contains(blockCounter)) isPark = true;
-
                     bool addElevator = false;
                     if (elevatorBlock == blockCounter) addElevator = true;
 
@@ -113,7 +128,7 @@ public class LevelController : MonoBehaviour
 
                     GameObject edgeType;
 
-                    if (isPark)
+                    if (parkBlocks.Contains(blockCounter))
                     {
                         newInstance = AddPark(blockPos, rotateBlock);
                         edgeType = edgePark;
@@ -153,7 +168,8 @@ public class LevelController : MonoBehaviour
                 }
 
                 //placed all instances in the active game object
-                newInstance.transform.parent = this.transform;
+                //newInstance.transform.parent = this.transform;
+                newInstance.transform.parent = city.transform;
 
                 currentPosZ += addToPos;
             }
@@ -171,10 +187,12 @@ public class LevelController : MonoBehaviour
     {
         List<int> parkBlocks = new();
         int counter = 0;
-        bool added = false;
+        bool added;
 
         for (int i = 0; i < _nrParks; i++)
         {
+            added = false;
+
             while (counter < 1000 && !added)
             {
                 int index = Random.Range(0, _totalBlocks);
@@ -282,7 +300,8 @@ public class LevelController : MonoBehaviour
             GameObject edgeObject = Instantiate(_edgeType);
             edgeObject.transform.Translate(_blockPos);
             edgeObject.transform.Rotate(0, _edges[k].Item2, 0, Space.World);
-            edgeObject.transform.parent = gameObject.transform;
+            //edgeObject.transform.parent = gameObject.transform;
+            edgeObject.transform.parent = city.transform;
         }
 
         return _gameObject;
@@ -310,6 +329,8 @@ public class LevelController : MonoBehaviour
             GameObject newCar = Instantiate(cars[carIndex], new Vector3(carPositions[k].x, 0, carPositions[k].z), Quaternion.identity);
             newCar.transform.Rotate(0, carRot, 0, Space.World);
             newCar.transform.parent = roadObject.transform;
+
+            SetCarMaterial(newCar);
         }
 
         return roadObject;
@@ -368,6 +389,16 @@ public class LevelController : MonoBehaviour
         }
 
         return _carPositions;
+    }
+
+    void SetCarMaterial(GameObject _newCar)
+    {
+        GameObject carImport = _newCar.transform.GetChild(0).gameObject;
+        GameObject carBody = carImport.transform.Find("CarBody").gameObject;
+        MeshRenderer renderer = carBody.GetComponent<MeshRenderer>();
+        Material[] prefabMaterials = renderer.materials;
+        prefabMaterials[0] = carMaterials[Random.Range(0, carMaterials.Count)];
+        renderer.materials = prefabMaterials;
     }
 
     GameObject RoadEdge(int _i, int _j, int _loopX, int _loopZ, Vector3 _roadPosition)
