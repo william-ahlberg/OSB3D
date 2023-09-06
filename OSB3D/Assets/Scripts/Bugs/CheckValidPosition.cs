@@ -23,8 +23,9 @@ public class CheckValidPosition : MonoBehaviour
 
         Collider[] freeColliders = Physics.OverlapBox(transform.position, transform.localScale/2);
         Debug.Log(freeColliders.Length);
-     
 
+        foreach (Collider collider in freeColliders)
+        {Debug.Log(collider.tag);}
         if (freeColliders.Length > 1)
         {
             Debug.Log("Position invalid, colliders intersect");

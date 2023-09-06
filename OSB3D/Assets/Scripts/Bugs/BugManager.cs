@@ -15,4 +15,20 @@ public class BugManager : MonoBehaviour
     {
         
     }
+
+
+    void ReadConfig()
+    { 
+    
+    
+    
+    
+    }
+    
+    void WriteLog()
+    { 
+    
+    
+    
+    }
 }

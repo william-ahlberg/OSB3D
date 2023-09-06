@@ -8,13 +8,13 @@ public class PhysicsBugs : MonoBehaviour
     [SerializeField] private int numberOfBugs;
     private Transform parent;
     private GameObject newParent;
+    private string searchTag = "Bug";
+    private bool firstFrame = true; //Used to generate bugs after PCG
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        // CalculateGameAreaBounds();
-        // Debug.Log(GetBounds());
-        // MakeCubes(numberOfBugs);
+       
     }
 
     private void CalculateGameAreaBounds()
@@ -22,7 +22,6 @@ public class PhysicsBugs : MonoBehaviour
         Renderer[] renderers = GetComponentsInChildren<Renderer>();
         if (renderers.Length > 0)
         {
-            Debug.Log(renderers.Length);
             gameAreaBounds = renderers[0].bounds;
             for (int i = 1; i < renderers.Length - 1; i++)
             {
@@ -42,14 +41,14 @@ public class PhysicsBugs : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
+        if(firstFrame)
         {
-            Debug.Log("Generate");
             CalculateGameAreaBounds();
-            Debug.Log(GetBounds());
             MakeCubes(numberOfBugs);
-        }     
-    
+            firstFrame = false;
+        }
+      
+
     }
 
     private void MakeCubes(int numberOfCubes)
@@ -59,7 +58,7 @@ public class PhysicsBugs : MonoBehaviour
         for (int i = 0; i < numberOfCubes; i++)
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.tag = "BugCube";
+            cube.tag = searchTag;
             cube.transform.localScale = new Vector3(Random.Range(1,5), Random.Range(1,5), Random.Range(1,5));
             cube.AddComponent<CubeIntersection>();
             cube.GetComponent<Collider>().isTrigger = true;
@@ -75,30 +74,28 @@ public class PhysicsBugs : MonoBehaviour
         RaycastHit hit;
      
         Bounds sceneBounds = GetBounds(); 
-        Vector3 randomPosition = new Vector3(Random.Range(sceneBounds.min.x, sceneBounds.max.x), Random.Range(0, sceneBounds.max.y), Random.Range(sceneBounds.min.z, sceneBounds.max.z));
+        Vector3 randomPosition = new Vector3(Random.Range(sceneBounds.min.x, sceneBounds.max.x), Random.Range(0, 10), Random.Range(sceneBounds.min.z, sceneBounds.max.z));
         Collider[] freeColliders = Physics.OverlapBox(randomPosition, cubeScale/2);
         
         bool validPosition = true;
 
-        foreach(Collider c in freeColliders)
+        foreach(Collider collider in freeColliders)
         {
-            if(!c.gameObject.CompareTag("BugCube"))
+            if(!collider.gameObject.CompareTag(searchTag))
             {
                 validPosition = false;
                 break;
             }
         }
 
-        if (!validPosition & (depth < 100)) 
+        if (!validPosition && (depth < 100)) 
         {
-            Debug.Log("Finding new position for Cube " + ID);
+            //Debug.Log("Finding new position for Cube " + ID);
             randomPosition = GetRandomPosition(cubeScale, ++depth, ID);
         }
 
         Physics.Raycast(randomPosition , Vector3.down, out hit, Mathf.Infinity);
         randomPosition.y = hit.point.y + cubeScale.y/2;
-        
-
         
         return randomPosition;
 

@@ -6,13 +6,31 @@ public class GeometryBugs : MonoBehaviour
 {
     // Start is called before the first frame update
     List<Collider> edgeNarrowColliders = new List<Collider>();
+    private string searchTag = "Bug";
+    private string searchName = "EdgeNarrow";
+    [SerializeField] private int _numberOfBugs = 0;
+    LevelController levelController;
+
+    public int NumberOfBugs
+    {
+        get
+        {
+            return Mathf.Min(_numberOfBugs, 2*((levelController.blockCountX-1) + (levelController.blockCountZ)-1));
+        }
+        set
+        {
+            _numberOfBugs = value;
+        }
+    }
+
     void Start()
     {
+        levelController = GetComponent<LevelController>();
 
         GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("Bug");
         foreach (GameObject obj in gameObjects)
         {
-            if (obj.GetComponent<Collider>() != null)
+            if (obj.GetComponent<Collider>() != null && obj.name == searchName)
             {
                 edgeNarrowColliders.Add(obj.GetComponent<Collider>());
 
@@ -23,10 +41,10 @@ public class GeometryBugs : MonoBehaviour
 
         Debug.Log("Number of Bug Colliders:" + edgeNarrowColliders.Count);
 
-
-        foreach (Collider collider in edgeNarrowColliders) 
-        { 
-            collider.enabled = false;
+        Debug.Log("Number of Bugs: " + NumberOfBugs);
+        for (int i = 0; i < NumberOfBugs; i++) 
+        {
+            edgeNarrowColliders[i].enabled = false;
         
         
         }
@@ -37,7 +55,6 @@ public class GeometryBugs : MonoBehaviour
     {
         
     }
-
 
 
 }

@@ -4,11 +4,14 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using Unity.VisualScripting;
+using System;
 
 public class BaseAgent : Agent
 {
     float[] actions = new float[5];
     AgentController agentController;
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -41,9 +44,8 @@ public class BaseAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        //Vector Observations
-        sensor.AddObservation(transform.position); //Absolute agent position
-
+        sensor.AddObservation(transform.position);
+        
 
     }
 
@@ -57,5 +59,6 @@ public class BaseAgent : Agent
 
         agentController.MoveAgent(actions);
     }
+
 
 }
