@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class BugManager : MonoBehaviour
 {
+    Dictionary<string,int> BugTypCount;
+    
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -19,7 +22,7 @@ public class BugManager : MonoBehaviour
 
     void ReadConfig()
     { 
-    
+        
     
     
     
@@ -27,6 +30,15 @@ public class BugManager : MonoBehaviour
     
     void WriteLog()
     { 
+    
+    
+    
+    }
+    
+    void MakePhysicsBugs()
+    {
+    
+    
     
     
     

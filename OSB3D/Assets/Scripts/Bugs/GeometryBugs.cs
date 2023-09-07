@@ -39,9 +39,7 @@ public class GeometryBugs : MonoBehaviour
 
         }
 
-        Debug.Log("Number of Bug Colliders:" + edgeNarrowColliders.Count);
 
-        Debug.Log("Number of Bugs: " + NumberOfBugs);
         for (int i = 0; i < NumberOfBugs; i++) 
         {
             edgeNarrowColliders[i].enabled = false;
