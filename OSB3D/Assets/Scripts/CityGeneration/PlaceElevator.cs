@@ -1,20 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using System.Globalization;
-using Unity.MLAgents;
-using System.Drawing;
-using UnityEditor;
-using System.IO;
-using UnityEngine.ProBuilder.MeshOperations;
 
 public class PlaceElevator : MonoBehaviour
 {
     [SerializeField] GameObject elevator;
     [SerializeField] GameObject elevatorFrame;
 
-    public GameObject AddElevator(System.Tuple<GameObject, Building> _building, Vector3 _direction)
+    //Main function to add a elevator to a block, used by the BlockGenerator-class
+    public GameObject Place(System.Tuple<GameObject, Building> _building, Vector3 _direction)
     {
         int floors = FloorsFromName(_building.Item1);
         Vector3 buildingSize = BuildingSize(_building.Item1);
@@ -42,18 +34,21 @@ public class PlaceElevator : MonoBehaviour
         return gameObject;
     }
 
+    //Checks how many floor the building next to the elevator has
     int FloorsFromName(GameObject _building)
     {
         string name = _building.name;
         return int.Parse(name.Substring(name.IndexOf("_F") + 2, 2));
     }
 
+    //Checks the size of the building next to the elevator
     Vector3 BuildingSize(GameObject _building)
     {
         Mesh buildingMesh = _building.GetComponentsInChildren<MeshFilter>()[0].sharedMesh;
         return buildingMesh.bounds.size;
     }
 
+    //Generates the elevator frame, based on the number of floors
     GameObject ElevatorFrame(int _floors)
     {
         GameObject elevatorFrameObject = new("ElevatorFrame");
@@ -74,6 +69,7 @@ public class PlaceElevator : MonoBehaviour
         return elevatorFrameObject;
     }
 
+    //Rotates the elevator based on where the building next to it is located
     float ElevatorRotation(Vector3 _direction)
     {
         if (_direction.x == -1) return -90;
@@ -82,6 +78,7 @@ public class PlaceElevator : MonoBehaviour
         else return 0;
     }
 
+    //Calculates the elevators position, based on the type of building standing next to it, it's postion and size
     Vector3 ElevatorPosition(string _buildingName, Vector3 _buildingSize, Vector3 _direction, Vector3 _buildingPosition)
     {
         float buildingWidth; 

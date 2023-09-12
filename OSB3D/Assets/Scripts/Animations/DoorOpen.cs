@@ -1,17 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class DoorOpen : MonoBehaviour
 {
+    [SerializeField] Renderer[] buttons;
     [SerializeField] Animator[] doorAnimator;
-    [SerializeField] Material buttonMaterial;
-
-    private void Start()
-    {
-        buttonMaterial.color = Color.red;
-    }
+    [SerializeField] Material buttonGreen;
+    [SerializeField] Material buttonRed;
 
     void OnTriggerEnter(Collider _collider) 
     {
@@ -28,7 +22,11 @@ public class DoorOpen : MonoBehaviour
                     doorAnimator[i].SetTrigger("TriggerOpen");
                     doorAnimator[i].SetBool("Opened", true);
                 }
-                buttonMaterial.color = Color.green; 
+
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    buttons[i].material = buttonGreen;
+                }
             }
 
             else if(opened)
@@ -38,8 +36,12 @@ public class DoorOpen : MonoBehaviour
                     doorAnimator[i].SetTrigger("TriggerClose");
                     doorAnimator[i].SetBool("Opened", false);
                 }
-                buttonMaterial.color = Color.red;
-        }
+
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    buttons[i].material = buttonRed;
+                }
+            }
         }
     }
 }

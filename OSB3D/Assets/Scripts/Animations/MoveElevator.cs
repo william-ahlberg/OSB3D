@@ -49,6 +49,7 @@ public class MoveElevator : MonoBehaviour
                 {
                     goUp = false;
                     moving = false;
+                    Invoke("SetGoDown", 300);
                 }
 
             }
@@ -69,6 +70,12 @@ public class MoveElevator : MonoBehaviour
             }
         }
     }
+
+    void SetGoDown()
+    {
+        goDown = true;
+    }
+
 
     public static bool ButtonPressed(int _buttonNr)
     {

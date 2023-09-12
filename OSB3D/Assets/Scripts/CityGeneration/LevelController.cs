@@ -1,13 +1,7 @@
 ﻿//using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEditor;
 using UnityEngine;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
-
 
 public class LevelController : MonoBehaviour
 {
@@ -20,8 +14,9 @@ public class LevelController : MonoBehaviour
     [Range(0.0f, 1.0f)]
     [SerializeField] float parkRatio;
 
-    [Header("Vertical connection")]
-
+    [Header("Street Items per road segment")]
+    [SerializeField] int itemMin;
+    [SerializeField] int itemMax;
 
     [Header("Car Generation")]
     [SerializeField] bool parkedPosition;
@@ -40,19 +35,27 @@ public class LevelController : MonoBehaviour
     GameObject city; 
     List<GameObject> parks;
     List<GameObject> cars;
-    List<Material> carMaterials; 
+    List<GameObject> streetItems;
+    List<Material> carMaterials;
+    private List<float> lightAndTreePositions; 
 
     BlockGenerator blockGenerator;
 
+    private float blockSize, roadWidth; 
+
     void Start()
     {
-        //fixed numbers, the size of the 3d-assets
-        float blockSize = 105;
-        float roadWidth = 20;
+        /*Fixed numbers, the size of the 3d-assets.
+        Should only be changed if another size blocks and roads are used than the once included*/
+        blockSize = 105;
+        roadWidth = 20;
 
         parks = Utility.FromDirectory("Prefabs/Parks");
         cars = Utility.FromDirectory("Prefabs/Cars");
+        streetItems = Utility.FromDirectory("Prefabs/StreetItems");
         carMaterials = Utility.LoadMaterials("Cars");
+
+        lightAndTreePositions = new List<float>() { -45, -30, -15, 0, 15, 30, 45}; 
 
         blockGenerator = GetComponent<BlockGenerator>();
 
@@ -60,6 +63,7 @@ public class LevelController : MonoBehaviour
         GenerateCity(blockSize, roadWidth);
     }
 
+    //Update() only used for screenshots. Can be removed before distribution. 
     void Update()
     {
         /* if (Input.GetKeyDown(KeyCode.V))
@@ -69,15 +73,18 @@ public class LevelController : MonoBehaviour
          }*/
     }
 
+
+    //ReGenerate() is for recording purpose only. Can be removed before distribution. 
     public void ReGenerate()
     {
+        Destroy(city);
         GenerateCity(105, 20); 
     }
 
     //Main method to generate city
     void GenerateCity(float _blockSize, float _roadWidth)
     {
-        Destroy(city);
+        //Grouped in a Game Object so it can be destroyed if regenerated for recordings
         city = new GameObject("City");
         city.transform.parent = this.transform;
 
@@ -85,15 +92,16 @@ public class LevelController : MonoBehaviour
 
         int totalBlocks = blockCountX * blockCountZ;
         int nrParks = (int) (parkRatio * totalBlocks);
-        Debug.Log(nrParks);
 
+        //A list of indices that are going to be parks
         List<int> parkBlocks = RandomParkBlocks(nrParks, totalBlocks);
 
+        //Building block index for where to place the elevator
         int elevatorBlock = RandomElevatorBlock(totalBlocks, parkBlocks);
 
         int blockCounter = 0; 
 
-        //adds to count for roads and crossings
+        //adds to loop count for roads and crossings
         int loopX = blockCountX * 2 - 1;
         int loopZ = blockCountZ * 2 - 1;
 
@@ -113,7 +121,7 @@ public class LevelController : MonoBehaviour
             {
                 GameObject newInstance;
 
-                //if both even, instatiate a block or park
+                //If both even, instatiate a block or park
                 if ((i % 2 == 0) && (j % 2 == 0))
                 {
                     bool addElevator = false;
@@ -122,6 +130,7 @@ public class LevelController : MonoBehaviour
                     float rotateBlock = Random.Range(0, 4);
                     rotateBlock *= 90;
 
+                    //A list which sides are at the edge and therefore not facing another block (if any)
                     List<System.Tuple<int, float, int>> edges = CheckEdgeConditions(i, j, loopX, loopZ, rotateBlock);
 
                     Vector3 blockPos = new(currentPosX, 0, currentPosZ);
@@ -167,7 +176,7 @@ public class LevelController : MonoBehaviour
                     }
                 }
 
-                //placed all instances in the active game object
+                //placed all instances in the a game object
                 //newInstance.transform.parent = this.transform;
                 newInstance.transform.parent = city.transform;
 
@@ -183,6 +192,7 @@ public class LevelController : MonoBehaviour
         }
     }
 
+    //Returns a list of indecies for where to place parks
     List<int> RandomParkBlocks(int _nrParks, int _totalBlocks)
     {
         List<int> parkBlocks = new();
@@ -207,6 +217,7 @@ public class LevelController : MonoBehaviour
         return parkBlocks; ;
     }
 
+    //Returns a index for in which building block the elevator should be placed
     int RandomElevatorBlock(int _totalBlocks, List<int> _parkBlocks)
     {
         int chosenIndex = 0;
@@ -227,6 +238,12 @@ public class LevelController : MonoBehaviour
 
         return chosenIndex;
     }
+
+    /* CheckEdgeConditions() checks if this block is at the edge of the city and returns a list with which sides are towards the edge. 
+     * Tuple<int,float,int> are for:        
+        int = index of side towards edge
+        float = rotation used for edgeWall
+        int = index of side towards edge after the block have been rotated.*/
 
     List<System.Tuple<int, float, int>> CheckEdgeConditions(int _i, int _j, int _loopX, int _loopZ, float _rotateBlock)
     {
@@ -258,6 +275,7 @@ public class LevelController : MonoBehaviour
         return edges; 
     }
 
+    //Checks which side will be facing the edge after the block have been rotated
     int EdgeBlocked(int _startEdge, float _rotation)
     {
         int blockEdge;
@@ -270,6 +288,7 @@ public class LevelController : MonoBehaviour
         return blockEdge;
     }
 
+    //Adds a new park block
     GameObject AddPark(Vector3 _blockPos, float _rotateBlock)
     {
         GameObject gameObject;
@@ -280,6 +299,7 @@ public class LevelController : MonoBehaviour
         return gameObject;
     }
 
+    //Adds a new building block
     GameObject AddBlock(List<System.Tuple<int, float, int>> _edges, Vector3 _blockPos, float _rotateBlock, bool _addElevator)
     {
         GameObject gameObject;
@@ -293,6 +313,7 @@ public class LevelController : MonoBehaviour
         return gameObject;
     }
 
+    //Adds the edge walls
     GameObject AddEdges(GameObject _gameObject, List<System.Tuple<int, float, int>> _edges, GameObject _edgeType, Vector3 _blockPos)
     {
         for (int k = 0; k < _edges.Count; k++)
@@ -307,6 +328,7 @@ public class LevelController : MonoBehaviour
         return _gameObject;
     }
 
+    //Generates a road object, including randomly placed cars and street items
     GameObject GenerateRoad(int _roadnr)
     {
         string roadName = "Road" + _roadnr.ToString();
@@ -315,82 +337,145 @@ public class LevelController : MonoBehaviour
         GameObject newRoad = Instantiate(road);
         newRoad.transform.parent = roadObject.transform;
 
-        int carNr = Random.Range(carMin, carMax);
+        List<Vector3> carPositions = PlacingPositions(true);
+        PlaceItems(roadObject, carPositions, true);
 
-        List<Vector3> carPositions = CarPositions(carNr);
-
-        for (int k = 0; k < carPositions.Count; k++)
-        {
-            float carRot;
-            if (carPositions[k].z > 0) carRot = -90;
-            else carRot = 90;
-
-            int carIndex = Random.Range(0, cars.Count);
-            GameObject newCar = Instantiate(cars[carIndex], new Vector3(carPositions[k].x, 0, carPositions[k].z), Quaternion.identity);
-            newCar.transform.Rotate(0, carRot, 0, Space.World);
-            newCar.transform.parent = roadObject.transform;
-
-            SetCarMaterial(newCar);
-        }
+        List<Vector3> itemPositions = PlacingPositions(false);
+        PlaceItems(roadObject, itemPositions, false);
 
         return roadObject;
     }
 
-    List<Vector3> CarPositions(int _carNr)
+    //Returns a list of car positions
+    List<Vector3> PlacingPositions(bool _cars)
     {
+        int nrPositions; 
 
-        List<Vector3> carsDir1 = new();
-        List<Vector3> carsDir2 = new();
+        List<Vector3> direction0 = new();
+        List<Vector3> direction1 = new();
 
-        float carZ;
-        if (parkedPosition) carZ = 4.8f;
-        else carZ = 3.0f;
+        float zPosition;
+        float threshold; 
 
-        for (var i = 0; i < _carNr; i++)
+        if (_cars)
         {
-            int carDirection = Random.Range(0, 2);
+            nrPositions = Random.Range(carMin, carMax);
 
-            if (carDirection == 0)
-            {
-                carsDir1 = FindCarPosition(carsDir1, carZ * -1.0f);
-            }
+            /*carZ postion is set based on the width of the road segment. 
+            Width the road segments included 0.24*roadWidth is next to the curb (parked position) 
+            and 0.15*road width is in the middle of a road (driving position) */
+            if (parkedPosition) zPosition = roadWidth * 0.24f;
+            else zPosition = roadWidth * 0.15f;
 
-            else
-            {
-                carsDir1 = FindCarPosition(carsDir1, carZ);
-            }
+            //Threshold of 7.5f ensure no overlap of cars
+            threshold = 7.5f;
         }
 
-        carsDir1.AddRange(carsDir2);
-        return carsDir1;
+        else
+        {
+            nrPositions = Random.Range(itemMin, itemMax);
+
+            for (int i = 0; i < lightAndTreePositions.Count; i++)
+            {
+                direction0.Add(new Vector3(lightAndTreePositions[i], 0, -7));
+                direction1.Add(new Vector3(lightAndTreePositions[i], 0, 7));
+            }
+
+            //Z position of 6.8 places street items on the edge of the curb towards the road, between the threes and street lights. 3.0 ensures no overlaps of street items or trees. 
+            zPosition = 6.8f;
+            threshold = 3.0f;
+        }
+
+            for (var i = 0; i < nrPositions; i++)
+            {
+                int direction = Random.Range(0, 2);
+
+                if (direction == 0)
+                {
+                    direction0 = FindPosition(direction0, zPosition * -1.0f, threshold);
+                }
+
+                else
+                {
+                    direction1 = FindPosition(direction1, zPosition, threshold);
+                }
+            }
+                
+        if(!_cars)
+        {
+            direction0.RemoveRange(0, lightAndTreePositions.Count);
+            direction1.RemoveRange(0, lightAndTreePositions.Count);   
+        }
+
+        direction0.AddRange(direction1);
+        return direction0;
     }
 
-    List<Vector3> FindCarPosition(List<Vector3> _carPositions, float _carZ)
+    //Adds a new car position to the list of carPositions, if it succesfully fins a position within a max number of attempts
+    List<Vector3> FindPosition(List<Vector3> _positions, float _zPosition, float _threshold)
     {
+        Debug.Log("zPosition: " + _zPosition);
         float minX = -46.0f;
         float maxX = 46.0f;
         int attempts = 0;
         bool placed = false;
 
-        Vector3 carPos;
+        Vector3 newPos;
 
         while (attempts < maxAttempts && !placed)
         {
 
-            carPos = new Vector3(Random.Range(minX, maxX), 0, _carZ);
+            newPos = new Vector3(Random.Range(minX, maxX), 0, _zPosition);
 
-            if (!_carPositions.Any(p => Vector3.Distance(carPos, p) < 7.5f))
+            //Checks if the new postion is already in the list of cars within a threshold 
+            if (!_positions.Any(p => Vector3.Distance(newPos, p) < _threshold))
             {
-                _carPositions.Add(carPos);
+                _positions.Add(newPos);
                 placed = true;
             }
 
             attempts++;
         }
 
-        return _carPositions;
+        return _positions;
     }
 
+    void PlaceItems(GameObject _roadObject, List<Vector3> _positions, bool _cars)
+    {
+        for (int i = 0; i < _positions.Count; i++)
+        {
+            float rotation;
+            GameObject newItem;
+
+            if (_cars)
+            {
+                //Checks where the car is placed and which direction it should be facing
+                if (_positions[i].z > 0) rotation = -90;
+                else rotation = 90;
+
+                int carIndex = Random.Range(0, cars.Count);
+                newItem = Instantiate(cars[carIndex], new Vector3(_positions[i].x, 0, _positions[i].z), Quaternion.identity);
+            }
+
+            else
+            {
+                if (_positions[i].z > 0) rotation = 180;
+                else rotation = 0;
+
+                int itemIndex = Random.Range(0, streetItems.Count);
+                newItem = Instantiate(streetItems[itemIndex], new Vector3(_positions[i].x, 0, _positions[i].z), Quaternion.identity);
+            }
+
+
+
+            newItem.transform.Rotate(0, rotation, 0, Space.World);
+            newItem.transform.parent = _roadObject.transform;
+
+            if (_cars) SetCarMaterial(newItem);
+        }
+    }
+
+    //Randomises a car material for the car body. The other materials on the cars are not changed. 
     void SetCarMaterial(GameObject _newCar)
     {
         GameObject carImport = _newCar.transform.GetChild(0).gameObject;
@@ -401,6 +486,7 @@ public class LevelController : MonoBehaviour
         renderer.materials = prefabMaterials;
     }
 
+    //Instatiate the edge-object next to a road with the correct rotation
     GameObject RoadEdge(int _i, int _j, int _loopX, int _loopZ, Vector3 _roadPosition)
     {
         float edgeRotation = 0;

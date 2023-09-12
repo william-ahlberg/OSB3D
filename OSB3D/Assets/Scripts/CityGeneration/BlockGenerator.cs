@@ -1,10 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class BlockGenerator : MonoBehaviour
 {
@@ -17,11 +14,16 @@ public class BlockGenerator : MonoBehaviour
     List<TextAsset> blockFiles;
 
     PlaceElevator placeElevator;
+    PlaceDoor placeDoor;
+
     void Awake()
     {
+        //To ensure .txt information is read correct on all langugae computers
         CultureInfo englishUSCulture = new("en-US");
         System.Threading.Thread.CurrentThread.CurrentCulture = englishUSCulture;
 
+        /* buildingCodes, if a new typ of builing is added it should be listed here with it's own code.
+         Order of codes do not matter, now in alphabetic order*/
         List<string> buildingCodes = new() {"BCC30", "BCC40",
                                             "BCS30", "BCS40",
                                              "BD20", "BD30",
@@ -35,6 +37,7 @@ public class BlockGenerator : MonoBehaviour
         materials = Utility.GetBuildingMaterials();
         blocks = TemplateBlocks();
         placeElevator = GetComponent<PlaceElevator>();
+        placeDoor = GetComponent<PlaceDoor>();
     }
 
     //Method to get all building types in Resources>Prefabs>Buildings (in each folder for each type)
@@ -56,7 +59,7 @@ public class BlockGenerator : MonoBehaviour
         return buildingLists;
     }
 
-    //Method below reads type, position and rotation for each block type from .txt files
+    //Method below reads type, position and rotation for each block type from .txt files as a string
     List<List<Building>> TemplateBlocks()
     {
         List<List<Building>> templates = new();
@@ -83,6 +86,8 @@ public class BlockGenerator : MonoBehaviour
                     List<int> edges = new();
 
                     string substring = info[0].Substring(0, 2);
+                    
+                    //If it is not a detached buliding and the x and z value is 
                     if (substring != "BD")
                     {
                         if (position.x < -30) edges.Add(0);
@@ -91,6 +96,7 @@ public class BlockGenerator : MonoBehaviour
                         if (position.z < -30) edges.Add(3);
                     }
 
+                    
                     templateBlock.Add(new Building(typeIndex, position, float.Parse(info[4]), isPassage, edges));
                 }
             }
@@ -127,10 +133,13 @@ public class BlockGenerator : MonoBehaviour
             int options = buildings[type].Count;
             int chosen = Random.Range(0, options);
 
+            //Keep track of all buildings for the elevator placement
             allBuildings.Add(new System.Tuple<GameObject, Building>(buildings[type][chosen], blocks[blocknr][i]));
 
+            //Check if it is a passage towards a courtyard, if so a door and elevator can be placed
             if (blocks[blocknr][i].IsPassage)
             {
+                //checks if the edge is towards another block, if so a door object can be placed
                 bool connectedEdge = CheckEdges(blocks[blocknr][i].Edges, _edges);
 
                 if (connectedEdge)
@@ -138,6 +147,7 @@ public class BlockGenerator : MonoBehaviour
                     doors.Add(i);
                 }
 
+                //if a elevator should be placed, the index of the gap and the direction towards the previous building is saved
                 if (_addElevator)
                 {
                     if (i != 0)
@@ -152,32 +162,35 @@ public class BlockGenerator : MonoBehaviour
                 }
             }
 
+            //If not a passage, instantiate a building
             else
             {
                 GameObject building = Instantiate(allBuildings[i].Item1, blocks[blocknr][i].Position, Quaternion.identity);
-                SetMaterials(building);
+                SetBuildingMaterials(building);
                 building.transform.Rotate(0, blocks[blocknr][i].Rotation, 0, Space.World);
                 building.transform.parent = block.transform;
             }
         }
 
+        //If positions to place the door have been found, randomly choose one 
         if (doors.Count > 0)
         {
-            int chosenDoor = Random.Range(0, doors.Count);
-            GameObject door = PlaceDoor(allBuildings, doors[chosenDoor]);
+            GameObject door = placeDoor.Place(allBuildings, doors, materials[2]);
             door.transform.parent = block.transform;
         }
 
+        //If positions to place the elevator have been found, randomly choose one
         if (forElevator.Count > 0)
         {
             int chosenPostition = Random.Range(0, forElevator.Count);
-            GameObject elevator = placeElevator.AddElevator(allBuildings[forElevator[chosenPostition]], directions[chosenPostition]);
+            GameObject elevator = placeElevator.Place(allBuildings[forElevator[chosenPostition]], directions[chosenPostition]);
             elevator.transform.parent = block.transform;
         }
 
         return block;
     }
 
+    //Checks which sides of the block is towards an edge, if any
     bool CheckEdges(List<int> _blockEdges, List<System.Tuple<int, float, int>> _outerEdgh)
     {
         bool connectedEdge = true;
@@ -198,20 +211,12 @@ public class BlockGenerator : MonoBehaviour
         return connectedEdge;
     }
 
-    public void SetMaterials(GameObject _prefab)
+    //Randomises the building materials. Works with the prefabs included, where the material order are in accordance with the seperate documentation
+    public void SetBuildingMaterials(GameObject _prefab)
     {
-        for (int i = 0; i < 4; i++)
-        {
             MeshRenderer renderer = _prefab.GetComponentInChildren<MeshRenderer>();
             Material[] prefabMaterials = renderer.materials;
 
-            if (prefabMaterials.Count() < 4) //For passage wall
-            {
-                prefabMaterials[2] = materials[2][Random.Range(0, materials[2].Count)]; //Facade
-            }
-
-            else
-            {
                 prefabMaterials[0] = materials[0][Random.Range(0, materials[0].Count)];  //Roof
                 prefabMaterials[1] = materials[1][Random.Range(0, materials[1].Count)]; //Plinth
                 prefabMaterials[2] = materials[2][Random.Range(0, materials[2].Count)]; //Facade
@@ -221,41 +226,5 @@ public class BlockGenerator : MonoBehaviour
                 prefabMaterials[5] = materials[3][windowDoor]; //DoorFrame
                 prefabMaterials[8] = materials[3][windowDoor]; //DoorPanel
                 renderer.materials = prefabMaterials;
-            }
-        }
     }
-
-    GameObject PlaceDoor(List<System.Tuple<GameObject, Building>> _allBuildings, int _index)
-    {
-        GameObject door = Instantiate(_allBuildings[_index].Item1, _allBuildings[_index].Item2.Position, Quaternion.identity);
-        SetMaterials(door);
-        door.transform.Rotate(0, _allBuildings[_index].Item2.Rotation, 0, Space.World);
-        return door;
-    }
-}
-
-//struct with the information for each building
-public struct Building
-{
-    private int typeIndex;
-    private Vector3 position;
-    private float yRotation;
-    private bool passage;
-    private List<int> edges;
-
-    public Building(int _typeIndex, Vector3 _Position, float _yRotation, bool _passage, List<int> _onEdges)
-    {
-        this.typeIndex = _typeIndex;
-        this.position = _Position;
-        this.yRotation = _yRotation;
-        this.passage = _passage;
-        this.edges = _onEdges;
-    }
-
-    public int TypeIndex { get { return this.typeIndex; } }
-    public Vector3 Position { get { return this.position; } }
-    public float Rotation { get { return this.yRotation; } }
-    public bool IsPassage { get { return this.passage; } }
-
-    public List<int> Edges { get { return this.edges; } }
 }
