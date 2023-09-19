@@ -10,7 +10,7 @@ public class Utility
     {
         List<List<Material>> materials;
 
-        List<string> materialFolders = new List<string>() { "Roof", "Plinth", "Facade", "DoorWindow" };
+        List<string> materialFolders = new List<string>() {"Facade", "Plinth", "DoorWindow", "Roof"};
         materials = new List<List<Material>>();
         for (int i = 0; i < materialFolders.Count; i++)
         {

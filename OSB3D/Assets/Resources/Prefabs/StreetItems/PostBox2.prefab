@@ -96,6 +96,10 @@ PrefabInstance:
       value: Postbox2_import
       objectReference: {fileID: 0}
     - target: {fileID: 1061755656718889564, guid: 5d8118586c45b3b45a9c19608a95d8f1, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f90172fecc251724e9b454a3ccf50e2e, type: 2}
+    - target: {fileID: 1061755656718889564, guid: 5d8118586c45b3b45a9c19608a95d8f1, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: f90172fecc251724e9b454a3ccf50e2e, type: 2}

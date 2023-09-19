@@ -83,7 +83,7 @@ public class PlaceElevator : MonoBehaviour
     {
         float buildingWidth; 
 
-        if (_buildingName.Substring(0, 3) == "BCC") buildingWidth = _buildingSize.y * 100 / 2;
+        if (_buildingName.Substring(0, 3) == "BCL") buildingWidth = _buildingSize.y * 100 / 2;
         else buildingWidth = _buildingSize.x * 100 / 2;
 
         float addToPosition = System.Math.Abs(_direction.x) * buildingWidth + System.Math.Abs(_direction.z) * buildingWidth;

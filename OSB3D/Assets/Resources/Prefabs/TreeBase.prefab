@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3672640832387807244}
   m_Layer: 0
   m_Name: TreeBase
-  m_TagString: Untagged
+  m_TagString: StreetTree
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -94,6 +94,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 9050b7b279f9384498c043cb0932aed0, type: 3}
       propertyPath: m_Name
       value: TreeBase_import
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9050b7b279f9384498c043cb0932aed0, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9050b7b279f9384498c043cb0932aed0, type: 3}
