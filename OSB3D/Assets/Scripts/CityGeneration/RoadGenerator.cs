@@ -6,20 +6,19 @@ using UnityEngine;
 
 public class RoadGenerator : MonoBehaviour
 {
-    [Header("Attempts placing items and cars")]
-    [SerializeField] int maxAttempts;
+    [Header("Cars and items")]
+    [SerializeField] int maxPlaceAttempts;
     [SerializeField] bool carsDriving;
     [SerializeField] bool stopOnCollision;
     [SerializeField] float carSpeed;
 
+    [Header("Cars per road segments")]
+    [SerializeField] int carMin;
+    [SerializeField] int carMax;
 
     [Header("Street Items per road segment")]
     [SerializeField] int itemMin;
     [SerializeField] int itemMax;
-
-    [Header("Cars per road segments")]
-    [SerializeField] int carMin;
-    [SerializeField] int carMax;
 
     [Header("Referenced Prefabs")]
     [SerializeField] GameObject road;
@@ -200,7 +199,7 @@ public class RoadGenerator : MonoBehaviour
 
         Vector3 newPos;
 
-        while (attempts < maxAttempts && !placed)
+        while (attempts < maxPlaceAttempts && !placed)
         {
 
             newPos = new Vector3(Random.Range(minX, maxX), 0, _zPosition);

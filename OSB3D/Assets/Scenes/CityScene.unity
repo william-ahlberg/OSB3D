@@ -17,13 +17,13 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.0025
+  m_FogDensity: 0.0024
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 1, g: 0.9573333, b: 0.84000003, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 0.8
+  m_AmbientIntensity: 0.7
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: 3259d47734b135149aeeb4520c6027d7, type: 2}
@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 34955113}
   - component: {fileID: 34955112}
   - component: {fileID: 34955111}
+  - component: {fileID: 34955114}
   m_Layer: 0
   m_Name: Body
   m_TagString: Player
@@ -167,7 +168,7 @@ MeshCollider:
   m_GameObject: {fileID: 34955109}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
@@ -223,6 +224,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 34955109}
   m_Mesh: {fileID: -7931966441900612458, guid: 07fa4ed49d9704d459cf94ce82ec7554, type: 3}
+--- !u!136 &34955114
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 34955109}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.4
+  m_Height: 1.7586472
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.8776187, z: 0.09598574}
 --- !u!1 &175351855
 GameObject:
   m_ObjectHideFlags: 0
@@ -1091,8 +1106,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seed: 61
-  blockCountX: 2
-  blockCountZ: 2
+  blockCountX: 5
+  blockCountZ: 5
   parkRatio: 0.25
   crossing: {fileID: 4005743241734848231, guid: 767244c251a7bd24180332c707fc2f9a, type: 3}
   edgeBlock: {fileID: 5917777203468375160, guid: 54285ac9cc2a1af49af24014232e5ce9, type: 3}
@@ -1149,14 +1164,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71a55b6f6f2e07c42ab870116fdfec0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxAttempts: 1000
+  maxPlaceAttempts: 0
   carsDriving: 1
-  stopOnCollision: 0
+  stopOnCollision: 1
   carSpeed: 5
-  itemMin: 0
-  itemMax: 4
   carMin: 1
   carMax: 7
+  itemMin: 0
+  itemMax: 4
   road: {fileID: 7799802082301009339, guid: 4e375f0103b52564aab24819b604a835, type: 3}
 --- !u!114 &1856633437
 MonoBehaviour:

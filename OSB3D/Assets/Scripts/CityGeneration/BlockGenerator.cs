@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -135,33 +136,29 @@ public class BlockGenerator : MonoBehaviour
         return templates;
     }
 
-    //Main function to generate the terrain
-    public Tuple<bool, GameObject, GameObject> GenerateBlock(List<System.Tuple<int, float, int>> _edges, bool _addElevator, int _blockSize, bool _lastBlock)
+    public List<int> RandomTemplateIndices(int _count)
     {
-        //randomizes which block to create
-        int blocknr = UnityEngine.Random.Range(0, blocks.Count);
+        List<int> indices = new List<int>();
 
-        //if it's the last block in the city and the elevator have not been placed, it can no be a terrain block
-        if (_lastBlock) blocknr = RandomRangeExcept();
-        
-        //if no blocksnr without terrain could be found
-        if (blocknr == -1)
+        for (int i = 0; i < _count; i++)
         {
-            blocknr = UnityEngine.Random.Range(0, blocks.Count);
-            _addElevator = false;
-
-            Debug.Log("Elevator could not be placed");
+            indices.Add(UnityEngine.Random.Range(0, blocks.Count));
         }
+        return indices;
+    }
 
+    //Main function to generate the terrain
+    public Tuple<bool, GameObject, GameObject> GenerateBlock(List<System.Tuple<int, float, int>> _edges, bool _addElevator, int _blockSize, int _blocknr)
+    {
         //Creates empty parent GameObject
-        string blockName = "Block" + blocknr.ToString();
+        string blockName = "Block" + _blocknr.ToString();
         GameObject block = new(blockName);
 
         bool terrain;
         GameObject ground;
 
         //Instantiate ground or terrain, based on the first building in the block
-        if (blocks[blocknr][0].Terrain)
+        if (blocks[_blocknr][0].Terrain)
         {
             terrain = true;
             ground = blockTerrain.Generate(_blockSize);
@@ -180,20 +177,20 @@ public class BlockGenerator : MonoBehaviour
         List<Vector3> directions = new();
 
         //loop to instantiate all buildings in the block
-        for (int i = 0; i < blocks[blocknr].Count; i++)
+        for (int i = 0; i < blocks[_blocknr].Count; i++)
         {
-            int type = blocks[blocknr][i].TypeIndex;
+            int type = blocks[_blocknr][i].TypeIndex;
             int options = buildings[type].Count;
             int chosen = UnityEngine.Random.Range(0, options);
 
             //Keep track of all buildings for the elevator placement
-            allBuildings.Add(new System.Tuple<GameObject, Building>(buildings[type][chosen], blocks[blocknr][i]));
+            allBuildings.Add(new System.Tuple<GameObject, Building>(buildings[type][chosen], blocks[_blocknr][i]));
 
             //Check if it is a passage towards a courtyard, if so a door and elevator can be placed
-            if (blocks[blocknr][i].IsPassage)
+            if (blocks[_blocknr][i].IsPassage)
             {
                 //checks if the edge is towards another block, if so a door object can be placed
-                bool connectedEdge = CheckEdges(blocks[blocknr][i].Edges, _edges);
+                bool connectedEdge = CheckEdges(blocks[_blocknr][i].Edges, _edges);
 
                 if (connectedEdge)
                 {
@@ -218,20 +215,20 @@ public class BlockGenerator : MonoBehaviour
             //If not a passage, instantiate a building
             else
             {
-                Vector3 position = blocks[blocknr][i].Position;
+                Vector3 position = blocks[_blocknr][i].Position;
 
                 if (terrain)
                 {
                     Terrain terrainComp = ground.GetComponentInChildren<Terrain>();
 
-                    float buildingWidth = blocks[blocknr][i].Width;
+                    float buildingWidth = blocks[_blocknr][i].Width;
 
                     position.y = SampleHeights(buildingWidth, position, terrainComp);
                 }
 
                 GameObject building = Instantiate(allBuildings[i].Item1, position, Quaternion.identity);
                 SetBuildingMaterials(building);
-                building.transform.Rotate(0, blocks[blocknr][i].Rotation, 0, Space.World);
+                building.transform.Rotate(0, blocks[_blocknr][i].Rotation, 0, Space.World);
                 building.transform.parent = block.transform;
             }
         }
@@ -239,7 +236,7 @@ public class BlockGenerator : MonoBehaviour
         //If positions to place the door have been found, randomly choose one 
         if (doors.Count > 0)
         {
-            GameObject door = placeDoor.Place(allBuildings, doors, materials[2]);
+            GameObject door = placeDoor.Place(allBuildings, doors, materials[0]);
             door.transform.parent = block.transform;
         }
 
@@ -255,17 +252,13 @@ public class BlockGenerator : MonoBehaviour
     }
 
     //Looks for a blocknr which do not include terrain
-    int RandomRangeExcept()
+    public int RandomRangeExcept()
     {
-        int max = 50;
-        int counter = 0;
-        int index = -1;
-
+        int index;
         do
         {
             index = UnityEngine.Random.Range(0, blocks.Count);
-            counter++;
-        } while (blocks[index][0].Terrain && counter < max);
+        } while (blocks[index][0].Terrain);
 
         return index;
     }

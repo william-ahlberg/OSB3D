@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 //Class used to trigger the elevator buttons
@@ -20,7 +21,10 @@ public class ElevatorButtonTrigger : MonoBehaviour
             bool on = MoveElevator.ButtonPressed(buttonNr);
 
             //As the elevator only exists once in the city and the buttons also have textures, the colours are changed directly
-            if (on) buttonRenderer.material.color = Color.green;
+            if (on)
+            {
+                buttonRenderer.material.color = Color.green;
+            }
             else buttonRenderer.material.color = Color.white; 
         }
     }

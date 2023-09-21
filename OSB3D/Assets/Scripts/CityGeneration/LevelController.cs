@@ -29,7 +29,6 @@ public class LevelController : MonoBehaviour
     RoadGenerator roadGenerator;
 
     private float blockSize, roadWidth;
-    private bool elevatorPlaced;
 
     void Start()
     {
@@ -49,7 +48,6 @@ public class LevelController : MonoBehaviour
         Should only be changed if another size blocks and roads are used than the once included*/
         blockSize = 105;
         roadWidth = 20;
-        elevatorPlaced = false;
 
         city = new GameObject("City");
         terrains = new GameObject("Terrains");
@@ -73,9 +71,13 @@ public class LevelController : MonoBehaviour
 
         //A list of indices that are going to be parks
         List<int> parkBlocks = RandomParkBlocks(nrParks, totalBlocks);
+        List<int> blockTemplateNr = blockGenerator.RandomTemplateIndices(totalBlocks);
 
         //Building block index for where to place the elevator
-        int elevatorBlock = RandomElevatorBlock(totalBlocks-1, parkBlocks);
+        int elevatorBlock = RandomElevatorBlock(totalBlocks, parkBlocks);
+        int elevatorBlockType = blockGenerator.RandomRangeExcept();
+
+        blockTemplateNr[elevatorBlock] = elevatorBlockType;
 
         int blockCounter = 0; 
 
@@ -124,18 +126,9 @@ public class LevelController : MonoBehaviour
 
                     else
                     {
-                        //checks if this is the last block
-
-                        bool lastBlock = false;
-                        if (blockCounter == totalBlocks-1) lastBlock = true;
-
-                        newInstance = AddBlock(edges, blockPos, rotateBlock, addElevator, lastBlock);
-
-                        //checks if unable to add elevator
-                        if (addElevator && !elevatorPlaced && blockCounter < totalBlocks - 1) elevatorBlock++;
+                        newInstance = AddBlock(edges, blockPos, rotateBlock, addElevator, blockTemplateNr[blockCounter]);
                         edgeType = edgeBlock;
                     }
-
 
                     if (edges.Count > 0) AddEdges(newInstance, edges, edgeType, blockPos);
 
@@ -291,15 +284,10 @@ public class LevelController : MonoBehaviour
     }
 
     //Adds a new building block
-    GameObject AddBlock(List<System.Tuple<int, float, int>> _edges, Vector3 _blockPos, float _rotateBlock, bool _addElevator, bool _lastBlock)
+    GameObject AddBlock(List<System.Tuple<int, float, int>> _edges, Vector3 _blockPos, float _rotateBlock, bool _addElevator, int _blockTemplate)
     {
-        //checks if the last block and the elevator haven't been placed
-        bool lastElevatorBlock;
 
-        if (!elevatorPlaced && _lastBlock) lastElevatorBlock = true;
-        else lastElevatorBlock = false;
-
-        Tuple<bool, GameObject, GameObject> blockObjects = blockGenerator.GenerateBlock(_edges, _addElevator, (int)blockSize, lastElevatorBlock);
+        Tuple<bool, GameObject, GameObject> blockObjects = blockGenerator.GenerateBlock(_edges, _addElevator, (int)blockSize, _blockTemplate);
 
         //moves the terrain to the correct position, if it's a terrain block
         if (blockObjects.Item1)
@@ -312,15 +300,10 @@ public class LevelController : MonoBehaviour
         blockObjects.Item2.transform.Translate(_blockPos);
         blockObjects.Item2.transform.Rotate(0, _rotateBlock, 0, Space.World);
 
-        if (_addElevator && !blockObjects.Item1)
+        //Sets elevator goal positions after the block has been moved into place
+        if (_addElevator)
         {
-            GameObject.Find("Elevator(Clone)").GetComponent<MoveElevator>().SetMaxPosition();
-            elevatorPlaced = true; 
-        }
-
-        else if (_addElevator && blockObjects.Item1)
-        {
-            elevatorPlaced = false;
+            GameObject.Find("Elevator(Clone)").GetComponentInChildren<MoveElevator>().SetTargetPosition();
         }
 
         return blockObjects.Item2;

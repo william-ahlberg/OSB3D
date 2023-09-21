@@ -1,5 +1,0 @@
-buildingCode,positionX,positionY,positionZ,rotationY
-BT60,35,t,-15.5,180
-BT60,0,t,-15.5,180
-BT60,-35,t,-15.5,0
-BT85,0,t,35,0

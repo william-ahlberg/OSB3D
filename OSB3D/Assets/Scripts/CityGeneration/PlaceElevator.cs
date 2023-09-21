@@ -24,12 +24,12 @@ public class PlaceElevator : MonoBehaviour
         float rotation = ElevatorRotation(_direction);
 
         elevatorObject.transform.Rotate(0, rotation, 0, Space.World);
-        elevatorObject.transform.Find("3").position += new Vector3(0, floors * floorHeight, 0);
+        elevatorObject.transform.Find("4").position += new Vector3(0, floors * floorHeight, 0);
         elevatorObject.transform.parent = gameObject.transform;
 
         gameObject.transform.position = ElevatorPosition(_building.Item1.name, buildingSize, _direction, _building.Item2.Position);
 
-        elevatorObject.GetComponent<MoveElevator>().SetBuildingHeight(buildingHeight);
+        elevatorObject.GetComponentInChildren<MoveElevator>().SetBuildingHeight(buildingHeight);
 
         return gameObject;
     }
