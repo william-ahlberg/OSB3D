@@ -22,11 +22,13 @@ public class MoveElevator : MonoBehaviour
         moving = false;
     }
 
+    //Called from LevelController, after block with elevator have been move into the correct place
     public void SetMaxPosition()
     {
         maxPos = new Vector3(transform.position.x, buildingHeight, transform.position.z);
     }
 
+    //Called from PlaceElevator when instanciating the elevator
     public void SetBuildingHeight(float _buildingHeight)
     {
         buildingHeight  = _buildingHeight;  
@@ -36,8 +38,6 @@ public class MoveElevator : MonoBehaviour
     {
         if (moving)
         {
-            Debug.Log("y pos: " + transform.position.y);
-
             if (goUp)
             {
                 if (Vector3.Distance(transform.position, maxPos) > 0.001f)
@@ -49,6 +49,8 @@ public class MoveElevator : MonoBehaviour
                 {
                     goUp = false;
                     moving = false;
+
+                    //After 300 sec the elevator goes down in case the player has fallen of the roof
                     Invoke("SetGoDown", 300);
                 }
 
@@ -76,7 +78,7 @@ public class MoveElevator : MonoBehaviour
         goDown = true;
     }
 
-
+    //Called from ElevatorButtonTrigger, checks which button has been pressed and sets the correct bools
     public static bool ButtonPressed(int _buttonNr)
     {
         bool toReturn = false;

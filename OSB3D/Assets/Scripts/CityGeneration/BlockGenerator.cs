@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -15,12 +16,17 @@ public class BlockGenerator : MonoBehaviour
     List<List<Material>> materials;
     List<TextAsset> blockFiles;
 
-    TerrainGenerator terrainGenerator;
+    BlockTerrain blockTerrain;
     PlaceElevator placeElevator;
     PlaceDoor placeDoor;
-    LevelController levelController;
 
     void Awake()
+    {
+        Setup();
+    }
+
+    //Setup used to also generate the city from the editor
+    public void Setup()
     {
         //To ensure .txt information is read correct on all langugae computers
         CultureInfo englishUSCulture = new("en-US");
@@ -30,7 +36,7 @@ public class BlockGenerator : MonoBehaviour
          Order of codes do not matter, now in alphabetic order*/
         List<string> buildingCodes = new() {"BCL30", "BCL40",
                                             "BCR30", "BCR40",
-                                             "BD20", "BD30", 
+                                             "BD20", "BD30",
                                              "BP05","BP10", "BP15", "BP20",
                                              "BR20", "BR30", "BR40",
                                              "BRV20",
@@ -41,10 +47,9 @@ public class BlockGenerator : MonoBehaviour
         blockFiles = Utility.LoadBlockTemplates("BlockTemplates");
         materials = Utility.GetBuildingMaterials();
         blocks = TemplateBlocks();
-        terrainGenerator = GetComponent<TerrainGenerator>();
+        blockTerrain = GetComponent<BlockTerrain>();
         placeElevator = GetComponent<PlaceElevator>();
         placeDoor = GetComponent<PlaceDoor>();
-        levelController = GetComponent<LevelController>();
     }
 
     //Method to get all building types in Resources>Prefabs>Buildings (in each folder for each type)
@@ -70,7 +75,7 @@ public class BlockGenerator : MonoBehaviour
     List<List<Building>> TemplateBlocks()
     {
         List<List<Building>> templates = new();
-        //List<TextAsset> blockFiles = Utility.LoadBlockTemplates("BlockTemplates");
+
         foreach (TextAsset blockFile in blockFiles)
         {
             List<Building> templateBlock = new();
@@ -93,6 +98,7 @@ public class BlockGenerator : MonoBehaviour
                     float y;
                     float z = float.Parse(info[3]);
 
+                    //checks if the building should be placed in terrain
                     if(info[2] == "t")
                     {
                         terrainBool = true;
@@ -129,11 +135,23 @@ public class BlockGenerator : MonoBehaviour
         return templates;
     }
 
-    public Tuple<bool, GameObject, GameObject> GenerateBlock(List<System.Tuple<int, float, int>> _edges, bool _addElevator, int _blockSize)
+    //Main function to generate the terrain
+    public Tuple<bool, GameObject, GameObject> GenerateBlock(List<System.Tuple<int, float, int>> _edges, bool _addElevator, int _blockSize, bool _lastBlock)
     {
         //randomizes which block to create
-        int blocknr = UnityEngine.Random.Range(0, blocks.Count-1);
-        //int blocknr = 5;
+        int blocknr = UnityEngine.Random.Range(0, blocks.Count);
+
+        //if it's the last block in the city and the elevator have not been placed, it can no be a terrain block
+        if (_lastBlock) blocknr = RandomRangeExcept();
+        
+        //if no blocksnr without terrain could be found
+        if (blocknr == -1)
+        {
+            blocknr = UnityEngine.Random.Range(0, blocks.Count);
+            _addElevator = false;
+
+            Debug.Log("Elevator could not be placed");
+        }
 
         //Creates empty parent GameObject
         string blockName = "Block" + blocknr.ToString();
@@ -142,11 +160,11 @@ public class BlockGenerator : MonoBehaviour
         bool terrain;
         GameObject ground;
 
-        //Instantiate ground
+        //Instantiate ground or terrain, based on the first building in the block
         if (blocks[blocknr][0].Terrain)
         {
             terrain = true;
-            ground = terrainGenerator.Generate(_blockSize);
+            ground = blockTerrain.Generate(_blockSize);
         }
 
         else
@@ -155,7 +173,7 @@ public class BlockGenerator : MonoBehaviour
             ground = Instantiate(groundPlate);
             ground.transform.parent = block.transform;
         }
-          
+
         List<System.Tuple<GameObject, Building>> allBuildings = new();
         List<int> doors = new();
         List<int> forElevator = new();
@@ -236,6 +254,23 @@ public class BlockGenerator : MonoBehaviour
         return new Tuple<bool, GameObject, GameObject>(terrain, block, ground);
     }
 
+    //Looks for a blocknr which do not include terrain
+    int RandomRangeExcept()
+    {
+        int max = 50;
+        int counter = 0;
+        int index = -1;
+
+        do
+        {
+            index = UnityEngine.Random.Range(0, blocks.Count);
+            counter++;
+        } while (blocks[index][0].Terrain && counter < max);
+
+        return index;
+    }
+
+    //Sample the height in the buildings four courner, for terrain blocks
     float SampleHeights(float _buildlingWidth, Vector3 _position, Terrain _terrainComp)
     {
         List<float> sampleHeights = new List<float>();
@@ -286,7 +321,7 @@ public class BlockGenerator : MonoBehaviour
     public void SetBuildingMaterials(GameObject _prefab)
     {
                 MeshRenderer renderer = _prefab.GetComponentInChildren<MeshRenderer>();
-                Material[] prefabMaterials = renderer.materials;
+                Material[] prefabMaterials = renderer.sharedMaterials;
 
                 prefabMaterials[0] = materials[0][UnityEngine.Random.Range(0, materials[0].Count)];  //Facade
                 prefabMaterials[1] = materials[1][UnityEngine.Random.Range(0, materials[1].Count)]; //Plinth
@@ -296,6 +331,6 @@ public class BlockGenerator : MonoBehaviour
                 prefabMaterials[3] = materials[2][windowDoor]; //Window
 
                 prefabMaterials[4] = materials[3][UnityEngine.Random.Range(0, materials[3].Count)]; //Roof
-                renderer.materials = prefabMaterials;
+                renderer.sharedMaterials = prefabMaterials;
     }
 }

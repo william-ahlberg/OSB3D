@@ -18,8 +18,9 @@ public class PlaceDoor : MonoBehaviour
     void SetMaterial(GameObject _prefab, List<Material> _facadeMaterials)
     {
         MeshRenderer renderer = _prefab.GetComponentInChildren<MeshRenderer>();
-        Material[] prefabMaterials = renderer.materials;
+        Material[] prefabMaterials = renderer.sharedMaterials;
 
         prefabMaterials[2] = _facadeMaterials[Random.Range(0, _facadeMaterials.Count)]; //Facade
+        renderer.sharedMaterials = prefabMaterials;
     }
 }

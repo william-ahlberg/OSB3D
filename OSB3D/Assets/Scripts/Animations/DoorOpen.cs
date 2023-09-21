@@ -1,5 +1,7 @@
 using UnityEngine;
 
+/*Class to trigger the animation of opening/closing doors and to change the material of the door buttons*/
+
 public class DoorOpen : MonoBehaviour
 {
     [SerializeField] Renderer[] buttons;
@@ -13,7 +15,6 @@ public class DoorOpen : MonoBehaviour
        {
             
             bool opened = doorAnimator[0].GetBool("Opened");
-
 
             if (!opened)
             {

@@ -3,11 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class LevelController : MonoBehaviour
 {
-    [SerializeField] Material testMaterial;
-
     [Header("City Setup")]
     [SerializeField] int seed;
     [SerializeField] int blockCountX;
@@ -22,7 +21,7 @@ public class LevelController : MonoBehaviour
     [SerializeField] GameObject edgeRoad;
 
     GameObject city;
-    GameObject terrains; 
+    GameObject terrains;
 
     List<GameObject> parks;
 
@@ -30,13 +29,27 @@ public class LevelController : MonoBehaviour
     RoadGenerator roadGenerator;
 
     private float blockSize, roadWidth;
+    private bool elevatorPlaced;
 
     void Start()
     {
+        Setup();
+    }
+
+    //Setup() is to to also be able to generate a city from the editor 
+    public void Setup()
+    {
+        blockGenerator = GetComponent<BlockGenerator>();
+        roadGenerator = GetComponent<RoadGenerator>();
+
+        blockGenerator.Setup();
+        roadGenerator.Setup();
+
         /*Fixed numbers, the size of the 3d-assets.
         Should only be changed if another size blocks and roads are used than the once included*/
         blockSize = 105;
         roadWidth = 20;
+        elevatorPlaced = false;
 
         city = new GameObject("City");
         terrains = new GameObject("Terrains");
@@ -44,17 +57,7 @@ public class LevelController : MonoBehaviour
 
         parks = Utility.FromDirectory("Prefabs/Parks");
 
-        blockGenerator = GetComponent<BlockGenerator>();
-        roadGenerator = GetComponent<RoadGenerator>();
-
         GenerateCity(blockSize, roadWidth);
-    }
-
-    //ReGenerate() is for recording purpose only. Can be removed before distribution. 
-    public void ReGenerate()
-    {
-        Destroy(city);
-        GenerateCity(105, 20); 
     }
 
     //Main method to generate city
@@ -72,7 +75,7 @@ public class LevelController : MonoBehaviour
         List<int> parkBlocks = RandomParkBlocks(nrParks, totalBlocks);
 
         //Building block index for where to place the elevator
-        int elevatorBlock = RandomElevatorBlock(totalBlocks, parkBlocks);
+        int elevatorBlock = RandomElevatorBlock(totalBlocks-1, parkBlocks);
 
         int blockCounter = 0; 
 
@@ -99,8 +102,9 @@ public class LevelController : MonoBehaviour
                 //If both even, instatiate a block or park
                 if ((i % 2 == 0) && (j % 2 == 0))
                 {
-                    bool addElevator = false;
+                    bool addElevator;
                     if (elevatorBlock == blockCounter) addElevator = true;
+                    else addElevator = false;
 
                     float rotateBlock = UnityEngine.Random.Range(0, 4);
                     rotateBlock *= 90;
@@ -120,7 +124,15 @@ public class LevelController : MonoBehaviour
 
                     else
                     {
-                        newInstance = AddBlock(edges, blockPos, rotateBlock, addElevator);
+                        //checks if this is the last block
+
+                        bool lastBlock = false;
+                        if (blockCounter == totalBlocks-1) lastBlock = true;
+
+                        newInstance = AddBlock(edges, blockPos, rotateBlock, addElevator, lastBlock);
+
+                        //checks if unable to add elevator
+                        if (addElevator && !elevatorPlaced && blockCounter < totalBlocks - 1) elevatorBlock++;
                         edgeType = edgeBlock;
                     }
 
@@ -129,7 +141,7 @@ public class LevelController : MonoBehaviour
 
                     blockCounter++;
                 }
-
+                
                 //if both uneven, instantiate a crossing
                 else if ((i % 2 != 0) && (j % 2 != 0))
                 {
@@ -139,7 +151,11 @@ public class LevelController : MonoBehaviour
                 //otherwise, instantiate a road
                 else
                 {
-                    newInstance = roadGenerator.GenerateRoad(roadNr, roadWidth);
+                    float minValue = blockSize / 2 * -1;
+                    float maxX = blockSize * blockCountX + roadWidth * (blockCountX - 1) + minValue;
+                    float maxZ = blockSize * blockCountZ + roadWidth * (blockCountX - 1) + minValue;
+
+                    newInstance = roadGenerator.GenerateRoad(roadNr, roadWidth, minValue, maxX, maxZ);
                     Vector3 roadPosition = new(currentPosX, 0, currentPosZ);
                     newInstance.transform.Translate(roadPosition);
                     newInstance.transform.Rotate(0, yRotation, 0, Space.World);
@@ -275,20 +291,37 @@ public class LevelController : MonoBehaviour
     }
 
     //Adds a new building block
-    GameObject AddBlock(List<System.Tuple<int, float, int>> _edges, Vector3 _blockPos, float _rotateBlock, bool _addElevator)
+    GameObject AddBlock(List<System.Tuple<int, float, int>> _edges, Vector3 _blockPos, float _rotateBlock, bool _addElevator, bool _lastBlock)
     {
-        Tuple<bool, GameObject, GameObject> blockObjects = blockGenerator.GenerateBlock(_edges, _addElevator, (int)blockSize);
+        //checks if the last block and the elevator haven't been placed
+        bool lastElevatorBlock;
 
-        if(blockObjects.Item1)
+        if (!elevatorPlaced && _lastBlock) lastElevatorBlock = true;
+        else lastElevatorBlock = false;
+
+        Tuple<bool, GameObject, GameObject> blockObjects = blockGenerator.GenerateBlock(_edges, _addElevator, (int)blockSize, lastElevatorBlock);
+
+        //moves the terrain to the correct position, if it's a terrain block
+        if (blockObjects.Item1)
         {
             blockObjects.Item3.transform.Translate(_blockPos);
             blockObjects.Item3.transform.parent = terrains.transform;
         }
 
+        //moves the block to the correct position
         blockObjects.Item2.transform.Translate(_blockPos);
         blockObjects.Item2.transform.Rotate(0, _rotateBlock, 0, Space.World);
 
-       // if (_addElevator) GameObject.Find("Elevator(Clone)").GetComponent<MoveElevator>().SetMaxPosition();
+        if (_addElevator && !blockObjects.Item1)
+        {
+            GameObject.Find("Elevator(Clone)").GetComponent<MoveElevator>().SetMaxPosition();
+            elevatorPlaced = true; 
+        }
+
+        else if (_addElevator && blockObjects.Item1)
+        {
+            elevatorPlaced = false;
+        }
 
         return blockObjects.Item2;
     }

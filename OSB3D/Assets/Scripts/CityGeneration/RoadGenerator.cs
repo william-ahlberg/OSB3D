@@ -6,15 +6,18 @@ using UnityEngine;
 
 public class RoadGenerator : MonoBehaviour
 {
-    [Header("Placing items and cars")]
+    [Header("Attempts placing items and cars")]
     [SerializeField] int maxAttempts;
+    [SerializeField] bool carsDriving;
+    [SerializeField] bool stopOnCollision;
+    [SerializeField] float carSpeed;
+
 
     [Header("Street Items per road segment")]
     [SerializeField] int itemMin;
     [SerializeField] int itemMax;
 
     [Header("Cars per road segments")]
-    [SerializeField] bool parkedPosition;
     [SerializeField] int carMin;
     [SerializeField] int carMax;
 
@@ -31,6 +34,12 @@ public class RoadGenerator : MonoBehaviour
 
     private void Awake()
     {
+        Setup();
+    }
+
+    //Setup used so the city also can be generated from the editor
+    public void Setup()
+    {
         cars = Utility.FromDirectory("Prefabs/Cars");
         streetItems = Utility.FromDirectory("Prefabs/StreetItems");
         carMaterials = Utility.LoadMaterials("Cars");
@@ -45,7 +54,7 @@ public class RoadGenerator : MonoBehaviour
     }
 
     //Generates a road object, including randomly placed cars and street items
-    public GameObject GenerateRoad(int _roadnr, float _roadWidth)
+    public GameObject GenerateRoad(int _roadnr, float _roadWidth, float _minValue, float _maxX, float _maxZ)
     {
         string roadName = "Road" + _roadnr.ToString();
         GameObject roadObject = new(roadName);
@@ -55,15 +64,16 @@ public class RoadGenerator : MonoBehaviour
 
         PlaceTrees(newRoad);
         List<Vector3> carPositions = PlacingPositions(true, _roadWidth);
-        PlaceItems(roadObject, carPositions, true);
+        PlaceItems(roadObject, carPositions, true, _minValue, _maxX, _maxZ);
 
         List<Vector3> itemPositions = PlacingPositions(false, _roadWidth);
 
-        PlaceItems(roadObject, itemPositions, false);
+        PlaceItems(roadObject, itemPositions, false, _minValue, _maxX, _maxZ);
 
         return roadObject;
     }
 
+    //places StreetTrees with a random y-rotation and scale
     void PlaceTrees(GameObject _newRoad)
     {
         List<Vector3> treePositions = TreePositions(_newRoad);
@@ -83,6 +93,7 @@ public class RoadGenerator : MonoBehaviour
         }
     }
 
+    //Finds the TreeBase positions to place the trees
      List<Vector3> TreePositions(GameObject _newRoad)
     {
         List<Vector3> treesPos = new(); 
@@ -90,16 +101,16 @@ public class RoadGenerator : MonoBehaviour
             foreach (Transform tpos in _newRoad.GetComponentsInChildren<Transform>())
             {            
 
-            if (tpos.CompareTag("StreetTree"))
+                if (tpos.CompareTag("StreetTree"))
                 {
-                //trees.Add(tree);
-                treesPos.Add(new Vector3(tpos.position.x, 0.2f, tpos.position.z));
+                    treesPos.Add(new Vector3(tpos.position.x, 0.2f, tpos.position.z));
                 }
             }
 
             return treesPos;
     }
 
+    //Return a list of scale factors to randomly scale the trees
     List<float> ScaleFactors (int _count)
     {
         List<float> result = new();
@@ -130,8 +141,9 @@ public class RoadGenerator : MonoBehaviour
             /*carZ postion is set based on the width of the road segment. 
             Width the road segments included 0.24*roadWidth is next to the curb (parked position) 
             and 0.15*road width is in the middle of a road (driving position) */
-            if (parkedPosition) zPosition = _roadWidth * 0.24f;
-            else zPosition = _roadWidth * 0.15f;
+
+            if (carsDriving) zPosition = _roadWidth * 0.15f;
+            else zPosition = _roadWidth * 0.24f;
 
             //Threshold of 7.5f ensure no overlap of cars
             threshold = carSpacing;
@@ -206,7 +218,8 @@ public class RoadGenerator : MonoBehaviour
         return _positions;
     }
 
-    void PlaceItems(GameObject _roadObject, List<Vector3> _positions, bool _cars)
+    //Used both to place cars and street items, with some differences in the placing settings
+    void PlaceItems(GameObject _roadObject, List<Vector3> _positions, bool _cars, float _minValue, float _maxX, float _maxZ)
     {
 
         for (int i = 0; i < _positions.Count; i++)
@@ -224,9 +237,11 @@ public class RoadGenerator : MonoBehaviour
 
                 int carIndex = Random.Range(0, cars.Count);
                 newItem = Instantiate(cars[carIndex], new Vector3(_positions[i].x, 0, _positions[i].z), Quaternion.identity);
-
+                DriveCar drive = newItem.GetComponent<DriveCar>();
+                drive.NewCar(carsDriving, _minValue, _maxX, _maxZ, carSpeed, stopOnCollision);
             }
 
+            //for placing street items
             else
             {
                 if (_positions[i].z > 0) rotation = 180;
@@ -248,8 +263,8 @@ public class RoadGenerator : MonoBehaviour
     {
         GameObject carImport = _newCar.transform.GetChild(0).gameObject;
         MeshRenderer renderer = carImport.GetComponent<MeshRenderer>();
-        Material[] prefabMaterials = renderer.materials;
+        Material[] prefabMaterials = renderer.sharedMaterials;
         prefabMaterials[0] = carMaterials[Random.Range(0, carMaterials.Count)];
-        renderer.materials = prefabMaterials;
+        renderer.sharedMaterials = prefabMaterials;
     }
 }
