@@ -19,8 +19,8 @@ public class StepHandler : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         startHeight = transform.position.y;
         agentColliders = GetComponentsInChildren<Collider>();
-        Debug.Log("Centre" + transform.position);
-        Debug.Log("Size" + GetHeight());
+        //Debug.Log("Centre" + transform.position);
+        //Debug.Log("Size" + GetHeight());
     }
 
     // Update is called once per frame
@@ -47,7 +47,7 @@ public class StepHandler : MonoBehaviour
         {
             RaycastHit hit;
             float contactHeight = transform.InverseTransformPoint(contact.point).y + GetHeight().y;
-            Debug.Log(contactHeight);
+            //Debug.Log(contactHeight);
 
             if ((contact.normal.y < 0.9f ) && contactHeight < maxStepHeight)
             {

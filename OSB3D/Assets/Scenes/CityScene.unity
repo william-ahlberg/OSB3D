@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028405, g: 0.22571576, b: 0.30692333, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028405, g: 0.22571574, b: 0.30692336, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1635,7 +1635,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 2000
-  field of view: 94.99999
+  field of view: 95
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -2766,8 +2766,6 @@ GameObject:
   - component: {fileID: 1856633433}
   - component: {fileID: 1856633434}
   - component: {fileID: 1856633435}
-  - component: {fileID: 1856633436}
-  - component: {fileID: 1856633437}
   m_Layer: 0
   m_Name: GameInstance
   m_TagString: Untagged
@@ -2851,36 +2849,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1856633430}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47f31f8f428d54242b3d79764b932dcc, type: 3}
+  m_Script: {fileID: 11500000, guid: 29a49795ec683594fbdb311cabe79b9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfBugs: 100
---- !u!114 &1856633436
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1856633430}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4433765adcee3a04fa44329f8a01b47c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numberOfBugs: 4
---- !u!114 &1856633437
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1856633430}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df589d87570fcd0499eb7053fb472703, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _numberOfBugs: 1
 --- !u!1 &1891355897
 GameObject:
   m_ObjectHideFlags: 0
