@@ -1,18 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.Experimental;
 using UnityEngine;
 
 public class MoveElevator : MonoBehaviour
 {
-    [SerializeField] float speed;
+    [SerializeField] List<Renderer> buttonRenderers;
 
     static bool powerOn;
     static bool goUp;
     static bool goDown;
     static bool moving;
+    bool runsCorutine; 
 
-    public Vector3 maxPos;
-    public float buildingHeight; 
+    Vector3 maxPos;
+    Vector3 downVector;
+    public float buildingHeight;
+
+    private float travelTime = 12;
 
     private void Start()
     {
@@ -20,13 +26,17 @@ public class MoveElevator : MonoBehaviour
         goUp = false;
         goDown = false;
         moving = false;
+        runsCorutine = false;
     }
 
-    public void SetMaxPosition()
+    //Called from LevelController, after block with elevator have been move into the correct place
+    public void SetTargetPosition()
     {
         maxPos = new Vector3(transform.position.x, buildingHeight, transform.position.z);
+        downVector = new Vector3(transform.position.x, 0, transform.position.z);
     }
 
+    //Called from PlaceElevator when instanciating the elevator
     public void SetBuildingHeight(float _buildingHeight)
     {
         buildingHeight  = _buildingHeight;  
@@ -34,90 +44,164 @@ public class MoveElevator : MonoBehaviour
 
     private void Update()
     {
-        if (moving)
+        if (moving && !runsCorutine)
         {
-            Debug.Log("y pos: " + transform.position.y);
-
+            //if moving and goUp is true
             if (goUp)
             {
-                if (Vector3.Distance(transform.position, maxPos) > 0.001f)
+                if (transform.position.y < maxPos.y)
                 {
-                    transform.position = Vector3.MoveTowards(transform.position, maxPos, speed * Time.deltaTime);
+                    StartCoroutine(MovingElevator(maxPos));
                 }
 
                 else
                 {
                     goUp = false;
-                    moving = false;
+                    buttonRenderers[1].material.color = Color.white;
                 }
-
             }
 
-            else if (goDown && transform.position.z > 0)
+            //if moving and goDown is true
+            else if (goDown)
             {
-                if (Vector3.Distance(transform.position, new Vector3(transform.position.x, 0f, transform.position.z)) > 0.001f)
+                if (transform.position.y > 0)
                 {
-                    transform.position -= new Vector3(0, speed * Time.deltaTime, 0);
-
+                    StartCoroutine(MovingElevator(downVector));
                 }
 
                 else
                 {
                     goDown = false;
-                    moving = false;
+                    buttonRenderers[3].material.color = Color.white;
                 }
+
+            }
+
+            //Resets all but powerOn
+            else
+            {
+                goDown = false;
+                buttonRenderers[3].material.color = Color.white;
+
+                goUp = false;
+                buttonRenderers[1].material.color = Color.white;
+
+                moving = false;
+                buttonRenderers[2].material.color = Color.white;
             }
         }
     }
+    
+    //Moves the elevator over a period of time
+    private IEnumerator MovingElevator(Vector3 _moveTowards)
+    {
+        runsCorutine = true;
+        Vector3 startPos = transform.position;
 
+        float timeCounter = 0;
+
+        while (timeCounter < travelTime)
+        {
+            timeCounter += Time.deltaTime;
+            float stepSize = timeCounter / travelTime;
+            transform.position = Vector3.Lerp(startPos, _moveTowards, stepSize);
+            yield return null;
+        }
+
+        transform.position = _moveTowards;
+        powerOn = false;
+        ResetBooleans();
+        ResetButtonColours();
+        runsCorutine = false;
+    }
+
+    //Reset booleans to move elevator
+    void ResetBooleans()
+    {
+        goUp = false;
+        goDown = false;
+        moving = false;
+    }
+
+    //Resets all buttons to white when the elevator reached it's location
+    void ResetButtonColours()
+    {
+        for (int i = 0; i < buttonRenderers.Count; i++)
+        {
+            buttonRenderers[i].material.color = Color.white;
+        }
+    }
+
+    //Called from ElevatorButtonTrigger, checks which button has been pressed and sets the correct bools
     public static bool ButtonPressed(int _buttonNr)
     {
         bool toReturn = false;
 
-        switch (_buttonNr)
+        if (!moving)
         {
-            case 0:
-                powerOn = !powerOn;
-                toReturn = powerOn;
-                break;
+            switch (_buttonNr)
+            {
+                case 0:
+                    powerOn = !powerOn;
 
-            case 1:
-                if (powerOn)
-                {
-                    goUp = true;
-                    goDown = false;
-                    toReturn = true;
-                }
+                    if (powerOn)
+                    {
+                        moving = true;
+                        goDown = true;
+                        goUp = false;
+                    }
 
-                else toReturn = false;
-                break;
+                    toReturn = powerOn;
+                    break;
 
-            case 2:
-                if (powerOn && (goUp || goDown))
-                {
-                    moving = true;
-                    toReturn = true;
-                }
+                case 1:
+                    if (powerOn)
+                    {
+                        goUp = true;
+                        goDown = false;
+                        toReturn = true;
+                    }
 
-                else toReturn = false;
-                break;
+                    else toReturn = false;
 
-            case 3:
-                if (powerOn)
-                {
-                    goDown = true;
-                    goDown = false;
-                    toReturn = true;
-                }
+                    break;
 
-                else toReturn = false;
+                case 2:
+                    if (powerOn && (goUp || goDown))
+                    {
+                        moving = true;
+                        toReturn = true;
+                    }
 
-                break;
+                    else toReturn = false;
 
-            case 4:
-                powerOn = !powerOn;
-                toReturn = powerOn;
-                break;
+                    break;
+
+                case 3:
+                    if (powerOn)
+                    {
+                        goDown = true;
+                        goUp = false;
+                        toReturn = true;
+                    }
+
+                    else toReturn = false;
+
+                    break;
+
+                case 4:
+                    powerOn = !powerOn;
+
+                    if (powerOn)
+                    {
+                        moving = true;
+                        goUp = true;
+                        goDown = false;
+                    }
+
+                    toReturn = powerOn;
+                    break;
+            }
         }
 
         return toReturn;

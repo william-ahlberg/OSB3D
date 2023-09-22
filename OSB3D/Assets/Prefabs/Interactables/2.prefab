@@ -61,6 +61,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonRenderer: {fileID: 953108748842375266}
+  buttonWhite: {fileID: 2100000, guid: ddf2ea8ff7336714380c171d63e6a75a, type: 2}
+  buttonGreen: {fileID: 2100000, guid: 0f13fd44052cf854a9f19d74ce6aca02, type: 2}
 --- !u!1 &7065482000782862092
 GameObject:
   m_ObjectHideFlags: 0

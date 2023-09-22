@@ -1,12 +1,9 @@
 ﻿//using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEditor;
 using UnityEngine;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class LevelController : MonoBehaviour
 {
@@ -17,94 +14,74 @@ public class LevelController : MonoBehaviour
     [Range(0.0f, 1.0f)]
     [SerializeField] float parkRatio;
 
-    [Header("Vertical connection")]
-
-
-    [Header("Car Generation")]
-    [SerializeField] bool parkedPosition;
-    [SerializeField] int carMin;
-    [SerializeField] int carMax;
-    [SerializeField] int maxAttempts;
-
     [Header("Referenced Prefabs")]
-    [SerializeField] GameObject road;
     [SerializeField] GameObject crossing;
-
     [SerializeField] GameObject edgeBlock;
     [SerializeField] GameObject edgePark;
     [SerializeField] GameObject edgeRoad;
 
+    GameObject city;
+    GameObject terrains;
+
     List<GameObject> parks;
-    List<GameObject> cars;
 
     BlockGenerator blockGenerator;
+    RoadGenerator roadGenerator;
+
+    private float blockSize, roadWidth;
 
     void Start()
     {
-        //fixed numbers, the size of the 3d-assets
-        float blockSize = 105;
-        float roadWidth = 20;
-
-        parks = Utility.FromDirectory("Prefabs/Parks");
-        cars = Utility.FromDirectory("Prefabs/Cars");
-
-        blockGenerator = GetComponent<BlockGenerator>();
-        GenerateCity(blockSize, roadWidth);
+        Setup();
     }
 
-    void Update()
+    //Setup() is to to also be able to generate a city from the editor 
+    public void Setup()
     {
-        /* if (Input.GetKeyDown(KeyCode.V))
-         {
-             ScreenCapture.CaptureScreenshot("unityscreenshot" + System.DateTime.Now.ToString("hhmmss") + ".png", 4);
-             Debug.Log("A screenshot was taken!");
-         }*/
+        blockGenerator = GetComponent<BlockGenerator>();
+        roadGenerator = GetComponent<RoadGenerator>();
+
+        blockGenerator.Setup();
+        roadGenerator.Setup();
+
+        /*Fixed numbers, the size of the 3d-assets.
+        Should only be changed if another size blocks and roads are used than the once included*/
+        blockSize = 105;
+        roadWidth = 20;
+
+        city = new GameObject("City");
+        terrains = new GameObject("Terrains");
+        terrains.transform.parent = city.transform;
+
+        parks = Utility.FromDirectory("Prefabs/Parks");
+
+        GenerateCity(blockSize, roadWidth);
     }
 
     //Main method to generate city
     void GenerateCity(float _blockSize, float _roadWidth)
     {
-        Random.InitState(seed);
+        //Grouped in a Game Object so it can be destroyed if regenerated for recordings
+        city.transform.parent = this.transform;
 
+        UnityEngine.Random.InitState(seed);
+        
         int totalBlocks = blockCountX * blockCountZ;
-        int nrParks = (int) parkRatio * totalBlocks;
+        int nrParks = (int) (parkRatio * totalBlocks);
 
-        List<int> parkBlocks = new();
-        int counter = 0;
-        bool added = false;
+        //A list of indices that are going to be parks
+        List<int> parkBlocks = RandomParkBlocks(nrParks, totalBlocks);
+        List<int> blockTemplateNr = blockGenerator.RandomTemplateIndices(totalBlocks);
 
-        for (int i = 0; i < nrParks; i++)
-        {
-            while (counter < 1000 && !added)
-            {
-                int index = Random.Range(0, totalBlocks);
-                if (!parkBlocks.Contains(index))
-                {
-                    parkBlocks.Add(index);
-                    added = true; 
-                }
-                counter++;
-            }
-        }
+        //Building block index for where to place the elevator
+        int elevatorBlock = RandomElevatorBlock(totalBlocks, parkBlocks);
+        int elevatorBlockType = blockGenerator.RandomRangeExcept();
 
-        int elevatorBlock = 0;
-        counter = 0;
-        added = false;
-
-        while (counter < 100 && !added)
-        {
-            int index = Random.Range(0, totalBlocks);
-            if (!parkBlocks.Contains(index))
-            {
-                elevatorBlock = index;
-                added = true;
-            }
-            counter++;
-        }
+        blockTemplateNr[elevatorBlock] = elevatorBlockType;
 
         int blockCounter = 0; 
 
-        //adds to count for roads and crossings
+        //adds to loop count for roads and crossings
         int loopX = blockCountX * 2 - 1;
         int loopZ = blockCountZ * 2 - 1;
 
@@ -124,46 +101,24 @@ public class LevelController : MonoBehaviour
             {
                 GameObject newInstance;
 
-                //if both even, instatiate a block or park
+                //If both even, instatiate a block or park
                 if ((i % 2 == 0) && (j % 2 == 0))
                 {
-                    bool isPark = false;
-                    if (parkBlocks.Contains(blockCounter)) isPark = true;
-
-                    bool addElevator = false;
+                    bool addElevator;
                     if (elevatorBlock == blockCounter) addElevator = true;
+                    else addElevator = false;
 
-                    float rotateBlock = Random.Range(0, 4);
+                    float rotateBlock = UnityEngine.Random.Range(0, 4);
                     rotateBlock *= 90;
 
-                    List<System.Tuple<int, float>> edges = new();
-                    List<int> blockedEdges = new();
+                    //A list which sides are at the edge and therefore not facing another block (if any)
+                    List<System.Tuple<int, float, int>> edges = CheckEdgeConditions(i, j, loopX, loopZ, rotateBlock);
 
-                    if (j == 0)
-                    {
-                        edges.Add(new System.Tuple<int, float>(3, -90));
-                        blockedEdges.Add(EdgeBlocked(3, rotateBlock));
-                    }
-                    if (j == loopZ - 1)
-                    { 
-                        edges.Add(new System.Tuple<int, float>(1, 90));
-                        blockedEdges.Add(EdgeBlocked(1, rotateBlock));
-                    }
-                    if (i == 0) 
-                    {
-                        edges.Add(new System.Tuple<int, float>(0, 0));
-                        blockedEdges.Add(EdgeBlocked(0, rotateBlock));
-                    }
-                    if (i == loopX - 1) 
-                    {
-                        edges.Add(new System.Tuple<int, float>(2, 180));
-                        blockedEdges.Add(EdgeBlocked(2, rotateBlock));
-                    }
                     Vector3 blockPos = new(currentPosX, 0, currentPosZ);
 
                     GameObject edgeType;
 
-                    if (isPark)
+                    if (parkBlocks.Contains(blockCounter))
                     {
                         newInstance = AddPark(blockPos, rotateBlock);
                         edgeType = edgePark;
@@ -171,15 +126,15 @@ public class LevelController : MonoBehaviour
 
                     else
                     {
-                        newInstance = AddBlock(blockedEdges, blockPos, rotateBlock, addElevator);
+                        newInstance = AddBlock(edges, blockPos, rotateBlock, addElevator, blockTemplateNr[blockCounter]);
                         edgeType = edgeBlock;
                     }
 
-                    if(edges.Count > 0) AddEdges(newInstance, edges, edgeType, blockPos);
+                    if (edges.Count > 0) AddEdges(newInstance, edges, edgeType, blockPos);
 
                     blockCounter++;
                 }
-
+                
                 //if both uneven, instantiate a crossing
                 else if ((i % 2 != 0) && (j % 2 != 0))
                 {
@@ -189,7 +144,11 @@ public class LevelController : MonoBehaviour
                 //otherwise, instantiate a road
                 else
                 {
-                    newInstance = GenerateRoad(roadNr);
+                    float minValue = blockSize / 2 * -1;
+                    float maxX = blockSize * blockCountX + roadWidth * (blockCountX - 1) + minValue;
+                    float maxZ = blockSize * blockCountZ + roadWidth * (blockCountX - 1) + minValue;
+
+                    newInstance = roadGenerator.GenerateRoad(roadNr, roadWidth, minValue, maxX, maxZ);
                     Vector3 roadPosition = new(currentPosX, 0, currentPosZ);
                     newInstance.transform.Translate(roadPosition);
                     newInstance.transform.Rotate(0, yRotation, 0, Space.World);
@@ -202,8 +161,8 @@ public class LevelController : MonoBehaviour
                     }
                 }
 
-                //placed all instances in the active game object
-                newInstance.transform.parent = this.transform;
+                //placed all instances in the a game object
+                newInstance.transform.parent = city.transform;
 
                 currentPosZ += addToPos;
             }
@@ -217,6 +176,155 @@ public class LevelController : MonoBehaviour
         }
     }
 
+    //Returns a list of indecies for where to place parks
+    List<int> RandomParkBlocks(int _nrParks, int _totalBlocks)
+    {
+        List<int> parkBlocks = new();
+        int counter = 0;
+        bool added;
+
+        for (int i = 0; i < _nrParks; i++)
+        {
+            added = false;
+
+            while (counter < 1000 && !added)
+            {
+                int index = UnityEngine.Random.Range(0, _totalBlocks);
+                if (!parkBlocks.Contains(index))
+                {
+                    parkBlocks.Add(index);
+                    added = true;
+                }
+                counter++;
+            }
+        }
+        return parkBlocks; ;
+    }
+
+    //Returns a index for in which building block the elevator should be placed
+    int RandomElevatorBlock(int _totalBlocks, List<int> _parkBlocks)
+    {
+        int chosenIndex = 0;
+        int counter = 0;
+        bool added = false;
+
+        while (counter < 100 && !added)
+        {
+            int index = UnityEngine.Random.Range(0, _totalBlocks);
+
+            if (!_parkBlocks.Contains(index))
+            {
+                chosenIndex = index;
+                added = true;
+            }
+            counter++;
+        }
+
+        return chosenIndex;
+    }
+
+    /* CheckEdgeConditions() checks if this block is at the edge of the city and returns a list with which sides are towards the edge. 
+     * Tuple<int,float,int> are for:        
+        int = index of side towards edge
+        float = rotation used for edgeWall
+        int = index of side towards edge after the block have been rotated.*/
+
+    List<System.Tuple<int, float, int>> CheckEdgeConditions(int _i, int _j, int _loopX, int _loopZ, float _rotateBlock)
+    {
+        List<System.Tuple<int, float, int>> edges = new();
+        int blockedEdge;
+
+        if (_j == 0)
+        {
+            blockedEdge = EdgeBlocked(3, _rotateBlock);
+            edges.Add(new System.Tuple<int, float, int>(3, -90, blockedEdge));
+        }
+        if (_j == _loopZ - 1)
+        {
+            blockedEdge = EdgeBlocked(1, _rotateBlock);
+            edges.Add(new System.Tuple<int, float, int>(1, 90, blockedEdge));
+        }
+        if (_i == 0)
+        {
+            blockedEdge = EdgeBlocked(0, _rotateBlock);
+            edges.Add(new System.Tuple<int, float, int>(0, 0, blockedEdge));
+        }
+
+        if (_i == _loopX - 1)
+        {
+            blockedEdge = EdgeBlocked(2, _rotateBlock);
+            edges.Add(new System.Tuple<int, float, int>(2, 180, blockedEdge));
+        }
+
+        return edges; 
+    }
+
+    //Checks which side will be facing the edge after the block have been rotated
+    int EdgeBlocked(int _startEdge, float _rotation)
+    {
+        int blockEdge;
+
+        if (_rotation == 270) blockEdge = (_startEdge + 1) % 4;
+        else if (_rotation == 180) blockEdge = (_startEdge + 2) % 4;
+        else if (_rotation == 90) blockEdge = (_startEdge + 3) % 4;
+        else blockEdge = _startEdge;
+
+        return blockEdge;
+    }
+
+    //Adds a new park block
+    GameObject AddPark(Vector3 _blockPos, float _rotateBlock)
+    {
+        GameObject gameObject;
+        int choosePark = UnityEngine.Random.Range(0, parks.Count);
+        gameObject = Instantiate(parks[choosePark]);
+        gameObject.transform.Translate(_blockPos);
+        gameObject.transform.Rotate(0, _rotateBlock, 0, Space.World);
+        return gameObject;
+    }
+
+    //Adds a new building block
+    GameObject AddBlock(List<System.Tuple<int, float, int>> _edges, Vector3 _blockPos, float _rotateBlock, bool _addElevator, int _blockTemplate)
+    {
+
+        Tuple<bool, GameObject, GameObject> blockObjects = blockGenerator.GenerateBlock(_edges, _addElevator, (int)blockSize, _blockTemplate);
+
+        //moves the terrain to the correct position, if it's a terrain block
+        if (blockObjects.Item1)
+        {
+            blockObjects.Item3.transform.Translate(_blockPos);
+            blockObjects.Item3.transform.parent = terrains.transform;
+        }
+
+        //moves the block to the correct position
+        blockObjects.Item2.transform.Translate(_blockPos);
+        blockObjects.Item2.transform.Rotate(0, _rotateBlock, 0, Space.World);
+
+        //Sets elevator goal positions after the block has been moved into place
+        if (_addElevator)
+        {
+            GameObject.Find("Elevator(Clone)").GetComponentInChildren<MoveElevator>().SetTargetPosition();
+        }
+
+        return blockObjects.Item2;
+    }
+
+    //Adds the edge walls
+    GameObject AddEdges(GameObject _gameObject, List<System.Tuple<int, float, int>> _edges, GameObject _edgeType, Vector3 _blockPos)
+    {
+        for (int k = 0; k < _edges.Count; k++)
+        {
+            GameObject edgeObject = Instantiate(_edgeType);
+            edgeObject.transform.Translate(_blockPos);
+            edgeObject.transform.Rotate(0, _edges[k].Item2, 0, Space.World);
+            //edgeObject.transform.parent = gameObject.transform;
+            edgeObject.transform.parent = city.transform;
+        }
+
+        return _gameObject;
+    }
+
+    //Instatiate the edge-object next to a road with the correct rotation
     GameObject RoadEdge(int _i, int _j, int _loopX, int _loopZ, Vector3 _roadPosition)
     {
         float edgeRotation = 0;
@@ -230,145 +338,5 @@ public class LevelController : MonoBehaviour
         edge.transform.Rotate(0, edgeRotation, 0, Space.World);
 
         return edge;
-    }
-
-    GameObject AddPark(Vector3 _blockPos, float _rotateBlock)
-    {
-        GameObject gameObject;
-        int choosePark = Random.Range(0, parks.Count);
-        gameObject = Instantiate(parks[choosePark]);
-        gameObject.transform.Translate(_blockPos);
-        gameObject.transform.Rotate(0, _rotateBlock, 0, Space.World);
-        return gameObject;
-    }
-
-    GameObject AddBlock(List<int> blockedEdges, Vector3 _blockPos, float _rotateBlock, bool _addElevator)
-    {
-        GameObject gameObject;
-
-        gameObject = blockGenerator.GenerateBlock(blockedEdges, _addElevator);
-        gameObject.transform.Translate(_blockPos);
-        gameObject.transform.Rotate(0, _rotateBlock, 0, Space.World);
-
-        if(_addElevator) GameObject.Find("Elevator(Clone)").GetComponent<MoveElevator>().SetMaxPosition();
-
-        return gameObject;
-    }
-
-    GameObject AddEdges(GameObject _gameObject, List<System.Tuple<int, float>> blockedEdges, GameObject _edgeType, Vector3 _blockPos)
-    {
-        for (int k = 0; k < blockedEdges.Count; k++)
-        {
-            GameObject edgeObject = Instantiate(_edgeType);
-            edgeObject.transform.Translate(_blockPos);
-            edgeObject.transform.Rotate(0, blockedEdges[k].Item2, 0, Space.World);
-            edgeObject.transform.parent = gameObject.transform;
-        }
-
-        return _gameObject;
-    }
-
-  List<System.Tuple<int, float>> BlockEdge(List<System.Tuple<int, float>> _blockedEdges, int _edgeIndex, float _rotateBlock, float _direction)
-  {
-
-      int blockedEdge = EdgeBlocked(_edgeIndex, _rotateBlock);
-      _blockedEdges.Add(new System.Tuple<int, float>(blockedEdge, _direction)); ;
-
-      return _blockedEdges;
-  }
-
-
-  int EdgeBlocked(int _startEdge, float _rotation)
-  {
-      int blockEdge;
-
-      if (_rotation == 270) blockEdge = (_startEdge + 1) % 4;
-      else if (_rotation == 180) blockEdge = (_startEdge + 2) % 4;
-      else if (_rotation == 90) blockEdge = (_startEdge + 3) % 4;
-      else blockEdge = _startEdge;
-
-      return blockEdge;
-  }
-
-    GameObject GenerateRoad(int _roadnr)
-    {
-        string roadName = "Road" + _roadnr.ToString();
-        GameObject roadObject = new(roadName);
-
-        GameObject newRoad = Instantiate(road);
-        newRoad.transform.parent = roadObject.transform;
-
-        int carNr = Random.Range(carMin, carMax);
-
-        List<Vector3> carPositions = CarPositions(carNr);
-
-        for (int k = 0; k < carPositions.Count; k++)
-        {
-            float carRot;
-            if (carPositions[k].z > 0) carRot = -90;
-            else carRot = 90;
-
-            int carIndex = Random.Range(0, cars.Count);
-            GameObject newCar = Instantiate(cars[carIndex], new Vector3(carPositions[k].x, 0, carPositions[k].z), Quaternion.identity);
-            newCar.transform.Rotate(0, carRot, 0, Space.World);
-            newCar.transform.parent = roadObject.transform;
-        }
-
-        return roadObject;
-    }
-
-    List<Vector3> CarPositions(int _carNr)
-    {
-
-        List<Vector3> carsDir1 = new();
-        List<Vector3> carsDir2 = new();
-
-        float carZ;
-        if (parkedPosition) carZ = 4.8f;
-        else carZ = 3.0f;
-
-        for (var i = 0; i < _carNr; i++)
-        {
-            int carDirection = Random.Range(0, 2);
-
-            if (carDirection == 0)
-            {
-                carsDir1 = FindCarPosition(carsDir1, carZ * -1.0f);
-            }
-
-            else
-            {
-                carsDir1 = FindCarPosition(carsDir1, carZ);
-            }
-        }
-
-        carsDir1.AddRange(carsDir2);
-        return carsDir1;
-    }
-
-    List<Vector3> FindCarPosition(List<Vector3> _carPositions, float _carZ)
-    {
-        float minX = -46.0f;
-        float maxX = 46.0f;
-        int attempts = 0;
-        bool placed = false;
-
-        Vector3 carPos;
-
-        while (attempts < maxAttempts && !placed)
-        {
-
-            carPos = new Vector3(Random.Range(minX, maxX), 0, _carZ);
-
-            if (!_carPositions.Any(p => Vector3.Distance(carPos, p) < 7.5f))
-            {
-                _carPositions.Add(carPos);
-                placed = true;
-            }
-
-            attempts++;
-        }
-
-        return _carPositions;
     }
 }
