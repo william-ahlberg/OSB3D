@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlaceElevator : MonoBehaviour
@@ -5,12 +6,14 @@ public class PlaceElevator : MonoBehaviour
     [SerializeField] GameObject elevator;
     [SerializeField] GameObject elevatorFrame;
 
+    List<string> exceptedBuildingTypes = new(){"BCL"};
+
     //Main function to add a elevator to a block, used by the BlockGenerator-class
     public GameObject Place(System.Tuple<GameObject, Building> _building, Vector3 _direction)
     {
         int floors = FloorsFromName(_building.Item1);
         Vector3 buildingSize = BuildingSize(_building.Item1);
-        float buildingHeight = (buildingSize.z * 100);
+        float buildingHeight = buildingSize.y;
         float floorHeight = buildingHeight / floors;
 
         Vector3 scaleVector = new(1, floorHeight, 1);
@@ -81,10 +84,12 @@ public class PlaceElevator : MonoBehaviour
     //Calculates the elevators position, based on the type of building standing next to it, it's postion and size
     Vector3 ElevatorPosition(string _buildingName, Vector3 _buildingSize, Vector3 _direction, Vector3 _buildingPosition)
     {
-        float buildingWidth; 
+        float buildingWidth = _buildingSize.x / 2;
 
-        if (_buildingName.Substring(0, 3) == "BCL") buildingWidth = _buildingSize.y * 100 / 2;
-        else buildingWidth = _buildingSize.x * 100 / 2;
+        for (int i = 0; i < exceptedBuildingTypes.Count; i++)
+        {
+            if (_buildingName.Substring(0, exceptedBuildingTypes[i].Length) == exceptedBuildingTypes[i]) buildingWidth = _buildingSize.z / 2;
+        }
 
         float addToPosition = System.Math.Abs(_direction.x) * buildingWidth + System.Math.Abs(_direction.z) * buildingWidth;
         float elevatorWidth = elevatorFrame.transform.localScale.x * 2;

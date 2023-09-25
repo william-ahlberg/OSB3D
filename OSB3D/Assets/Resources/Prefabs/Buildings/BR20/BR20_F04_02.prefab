@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 8230457075792095026}
   - component: {fileID: 8265278170123952366}
   - component: {fileID: 1578845658876432273}
-  - component: {fileID: 4070711376850258358}
+  - component: {fileID: 4606374771453333592}
   m_Layer: 0
   m_Name: BR20_F04_02_import
   m_TagString: Untagged
@@ -58,14 +58,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4502607475020235490}
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 6.5, z: 0}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9163827300587795902}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8265278170123952366
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -98,7 +98,7 @@ MeshRenderer:
   - {fileID: 2100000, guid: 5f302710f59fed6429f6758af118bf43, type: 2}
   - {fileID: 2100000, guid: 9ae053c74eabf6642a1bd1f8987d47d0, type: 2}
   - {fileID: 2100000, guid: 9ae053c74eabf6642a1bd1f8987d47d0, type: 2}
-  - {fileID: 2100000, guid: 676c78c576086334eb84d2f80b5f8bbe, type: 2}
+  - {fileID: 2100000, guid: 81c28b12926a32a45bbb9b2daeb40076, type: 2}
   - {fileID: 2100000, guid: 8e3bf1125413c8c4aa1a8954b4766dd5, type: 2}
   - {fileID: 2100000, guid: d7d576d4f415fd745b32fb3d03afe170, type: 2}
   m_StaticBatchInfo:
@@ -122,7 +122,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4070711376850258358
+--- !u!65 &4606374771453333592
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,5 +133,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.2, y: 0.2501, z: 0.12400001}
-  m_Center: {x: -8.9406926e-11, y: -8.940692e-11, z: -0.0029999986}
+  m_Size: {x: 20, y: 12.4, z: 25}
+  m_Center: {x: 0, y: -0.29999995, z: 0}

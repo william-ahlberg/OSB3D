@@ -10,8 +10,8 @@ public struct Building
     private readonly float yRotation;
     private readonly bool passage;
     private readonly List<int> edges;
-    private readonly float width;
-    public Building(int _typeIndex, Vector3 _Position, float _yRotation, bool _passage, List<int> _onEdges, bool _terrain, float _width)
+
+    public Building(int _typeIndex, Vector3 _Position, float _yRotation, bool _passage, List<int> _onEdges, bool _terrain)
     {
         this.typeIndex = _typeIndex;
         this.position = _Position;
@@ -19,7 +19,6 @@ public struct Building
         this.passage = _passage;
         this.edges = _onEdges;
         this.terrain = _terrain;
-        this.width = _width;    
     }
 
     public readonly int TypeIndex { get { return this.typeIndex; } }
@@ -28,5 +27,4 @@ public struct Building
     public readonly bool IsPassage { get { return this.passage; } }
     public readonly List<int> Edges { get { return this.edges; } }
     public readonly bool Terrain { get { return this.terrain; } }
-    public readonly float Width { get { return this.width; } }
 }

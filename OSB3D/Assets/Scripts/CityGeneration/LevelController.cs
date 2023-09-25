@@ -317,7 +317,6 @@ public class LevelController : MonoBehaviour
             GameObject edgeObject = Instantiate(_edgeType);
             edgeObject.transform.Translate(_blockPos);
             edgeObject.transform.Rotate(0, _edges[k].Item2, 0, Space.World);
-            //edgeObject.transform.parent = gameObject.transform;
             edgeObject.transform.parent = city.transform;
         }
 

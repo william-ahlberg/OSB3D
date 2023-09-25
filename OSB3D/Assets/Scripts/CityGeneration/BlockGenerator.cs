@@ -1,9 +1,7 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -21,6 +19,8 @@ public class BlockGenerator : MonoBehaviour
     PlaceElevator placeElevator;
     PlaceDoor placeDoor;
 
+    private float lowerTerrainBuildings = 0.5f;
+
     void Awake()
     {
         Setup();
@@ -37,11 +37,11 @@ public class BlockGenerator : MonoBehaviour
          Order of codes do not matter, now in alphabetic order*/
         List<string> buildingCodes = new() {"BCL30", "BCL40",
                                             "BCR30", "BCR40",
-                                             "BD20", "BD30",
+                                             "BD20", "BD30", "BD60", "BD85",
                                              "BP05","BP10", "BP15", "BP20",
                                              "BR20", "BR30", "BR40",
                                              "BRV20",
-                                             "BT20", "BT60", "BT85"};
+                                             "BT20"};
 
         buildingTypes = new Dictionary<string, int>();
         buildings = GetBuildlings(buildingCodes);
@@ -63,9 +63,10 @@ public class BlockGenerator : MonoBehaviour
             buildingTypes.Add(buildingType, index);
             string directory = "Prefabs/Buildings/" + buildingType;
 
-            List<GameObject> objectsDirectory = Utility.FromDirectory(directory);
+            List<GameObject> objects = new List<GameObject>();
+            objects.AddRange(Utility.FromDirectory(directory));
 
-            buildingLists.Add(objectsDirectory);
+            buildingLists.Add(objects);
             index++;
         }
 
@@ -91,35 +92,18 @@ public class BlockGenerator : MonoBehaviour
                 {
                     int typeIndex = buildingTypes[info[0]];
 
-                    bool isPassage = false;
-                    if (info[0].Substring(0, 2) == "BP") isPassage = true;
+                    bool isPassage = false; 
+                    if(info[0].Substring(0, 2) == "BP") isPassage = true;
 
-                    bool terrainBool; 
-                    float x = float.Parse(info[1]);
-                    float y;
-                    float z = float.Parse(info[3]);
+                    bool isTerrain = false;
+                    if(info[2] == "t") isTerrain = true;
 
-                    //checks if the building should be placed in terrain
-                    if(info[2] == "t")
-                    {
-                        terrainBool = true;
-                        y = 0; 
-                    }
-
-                    else
-                    {
-                        terrainBool = false;
-                        y = float.Parse(info[2]);
-                    }
-
-                    Vector3 position = new(x, y, z);
+                    Vector3 position = BuildingPosition(info, isTerrain);
 
                     List<int> edges = new();
 
-                    string substring = info[0].Substring(0, 2);
-                    
                     //If it is not a detached buliding and the x and z value is 
-                    if (substring != "BD")
+                    if (info[0].Substring(0, 2) != "BD")
                     {
                         if (position.x < -30) edges.Add(0);
                         if (position.z > 30) edges.Add(1);
@@ -127,13 +111,26 @@ public class BlockGenerator : MonoBehaviour
                         if (position.z < -30) edges.Add(3);
                     }
 
-                    float width = float.Parse(info[0].Substring(info[0].Length-2));
-                    templateBlock.Add(new Building(typeIndex, position, float.Parse(info[4]), isPassage, edges, terrainBool, width));
+                    templateBlock.Add(new Building(typeIndex, position, float.Parse(info[4]), isPassage, edges, isTerrain));
                 }
             }
             templates.Add(templateBlock);
         }
+
         return templates;
+    }
+
+    //Gets the buliding positon from a string 
+    Vector3 BuildingPosition(List<string> _info, bool _isTerrain)
+    {
+        float x = float.Parse(_info[1]);
+        float y;
+        float z = float.Parse(_info[3]);
+
+        if (_isTerrain) y = 0;
+        else y = float.Parse(_info[2]);
+
+        return new Vector3(x, y, z);
     }
 
     public List<int> RandomTemplateIndices(int _count)
@@ -147,6 +144,18 @@ public class BlockGenerator : MonoBehaviour
         return indices;
     }
 
+    //Looks for a blocknr which do not include terrain
+    public int RandomRangeExcept()
+    {
+        int index;
+        do
+        {
+            index = UnityEngine.Random.Range(0, blocks.Count);
+        } while (blocks[index][0].Terrain);
+
+        return index;
+    }
+
     //Main function to generate the terrain
     public Tuple<bool, GameObject, GameObject> GenerateBlock(List<System.Tuple<int, float, int>> _edges, bool _addElevator, int _blockSize, int _blocknr)
     {
@@ -154,22 +163,10 @@ public class BlockGenerator : MonoBehaviour
         string blockName = "Block" + _blocknr.ToString();
         GameObject block = new(blockName);
 
-        bool terrain;
-        GameObject ground;
+        bool isTerrain = false;
+        if (blocks[_blocknr][0].Terrain) isTerrain = true;
 
-        //Instantiate ground or terrain, based on the first building in the block
-        if (blocks[_blocknr][0].Terrain)
-        {
-            terrain = true;
-            ground = blockTerrain.Generate(_blockSize);
-        }
-
-        else
-        {
-            terrain = false;
-            ground = Instantiate(groundPlate);
-            ground.transform.parent = block.transform;
-        }
+        GameObject ground = GroundObject(isTerrain, _blockSize, block);
 
         List<System.Tuple<GameObject, Building>> allBuildings = new();
         List<int> doors = new();
@@ -183,8 +180,10 @@ public class BlockGenerator : MonoBehaviour
             int options = buildings[type].Count;
             int chosen = UnityEngine.Random.Range(0, options);
 
+            GameObject chosenObject = buildings[type][chosen];
+
             //Keep track of all buildings for the elevator placement
-            allBuildings.Add(new System.Tuple<GameObject, Building>(buildings[type][chosen], blocks[_blocknr][i]));
+            allBuildings.Add(new System.Tuple<GameObject, Building>(chosenObject, blocks[_blocknr][i]));
 
             //Check if it is a passage towards a courtyard, if so a door and elevator can be placed
             if (blocks[_blocknr][i].IsPassage)
@@ -192,10 +191,7 @@ public class BlockGenerator : MonoBehaviour
                 //checks if the edge is towards another block, if so a door object can be placed
                 bool connectedEdge = CheckEdges(blocks[_blocknr][i].Edges, _edges);
 
-                if (connectedEdge)
-                {
-                    doors.Add(i);
-                }
+                if (connectedEdge) doors.Add(i);
 
                 //if a elevator should be placed, the index of the gap and the direction towards the previous building is saved
                 if (_addElevator)
@@ -203,10 +199,7 @@ public class BlockGenerator : MonoBehaviour
                     if (i != 0)
                     {
                         forElevator.Add(i - 1);
-                        Vector3 direction = allBuildings[i].Item2.Position - allBuildings[i - 1].Item2.Position;
-                        if (System.Math.Abs(direction.x) > System.Math.Abs(direction.z)) direction = new Vector3(direction.x, 0, 0);
-                        else direction = new Vector3(0, 0, direction.z);
-                        direction.Normalize();
+                        Vector3 direction = PlacementDirection(allBuildings[i].Item2.Position, allBuildings[i - 1].Item2.Position);
                         directions.Add(direction);
                     }
                 }
@@ -216,20 +209,15 @@ public class BlockGenerator : MonoBehaviour
             else
             {
                 Vector3 position = blocks[_blocknr][i].Position;
+                float buildingRotation = blocks[_blocknr][i].Rotation;
 
-                if (terrain)
-                {
-                    Terrain terrainComp = ground.GetComponentInChildren<Terrain>();
+                if (isTerrain) position.y = TerrainHeight(allBuildings[i], ground, block); 
 
-                    float buildingWidth = blocks[_blocknr][i].Width;
-
-                    position.y = SampleHeights(buildingWidth, position, terrainComp);
-                }
-
-                GameObject building = Instantiate(allBuildings[i].Item1, position, Quaternion.identity);
+                GameObject building = Instantiate(buildings[type][chosen], position, Quaternion.identity);
                 SetBuildingMaterials(building);
-                building.transform.Rotate(0, blocks[_blocknr][i].Rotation, 0, Space.World);
+                building.transform.Rotate(0, buildingRotation, 0, Space.World);
                 building.transform.parent = block.transform;
+
             }
         }
 
@@ -248,43 +236,89 @@ public class BlockGenerator : MonoBehaviour
             elevator.transform.parent = block.transform;
         }
 
-        return new Tuple<bool, GameObject, GameObject>(terrain, block, ground);
+        return new Tuple<bool, GameObject, GameObject>(isTerrain, block, ground);
     }
 
-    //Looks for a blocknr which do not include terrain
-    public int RandomRangeExcept()
+    //Instantiate ground or terrain
+    GameObject GroundObject(bool _isTerrain, int _blockSize, GameObject _block)
     {
-        int index;
-        do
-        {
-            index = UnityEngine.Random.Range(0, blocks.Count);
-        } while (blocks[index][0].Terrain);
+        GameObject ground; 
 
-        return index;
+        if (_isTerrain)
+        {
+            ground = blockTerrain.Generate(_blockSize);
+        }
+
+        else
+        {
+            ground = Instantiate(groundPlate);
+            ground.transform.parent = _block.transform;
+        }
+
+        return ground;
+    }
+
+    //Calculates in which direction the building is, in realation to the elevator
+    Vector3 PlacementDirection(Vector3 _elevatorPosition, Vector3 _buildingPositon)
+    {
+        Vector3 direction = _elevatorPosition - _buildingPositon;
+        
+        if (System.Math.Abs(direction.x) > System.Math.Abs(direction.z)) direction = new Vector3(direction.x, 0, 0);
+        else direction = new Vector3(0, 0, direction.z);
+        
+        direction.Normalize();
+        return direction;
+    }
+
+    float TerrainHeight(System.Tuple<GameObject, Building> _buildingTuple, GameObject _ground, GameObject _block)
+    {
+        float yValue; 
+
+        Mesh buildingMesh = _buildingTuple.Item1.GetComponentsInChildren<MeshFilter>()[0].sharedMesh;
+        Vector3 size = BuildingSize(buildingMesh, _buildingTuple.Item2.Rotation);
+        Terrain terrainComp = _ground.GetComponentInChildren<Terrain>();
+
+        //Samples the corners of the building and chooses the smallest y-value
+        yValue = SampleHeights(size, _buildingTuple.Item2.Position, terrainComp, _block) - lowerTerrainBuildings;
+
+        return yValue;
+    }
+
+    Vector3 BuildingSize(Mesh _buildingMesh, float _rotation)
+    {
+        Vector3 meshSize = _buildingMesh.bounds.size;
+
+        float buildingWidthX = meshSize.x;
+        float buildingDepthZ = meshSize.z;
+
+        if (_rotation == 90 || _rotation == -90)
+        {
+            buildingWidthX = meshSize.z;
+            buildingDepthZ = meshSize.x;
+        }
+
+        return new Vector3(buildingWidthX, 0, buildingDepthZ);
     }
 
     //Sample the height in the buildings four courner, for terrain blocks
-    float SampleHeights(float _buildlingWidth, Vector3 _position, Terrain _terrainComp)
+    float SampleHeights(Vector3 _buildingSize, Vector3 _position, Terrain _terrainComp, GameObject _block)
     {
         List<float> sampleHeights = new List<float>();
 
-        float toAdd = _buildlingWidth / 2;
+        float addX = (_buildingSize.x -1) / 2;
+        float addZ = (_buildingSize.z -1) / 2;
 
-        float heigh1 = _terrainComp.SampleHeight(new Vector3(_position.x + toAdd, 0, _position.z));
+        float heigh1 = _terrainComp.SampleHeight(new Vector3(_position.x - addX, 0, _position.z - addZ));
         sampleHeights.Add(heigh1);
-       // Debug.Log("1: " + heigh1);
 
-        float heigh2 = _terrainComp.SampleHeight(new Vector3(_position.x - toAdd, 0, _position.z));
+        float heigh2 = _terrainComp.SampleHeight(new Vector3(_position.x - addX, 0, _position.z + addZ));
         sampleHeights.Add(heigh2);
-       // Debug.Log("2: " + heigh2);
 
-        float heigh3 = _terrainComp.SampleHeight(new Vector3(_position.x + toAdd, 0, _position.z + toAdd));
+        float heigh3 = _terrainComp.SampleHeight(new Vector3(_position.x + addX, 0, _position.z + addZ));
         sampleHeights.Add(heigh3);
-       // Debug.Log("3: " + heigh3);
 
-        float height4 = _terrainComp.SampleHeight(new Vector3(_position.x + toAdd, 0, _position.z - toAdd));
+        float height4 = _terrainComp.SampleHeight(new Vector3(_position.x + addX, 0, _position.z - addZ));
         sampleHeights.Add(height4);
-       // Debug.Log("4: " + height4);
 
         return sampleHeights.Min();
     }

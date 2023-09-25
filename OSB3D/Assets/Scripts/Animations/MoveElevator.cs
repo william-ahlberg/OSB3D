@@ -42,7 +42,7 @@ public class MoveElevator : MonoBehaviour
         buildingHeight  = _buildingHeight;  
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (moving && !runsCorutine)
         {
@@ -105,7 +105,7 @@ public class MoveElevator : MonoBehaviour
             timeCounter += Time.deltaTime;
             float stepSize = timeCounter / travelTime;
             transform.position = Vector3.Lerp(startPos, _moveTowards, stepSize);
-            yield return null;
+            yield return new WaitForFixedUpdate();
         }
 
         transform.position = _moveTowards;
