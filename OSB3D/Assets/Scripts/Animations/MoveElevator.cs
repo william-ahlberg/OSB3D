@@ -46,12 +46,6 @@ public class MoveElevator : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Debug.Log("Power: " + powerOn);
-        Debug.Log("GoUp: " + goUp);
-        Debug.Log("GoDown: " + goDown);
-        Debug.Log("Moving: " + moving);
-        Debug.Log("RunsCorutine: " + runsCorutine); 
-        Debug.Log("isDown: " + isDown);
 
         if (moving && !runsCorutine)
         {
@@ -91,13 +85,9 @@ public class MoveElevator : MonoBehaviour
             //Resets all but powerOn
             else
             {
-                goDown = false;
-                buttonRenderers[3].material.color = Color.white;
-
-                goUp = false;
-                buttonRenderers[1].material.color = Color.white;
-
                 moving = false;
+                buttonRenderers[3].material.color = Color.white;
+                buttonRenderers[1].material.color = Color.white;
                 buttonRenderers[2].material.color = Color.white;
             }
         }
@@ -120,8 +110,6 @@ public class MoveElevator : MonoBehaviour
         }
 
         transform.position = _moveTowards;
-        powerOn = false;
-        isDown = !isDown;
         ResetBooleans();
         ResetButtonColours();
         runsCorutine = false;
@@ -130,6 +118,8 @@ public class MoveElevator : MonoBehaviour
     //Reset booleans to move elevator
     void ResetBooleans()
     {
+        powerOn = false;
+        isDown = !isDown;
         goUp = false;
         goDown = false;
         moving = false;
