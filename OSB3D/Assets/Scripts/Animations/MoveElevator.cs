@@ -12,6 +12,7 @@ public class MoveElevator : MonoBehaviour
     static bool goUp;
     static bool goDown;
     static bool moving;
+    static bool isDown;
     bool runsCorutine; 
 
     Vector3 maxPos;
@@ -27,6 +28,7 @@ public class MoveElevator : MonoBehaviour
         goDown = false;
         moving = false;
         runsCorutine = false;
+        isDown = true; 
     }
 
     //Called from LevelController, after block with elevator have been move into the correct place
@@ -44,6 +46,13 @@ public class MoveElevator : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Debug.Log("Power: " + powerOn);
+        Debug.Log("GoUp: " + goUp);
+        Debug.Log("GoDown: " + goDown);
+        Debug.Log("Moving: " + moving);
+        Debug.Log("RunsCorutine: " + runsCorutine); 
+        Debug.Log("isDown: " + isDown);
+
         if (moving && !runsCorutine)
         {
             //if moving and goUp is true
@@ -57,6 +66,7 @@ public class MoveElevator : MonoBehaviour
                 else
                 {
                     goUp = false;
+                    isDown = false; 
                     buttonRenderers[1].material.color = Color.white;
                 }
             }
@@ -72,6 +82,7 @@ public class MoveElevator : MonoBehaviour
                 else
                 {
                     goDown = false;
+                    isDown = true;
                     buttonRenderers[3].material.color = Color.white;
                 }
 
@@ -110,6 +121,7 @@ public class MoveElevator : MonoBehaviour
 
         transform.position = _moveTowards;
         powerOn = false;
+        isDown = !isDown;
         ResetBooleans();
         ResetButtonColours();
         runsCorutine = false;
@@ -144,7 +156,7 @@ public class MoveElevator : MonoBehaviour
                 case 0:
                     powerOn = !powerOn;
 
-                    if (powerOn)
+                    if (powerOn && !isDown)
                     {
                         moving = true;
                         goDown = true;
@@ -192,7 +204,7 @@ public class MoveElevator : MonoBehaviour
                 case 4:
                     powerOn = !powerOn;
 
-                    if (powerOn)
+                    if (powerOn && isDown)
                     {
                         moving = true;
                         goUp = true;
