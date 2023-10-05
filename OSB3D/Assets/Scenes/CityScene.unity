@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.7
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4949932, g: 0.44035766, b: 0.3742539, a: 0.7}
+  m_IndirectSpecularColor: {r: 0.50080645, g: 0.44459248, b: 0.37618905, a: 0.7}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1071,6 +1071,7 @@ GameObject:
   - component: {fileID: 1856633437}
   - component: {fileID: 1856633434}
   - component: {fileID: 1856633435}
+  - component: {fileID: 1856633438}
   m_Layer: 0
   m_Name: GameInstance
   m_TagString: Untagged
@@ -1105,9 +1106,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3d7d1218ccd214db5f61542cea8c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 61
-  blockCountX: 5
-  blockCountZ: 5
+  seed: 1337
+  blockCountX: 2
+  blockCountZ: 2
   parkRatio: 0.25
   crossing: {fileID: 4005743241734848231, guid: 767244c251a7bd24180332c707fc2f9a, type: 3}
   edgeBlock: {fileID: 5917777203468375160, guid: 54285ac9cc2a1af49af24014232e5ce9, type: 3}
@@ -1191,6 +1192,21 @@ MonoBehaviour:
   maxHeight: 4
   edgeDistance: 0.6
   material: {fileID: 2100000, guid: f284f06a78ed0bb489cbbed2ec9218ec, type: 2}
+--- !u!114 &1856633438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1856633430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29a49795ec683594fbdb311cabe79b9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
 --- !u!1 &1891355897
 GameObject:
   m_ObjectHideFlags: 0
@@ -1321,19 +1337,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c738edb962945a44db64f3cf6f36f2a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 70
-  maxSpeed: 0
+  <moveSpeed>k__BackingField: 100
+  <jumpForce>k__BackingField: 10
   gravityScale: 10
   groundDrag: 5
-  jumpForce: 10
   jumpCooldown: 0.25
   airMultiplier: 0.1
-  sensitivityX: 400
-  sensitivityY: 400
+  sensitivityX: 100
+  sensitivityY: 100
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  flyMode: 0
   manualInput: 1
   forwardFace: {fileID: 175351856}
   head: {fileID: 845986622}

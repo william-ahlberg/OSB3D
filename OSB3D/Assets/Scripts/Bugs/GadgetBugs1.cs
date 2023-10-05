@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-public class GadgetBugs : BugBase
+public class GadgetBugs1 : MonoBehaviour
 {	
     private Dictionary<string, string> searchNameGadgetPairs = new Dictionary<string, string>()
         {
@@ -18,7 +18,6 @@ public class GadgetBugs : BugBase
     // Start is called before the first frame update
     private void Start()
     {
-        base.Start();
         DisableGadget("Door");
         DisableGadget("Elevator");
     }
@@ -40,20 +39,6 @@ public class GadgetBugs : BugBase
             
         
         
-    }
-
-    private void CrossGadget()
-    {
-        
-
-
-    }
-
-    private void AlterGadget()
-    {
-
-
-
     }
 
 		

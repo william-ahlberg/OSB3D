@@ -6,15 +6,20 @@ using System.Text.RegularExpressions;
 
 public class BugManager : MonoBehaviour
 {
-    Dictionary<string,int> BugTypCount;
+    Dictionary<string,int> BugTypeCount;
+    //Dictionary<string,int> IsActiveBugType = {};
+
     List<BugBase> bugs = new List<BugBase>();
     public Bounds bounds;
+
+
+
     // Start is called before the first frame update
     void Start()
     {
         CalcBounds();
         CreateBugArea();
-        searchBugObject();
+        SearchBugObject();
     }
 
     // Update is called once per frame
@@ -33,7 +38,6 @@ public class BugManager : MonoBehaviour
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.transform.localScale = new Vector3(Random.Range(1,5), 3f, Random.Range(1,5));
             cube.tag = "Bug";
-
             cube.GetComponent<Collider>().isTrigger = true;
             cube.transform.parent = parentObject.transform;
             cube.AddComponent<PhysicsBugs>();
@@ -56,14 +60,13 @@ public class BugManager : MonoBehaviour
 
     }
 
-    public void searchBugObject()
+    public void SearchBugObject()
     {
         GameObject[] bugObjects; 
         bugObjects = GameObject.FindGameObjectsWithTag("Bug");
-
         foreach (GameObject bugObject in bugObjects)
         {
-            if (Regex.IsMatch(bugObject.name, "^Trigger"))
+            if (Regex.IsMatch(bugObject.name, "Elevator"))
             {
                 bugObject.AddComponent<GadgetBugs>();
             }

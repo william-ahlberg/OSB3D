@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GeometryBugs : MonoBehaviour
+public class GeometryBugs : BugBase
 {
     // Start is called before the first frame update
     List<Collider> edgeNarrowColliders = new List<Collider>();
