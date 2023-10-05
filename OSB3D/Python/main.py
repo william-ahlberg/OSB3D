@@ -1,8 +1,8 @@
 import numpy as np
-from envs import unity
+from OSB3D.Python.envs import osb3d
 
 def main():
-    env = unity.OSB3D(
+    env = osb3d.OSB3D(
         file_name = ""
         seed = 0
         

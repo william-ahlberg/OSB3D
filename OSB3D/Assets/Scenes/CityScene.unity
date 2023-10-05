@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.7
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.50080645, g: 0.44459248, b: 0.37618905, a: 0.7}
+  m_IndirectSpecularColor: {r: 0.49498683, g: 0.44034344, b: 0.37423936, a: 0.7}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -377,7 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensorForward
   m_DetectableTags: []
-  m_RaysPerDirection: 10
+  m_RaysPerDirection: 5
   m_MaxRayDegrees: 50
   m_SphereCastRadius: 0.5
   m_RayLength: 10
@@ -659,7 +659,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 875374739}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.513, z: 0}
   m_LocalScale: {x: 1.4285712, y: 0.6666667, z: 1.4285712}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -757,7 +757,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 2000
-  field of view: 95
+  field of view: 94.99999
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -1044,7 +1044,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensorBackwards
   m_DetectableTags: []
-  m_RaysPerDirection: 10
+  m_RaysPerDirection: 5
   m_MaxRayDegrees: 50
   m_SphereCastRadius: 0.5
   m_RayLength: 10
