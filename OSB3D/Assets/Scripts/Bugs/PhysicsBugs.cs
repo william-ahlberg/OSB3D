@@ -15,6 +15,7 @@ public class PhysicsBugs : BugBase
     public override void Start() 
     {
         base.Start();
+
         GameObject agent = GameObject.Find("/Characters/Agent");
         agentController = agent.GetComponent<AgentController>();
         startJumpForce = agentController.jumpForce;

@@ -11,6 +11,7 @@ public class BugManager : MonoBehaviour
 
     List<BugBase> bugs = new List<BugBase>();
     public Bounds bounds;
+    public List<Vector3> bugPositions = new List<Vector3>();
 
 
 
@@ -20,6 +21,7 @@ public class BugManager : MonoBehaviour
         CalcBounds();
         CreateBugArea();
         SearchBugObject();
+        LogBugPosition();
     }
 
     // Update is called once per frame
@@ -42,6 +44,7 @@ public class BugManager : MonoBehaviour
             cube.transform.parent = parentObject.transform;
             cube.AddComponent<PhysicsBugs>();
             cube.GetComponent<PhysicsBugs>().id = i;
+            cube.transform.position = PlaceBugArea(cube,0);
         }
 
     }
@@ -69,6 +72,7 @@ public class BugManager : MonoBehaviour
             if (Regex.IsMatch(bugObject.name, "Elevator"))
             {
                 bugObject.AddComponent<GadgetBugs>();
+                //LogBugPosition(bugObject.transform.position);
             }
 
 
@@ -76,5 +80,46 @@ public class BugManager : MonoBehaviour
 
     }
 
-  
+    public void LogBugPosition()
+    {
+        GameObject[] bugObjects;
+
+        bugObjects = GameObject.FindGameObjectsWithTag("Bug");
+        foreach (GameObject bugObject in bugObjects)
+        {
+            bugPositions.Add(bugObject.transform.position);
+        }
+    }
+
+    public Vector3 PlaceBugArea(GameObject cube, int depth)
+    {
+        RaycastHit hit;
+        Vector3 position = new Vector3(Random.Range(bounds.min.x, bounds.max.x), Random.Range(bounds.min.y, bounds.max.y), Random.Range(bounds.min.z, bounds.max.z));
+        Collider[] freeColliders = Physics.OverlapBox(cube.transform.position, cube.transform.localScale / 2);
+
+        bool validPosition = true;
+
+        foreach (Collider collider in freeColliders)
+        {
+            if (!collider.gameObject.CompareTag("Bug"))
+            {
+                validPosition = false;
+                break;
+            }
+        }
+
+        if (!validPosition && (depth < 100))
+        {
+            //Debug.Log("Finding new position for Cube " + ID);
+            position = PlaceBugArea(cube,++depth);
+        }
+
+        Physics.Raycast(position, Vector3.down, out hit, Mathf.Infinity);
+        position.y = hit.point.y + cube.transform.localScale.y / 2;
+
+        return position;
+
+    }
+
+
 }

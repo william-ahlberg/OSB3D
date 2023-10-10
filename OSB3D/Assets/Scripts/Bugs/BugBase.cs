@@ -32,8 +32,6 @@ public class BugBase : MonoBehaviour
         bounds = bugManager.bounds;
         scale = transform.localScale;
 
-        transform.position = PlaceBugArea(0);
-
     }
 
     private void Update()
