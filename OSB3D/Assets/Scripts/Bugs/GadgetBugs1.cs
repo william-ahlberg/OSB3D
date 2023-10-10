@@ -1,0 +1,54 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System.Text.RegularExpressions;
+
+public class GadgetBugs1 : MonoBehaviour
+{	
+    private Dictionary<string, string> searchNameGadgetPairs = new Dictionary<string, string>()
+        {
+		{"Door", "^Trigger"},
+		{"Elevator", "[0-4]"}
+        };
+	
+	
+    private List<GameObject> doors = new List<GameObject>();
+    [SerializeField] private int numberOfBugs = 1000;
+    
+    // Start is called before the first frame update
+    private void Start()
+    {
+        DisableGadget("Door");
+        DisableGadget("Elevator");
+    }
+
+    private void Update()
+    {
+    }
+
+    private void DisableGadget(string gadgetKey)
+    {
+        Collider[] colliders = GetComponentsInChildren<Collider>();
+        foreach (Collider collider in colliders) 
+        { 
+            if (Regex.IsMatch(collider.name, searchNameGadgetPairs[gadgetKey])) 
+            { 
+                collider.enabled = false; 
+            } 
+        }
+            
+        
+        
+    }
+
+		
+	
+	
+	
+	
+	
+	}
+
+
+
+

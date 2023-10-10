@@ -21,8 +21,6 @@ public class PlayerController : MonoBehaviour
         actions[3] = Input.GetAxisRaw("Mouse Y");
         actions[4] = System.Convert.ToSingle(Input.GetKey(KeyCode.Space));
 
-        //For manual control
-        //actions[5] = System.Convert.ToSingle(Input.GetKey(KeyCode.V)); 
         return actions;
     }
 
@@ -30,8 +28,6 @@ public class PlayerController : MonoBehaviour
     {
         extraActions[0] = Input.GetKey(KeyCode.V);
        
-        
-        
         return extraActions; 
     
     

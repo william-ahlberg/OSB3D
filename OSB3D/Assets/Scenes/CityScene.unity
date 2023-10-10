@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 1
-  m_FogColor: {r: 0.45, g: 0.45, b: 0.45, a: 1}
+  m_FogColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.0024
   m_LinearFogStart: 0
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.7
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4949932, g: 0.44035766, b: 0.3742539, a: 0.7}
+  m_IndirectSpecularColor: {r: 0.50080645, g: 0.44459248, b: 0.37618905, a: 0.7}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -377,7 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensorForward
   m_DetectableTags: []
-  m_RaysPerDirection: 10
+  m_RaysPerDirection: 5
   m_MaxRayDegrees: 50
   m_SphereCastRadius: 0.5
   m_RayLength: 10
@@ -659,7 +659,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 875374739}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.513, z: 0}
   m_LocalScale: {x: 1.4285712, y: 0.6666667, z: 1.4285712}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1044,7 +1044,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensorBackwards
   m_DetectableTags: []
-  m_RaysPerDirection: 10
+  m_RaysPerDirection: 5
   m_MaxRayDegrees: 50
   m_SphereCastRadius: 0.5
   m_RayLength: 10
@@ -1071,6 +1071,7 @@ GameObject:
   - component: {fileID: 1856633437}
   - component: {fileID: 1856633434}
   - component: {fileID: 1856633435}
+  - component: {fileID: 1856633438}
   m_Layer: 0
   m_Name: GameInstance
   m_TagString: Untagged
@@ -1105,10 +1106,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3d7d1218ccd214db5f61542cea8c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 2
-  blockCountX: 5
-  blockCountZ: 5
-  parkRatio: 0.2
+  seed: 1337
+  blockCountX: 2
+  blockCountZ: 2
+  parkRatio: 0.25
   crossing: {fileID: 4005743241734848231, guid: 767244c251a7bd24180332c707fc2f9a, type: 3}
   edgeBlock: {fileID: 5917777203468375160, guid: 54285ac9cc2a1af49af24014232e5ce9, type: 3}
   edgePark: {fileID: 7608264914060715283, guid: a792be091242e674f97998050e3e7238, type: 3}
@@ -1169,7 +1170,7 @@ MonoBehaviour:
   stopOnCollision: 1
   carSpeed: 5
   carMin: 1
-  carMax: 5
+  carMax: 7
   itemMin: 0
   itemMax: 4
   road: {fileID: 7799802082301009339, guid: 4e375f0103b52564aab24819b604a835, type: 3}
@@ -1188,9 +1189,25 @@ MonoBehaviour:
   resolution: 32
   scale: 3.5
   minHeight: 0
-  maxHeight: 4.5
+  maxHeight: 4
   edgeDistance: 0.6
   material: {fileID: 2100000, guid: f284f06a78ed0bb489cbbed2ec9218ec, type: 2}
+--- !u!114 &1856633438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1856633430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29a49795ec683594fbdb311cabe79b9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  bugPositions: []
 --- !u!1 &1891355897
 GameObject:
   m_ObjectHideFlags: 0
@@ -1215,7 +1232,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1891355897}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 60, y: 0.1, z: -30}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1255,7 +1272,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1993042067}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 60, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1321,19 +1338,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c738edb962945a44db64f3cf6f36f2a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 70
-  maxSpeed: 0
+  <moveSpeed>k__BackingField: 100
+  <jumpForce>k__BackingField: 10
   gravityScale: 10
   groundDrag: 5
-  jumpForce: 10
   jumpCooldown: 0.25
   airMultiplier: 0.1
-  sensitivityX: 400
-  sensitivityY: 400
+  sensitivityX: 100
+  sensitivityY: 100
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  flyMode: 0
   manualInput: 1
   forwardFace: {fileID: 175351856}
   head: {fileID: 845986622}

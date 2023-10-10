@@ -9,8 +9,8 @@ public class LevelController : MonoBehaviour
 {
     [Header("City Setup")]
     [SerializeField] int seed;
-    [SerializeField] int blockCountX;
-    [SerializeField] int blockCountZ;
+    [SerializeField] public int blockCountX;
+    [SerializeField] public int blockCountZ;
     [Range(0.0f, 1.0f)]
     [SerializeField] float parkRatio;
 
