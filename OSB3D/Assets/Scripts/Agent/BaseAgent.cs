@@ -45,6 +45,8 @@ public class BaseAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(transform.position);
+        sensor.AddObservation(transform.rotation);
+
         
 
     }

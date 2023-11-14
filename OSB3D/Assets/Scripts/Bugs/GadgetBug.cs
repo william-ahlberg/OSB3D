@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-public class GadgetBugs : BugBase
+public class GadgetBug : BugBase
 {	
     private Dictionary<string, string> searchNameGadgetPairs = new Dictionary<string, string>()
         {

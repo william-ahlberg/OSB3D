@@ -1,20 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class PhysicsBugs : BugBase
+[System.Serializable]
+public class PhysicsBug : BugBase
 {
     AgentController agentController;
-    float startJumpForce;
-    float startMoveSpeed;
-    float bugJumpForce;
-    float bugMoveSpeed;
-    bool inBug;
-    int bugType;
+    public float startJumpForce;
+    public float startMoveSpeed;
+    public float bugJumpForce;
+    public float bugMoveSpeed;
+    public bool playerInBug;
+
+    public int physicsParameter;
+
 
     public override void Start() 
     {
         base.Start();
+        base.bugType = "B8";
 
         GameObject agent = GameObject.Find("/Characters/Agent");
         agentController = agent.GetComponent<AgentController>();
@@ -22,8 +25,8 @@ public class PhysicsBugs : BugBase
         startMoveSpeed = agentController.moveSpeed;
         bugJumpForce = Random.Range(0, 32);
         bugMoveSpeed = Random.Range(1, 100);
-        inBug = false;
-        bugType = Random.Range(0, 2);
+        playerInBug = false;
+        physicsParameter = Random.Range(0, 2);
     }
 
     private void Update()
@@ -32,7 +35,13 @@ public class PhysicsBugs : BugBase
     
     
     
-    } 
+    }
+
+    public override void Initialize(int id)
+    { 
+        base.Initialize(id);
+    }
+
 
     protected virtual void ToggleBugVisual()
     {
@@ -51,8 +60,7 @@ public class PhysicsBugs : BugBase
 
         if (other.CompareTag("Player"))
         {
-            inBug = true;
-
+            playerInBug = true;
             Debug.Log("Cube Intersection");
             Debug.Log(agentController);
             ChangePhysics();
@@ -65,21 +73,21 @@ public class PhysicsBugs : BugBase
 
         if (other.CompareTag("Player"))
         {
-            inBug = false;
+            playerInBug = false;
 
             Debug.Log("Cube Intersection");
             Debug.Log(agentController);
             ChangePhysics();
-            inBug = false;
+            playerInBug = false;
         }
 
     }
 
     private void ChangePhysics()
     {
-        if (inBug)
+        if (playerInBug)
         {
-            if (bugType == 0)
+            if (physicsParameter == 0)
             {
                 agentController.jumpForce = bugJumpForce;
 
@@ -96,7 +104,7 @@ public class PhysicsBugs : BugBase
         }
         else
         {
-            if (bugType == 0)
+            if (physicsParameter == 0)
             {
                 agentController.jumpForce = startJumpForce;
 

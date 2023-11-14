@@ -3,37 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-
 public class BugManager : MonoBehaviour
 {
-    Dictionary<string,int> BugTypeCount;
-    //Dictionary<string,int> IsActiveBugType = {};
-
-    List<BugBase> bugs = new List<BugBase>();
     public Bounds bounds;
-    public List<Vector3> bugPositions = new List<Vector3>();
-
-
-
+    public string savePath = "C:\\Users\\William\\Projects\\osb3d\\OSB3D\\Data";
+    public PhysicsBug bug;
+    bool firstFrame = true;
+    PhysicsBug[] bugs;
+    BugLogger bugLogger = new BugLogger();
     // Start is called before the first frame update
     void Start()
     {
         CalcBounds();
         CreateBugArea();
         SearchBugObject();
-        LogBugPosition();
+        Debug.Log(Application.dataPath);
+        bugs = FindObjectsByType<PhysicsBug>(FindObjectsSortMode.None);
+        bugLogger.LogBug(bugs);
+        Debug.Log("Test: " + bugLogger.logs[0].bugType);
+        bugLogger.SerializeJson();
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+
     }
 
 
 
     void CreateBugArea() 
     {
-        Debug.Log(bounds);
         GameObject parentObject = new GameObject("CubeParent");
         for (int i = 0; i < 100; i++)
         {
@@ -42,9 +43,9 @@ public class BugManager : MonoBehaviour
             cube.tag = "Bug";
             cube.GetComponent<Collider>().isTrigger = true;
             cube.transform.parent = parentObject.transform;
-            cube.AddComponent<PhysicsBugs>();
-            cube.GetComponent<PhysicsBugs>().id = i;
-            cube.transform.position = PlaceBugArea(cube,0);
+            cube.transform.position = PlaceBugArea(cube, 0);
+            bug = cube.AddComponent<PhysicsBug>();
+            bug.Initialize(i);
         }
 
     }
@@ -71,23 +72,10 @@ public class BugManager : MonoBehaviour
         {
             if (Regex.IsMatch(bugObject.name, "Elevator"))
             {
-                bugObject.AddComponent<GadgetBugs>();
-                //LogBugPosition(bugObject.transform.position);
+                bugObject.AddComponent<GadgetBug>();
             }
 
 
-        }
-
-    }
-
-    public void LogBugPosition()
-    {
-        GameObject[] bugObjects;
-
-        bugObjects = GameObject.FindGameObjectsWithTag("Bug");
-        foreach (GameObject bugObject in bugObjects)
-        {
-            bugPositions.Add(bugObject.transform.position);
         }
     }
 
@@ -121,5 +109,99 @@ public class BugManager : MonoBehaviour
 
     }
 
+}
+
+[System.Serializable]
+public class BugLogEntry
+{
+    public int id;
+    public Vector3 position;
+    public string bugClass;
+    public string bugType;
+    public bool isActive;
+
+    public override string ToString() => $"Bug Log Entry: {position}";
+}
+public class BugLogger
+{
+    public string savePath;
+    public List<BugLogEntry> logs = new List<BugLogEntry>();
+
+    public void LogBug(BugBase[] bugs)
+    {
+        int i = 0;
+        foreach (BugBase bug in bugs)
+        {
+            logs.Add( new BugLogEntry() );
+            logs[i].position = bug.position;
+            logs[i].id = bug.id;
+            logs[i].bugClass = bug.bugClass;
+            logs[i].bugType = bug.bugType;
+            logs[i].isActive = bug.isActive;
+
+            i++;        
+            
+        }
+    
+    }
+
+    public void SerializeJson()
+    {
+        string json = JsonHelper.ToJson(logs, true);
+        Debug.Log(json);
+        string filePath = "C:\\Users\\William\\Projects\\osb3d\\OSB3D\\Data\\" + "data.json";
+        System.IO.File.WriteAllText(filePath, json);
+
+    }
+
+    public void DeserializeJson()
+    { }
+}
+
+public static class JsonHelper
+{
+    public static T[] FromJson<T>(string json)
+    {
+        Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
+        return wrapper.BugLog;
+    }
+
+    public static string ToJson<T>(T[] array)
+    {
+        Wrapper<T> wrapper = new Wrapper<T>();
+        wrapper.BugLog = array;
+        return JsonUtility.ToJson(wrapper);
+    }
+
+    public static string ToJson<T>(T[] array, bool prettyPrint)
+    {
+        Wrapper<T> wrapper = new Wrapper<T>();
+        wrapper.BugLog = array;
+        return JsonUtility.ToJson(wrapper, prettyPrint);
+    }
+
+    public static string ToJson<T>(List<T> list)
+    {
+        Wrapper<T> wrapper = new Wrapper<T>();
+        wrapper.BugLog = list.ToArray();
+        return JsonUtility.ToJson(wrapper);
+    }
+
+    public static string ToJson<T>(List<T> list, bool prettyPrint)
+    {
+        Wrapper<T> wrapper = new Wrapper<T>();
+        wrapper.BugLog = list.ToArray();
+        return JsonUtility.ToJson(wrapper, prettyPrint);
+    }
+    [System.Serializable]
+    private class Wrapper<T>
+    {
+        public T[] BugLog;
+    }
 
 }
+
+
+
+
+
