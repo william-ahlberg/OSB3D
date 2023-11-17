@@ -10,18 +10,24 @@ using System;
 public class BaseAgent : Agent
 {
     float[] actions = new float[5];
+    Vector3 startPosition;
     AgentController agentController;
+    Transform agentBody;
 
     // Start is called before the first frame update
     private void Start()
     {
         agentController = GetComponent<AgentController>();
+        agentBody = transform.Find("Body");
+        startPosition = transform.position;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        
+        Debug.Log("Agent position" + transform.position);
+        //Debug.Log("Agent rotation" + agentBody.localRotation);
+
     }
 
     private void FixedUpdate()
@@ -31,7 +37,9 @@ public class BaseAgent : Agent
 
     public override void OnEpisodeBegin()
     {
+        ResetAgent();
         Debug.Log("Episode Begin");
+
 
     }
 
@@ -44,10 +52,12 @@ public class BaseAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        sensor.AddObservation(agentBody.localRotation);
         sensor.AddObservation(transform.position);
-        sensor.AddObservation(transform.rotation);
 
-        
+
+
+
 
     }
 
@@ -60,6 +70,12 @@ public class BaseAgent : Agent
         actions[4] = Mathf.Clamp(actionBuffers.ContinuousActions[4], 0f, 1f); // Jump
 
         agentController.MoveAgent(actions);
+    }
+
+    public void ResetAgent()
+    {
+        rigidBody.velocity = Vector3.zero;
+        transform.position = startPosition;
     }
 
 
