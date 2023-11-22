@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.7
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.50080645, g: 0.44459248, b: 0.37618905, a: 0.7}
+  m_IndirectSpecularColor: {r: 0.4949932, g: 0.44035766, b: 0.3742539, a: 0.7}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1345,8 +1345,8 @@ MonoBehaviour:
   groundDrag: 5
   jumpCooldown: 0.25
   airMultiplier: 0.1
-  sensitivityX: 100
-  sensitivityY: 100
+  sensitivityX: 200
+  sensitivityY: 200
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
@@ -1383,7 +1383,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 6
+    VectorObservationSize: 7
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 5

@@ -47,7 +47,7 @@ class OSB3DEnv:
             done = False
 
         self.previous_action = actions # Add field
-
+        # Global in na
         state = dict(global_in=np.concatenate(decision_steps.obs, axis=1))
         state['global_in'] = np.concatenate([state['global_in'], np.reshape(self.sample_weights,(1,3))],axis=1)
         state['global_in'] = state["global_in"].reshape((len(state["global_in"][0])))
@@ -82,11 +82,9 @@ class OSB3DEnv:
 
         state = dict(global_in=np.concatenate(decision_steps.obs, axis=1))
         # Append the value of the motivation weight
-
         state['global_in'] = np.concatenate([state['global_in'], np.reshape(self.sample_weights,(1,3))],axis=1)
         state['global_in'] = state["global_in"].reshape((len(state["global_in"][0])))
         position = state['global_in'][-6:-3]
-
         print(position)
         self.trajectories_for_episode[self.episode].append(np.concatenate([position, state['global_in'][-2:]]))
         return state

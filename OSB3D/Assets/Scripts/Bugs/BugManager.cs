@@ -10,12 +10,15 @@ public class BugManager : MonoBehaviour
     public PhysicsBug bug;
     bool firstFrame = true;
     PhysicsBug[] bugs;
+    int nBugs = 100;
     BugLogger bugLogger = new BugLogger();
+
     // Start is called before the first frame update
     void Start()
     {
         CalcBounds();
-        CreateBugArea();
+        firstFrame = false;
+        CreateBugArea(nBugs);
         SearchBugObject();
         Debug.Log(Application.dataPath);
         bugs = FindObjectsByType<PhysicsBug>(FindObjectsSortMode.None);
@@ -27,19 +30,26 @@ public class BugManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (firstFrame == true)
+        {
+
+        } 
+              
 
     }
 
 
 
-    void CreateBugArea() 
+    void CreateBugArea(int nBugs)
     {
+        int cubeScaleMin = 1;
+        int cubeScaleMax = 5;
+
         GameObject parentObject = new GameObject("CubeParent");
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < nBugs; i++)
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.localScale = new Vector3(Random.Range(1,5), 3f, Random.Range(1,5));
+            cube.transform.localScale = new Vector3(Random.Range(cubeScaleMin, cubeScaleMax), cubeScaleMax / 2, Random.Range(cubeScaleMin, cubeScaleMax));
             cube.tag = "Bug";
             cube.GetComponent<Collider>().isTrigger = true;
             cube.transform.parent = parentObject.transform;
@@ -47,7 +57,7 @@ public class BugManager : MonoBehaviour
             bug = cube.AddComponent<PhysicsBug>();
             bug.Initialize(i);
         }
-
+    
     }
 
     public void CalcBounds()
@@ -82,31 +92,37 @@ public class BugManager : MonoBehaviour
     public Vector3 PlaceBugArea(GameObject cube, int depth)
     {
         RaycastHit hit;
-        Vector3 position = new Vector3(Random.Range(bounds.min.x, bounds.max.x), Random.Range(bounds.min.y, bounds.max.y), Random.Range(bounds.min.z, bounds.max.z));
-        Collider[] freeColliders = Physics.OverlapBox(cube.transform.position, cube.transform.localScale / 2);
+        Vector3 position = new Vector3(Random.Range(bounds.min.x, bounds.max.x), Random.Range(bounds.min.y, bounds.max.y/2), Random.Range(bounds.min.z, bounds.max.z));
+        Collider[] checkColliders = Physics.OverlapBox(cube.transform.position, cube.transform.localScale / 2);
 
         bool validPosition = true;
 
-        foreach (Collider collider in freeColliders)
+        if (checkColliders.Length > 1)
         {
-            if (!collider.gameObject.CompareTag("Bug"))
-            {
-                validPosition = false;
-                break;
+            validPosition = false;
+        }
+
+        foreach (Collider collider in checkColliders)
+        {
+            
+            
+                if (!collider.gameObject.CompareTag("Bug"))
+                {
+                    validPosition = false;
+                    break;
+                }
             }
-        }
 
-        if (!validPosition && (depth < 100))
-        {
-            //Debug.Log("Finding new position for Cube " + ID);
-            position = PlaceBugArea(cube,++depth);
-        }
+            if (!validPosition && (depth < 100))
+            {
+                position = PlaceBugArea(cube, ++depth);
+            }
 
-        Physics.Raycast(position, Vector3.down, out hit, Mathf.Infinity);
-        position.y = hit.point.y + cube.transform.localScale.y / 2;
+            Physics.Raycast(position, Vector3.down, out hit, Mathf.Infinity);
+            position.y = hit.point.y + cube.transform.localScale.y / 2;
 
-        return position;
-
+            return position;
+        
     }
 
 }

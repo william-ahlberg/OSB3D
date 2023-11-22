@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="osb3d-env" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="osb3d-env" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="ccpt-env" project-jdk-type="Python SDK" />
 </project>

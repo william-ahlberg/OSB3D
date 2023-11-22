@@ -13,11 +13,13 @@ public class BaseAgent : Agent
     Vector3 startPosition;
     AgentController agentController;
     Transform agentBody;
+    Rigidbody rb;
 
     // Start is called before the first frame update
     private void Start()
     {
         agentController = GetComponent<AgentController>();
+        rb = GetComponent<Rigidbody>();
         agentBody = transform.Find("Body");
         startPosition = transform.position;
     }
@@ -25,14 +27,11 @@ public class BaseAgent : Agent
     // Update is called once per frame
     private void Update()
     {
-        Debug.Log("Agent position" + transform.position);
-        //Debug.Log("Agent rotation" + agentBody.localRotation);
 
     }
 
     private void FixedUpdate()
     {
-    
     }
 
     public override void OnEpisodeBegin()
@@ -74,7 +73,7 @@ public class BaseAgent : Agent
 
     public void ResetAgent()
     {
-        rigidBody.velocity = Vector3.zero;
+        rb.velocity = Vector3.zero;
         transform.position = startPosition;
     }
 
