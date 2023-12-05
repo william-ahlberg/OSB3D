@@ -14,11 +14,15 @@ public class BaseAgent : Agent
     AgentController agentController;
     Transform agentBody;
     Rigidbody rb;
+    PlayerController playerController;
+
 
     // Start is called before the first frame update
     private void Start()
     {
         agentController = GetComponent<AgentController>();
+        playerController = GetComponent<PlayerController>();
+
         rb = GetComponent<Rigidbody>();
         agentBody = transform.Find("Body");
         startPosition = transform.position;
@@ -27,7 +31,7 @@ public class BaseAgent : Agent
     // Update is called once per frame
     private void Update()
     {
-
+        if (playerController.ExtraInput()[1]) { OnEpisodeBegin(); }
     }
 
     private void FixedUpdate()

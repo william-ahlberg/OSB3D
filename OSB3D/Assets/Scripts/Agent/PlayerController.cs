@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     public bool[] ExtraInput()
     {
         extraActions[0] = Input.GetKey(KeyCode.V);
-       
+        extraActions[1] = Input.GetKey(KeyCode.R);
         return extraActions; 
     
     

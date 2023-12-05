@@ -51,7 +51,11 @@ public class DriveCar : MonoBehaviour
         
         if(driving && !setDirection)
         {
-            transform.Translate(direction * Time.deltaTime * speed, Space.World);
+            if (!CheckAhead())
+            {
+                transform.Translate(direction * Time.deltaTime * speed, Space.World);
+            }
+            
 
             //checks if the car goes outside the city map and if so, moves it to the other side of the map
             if (transform.position.x < min)
@@ -115,4 +119,27 @@ public class DriveCar : MonoBehaviour
 
         driving = true;
     }
+
+    private bool CheckAhead()
+    {
+        int layerMask = 1 << 8;
+        layerMask = ~layerMask;
+        RaycastHit hit;
+        // Does the ray intersect any objects excluding the player layer
+        if (Physics.Raycast(transform.position + new Vector3(0f, 1f, 0f), transform.TransformDirection(Vector3.forward), out hit, 7.5f, layerMask))
+        {
+            Debug.Log(hit.collider.tag);
+            if (hit.collider.CompareTag("Edge")) { return false; }
+            Debug.DrawRay(transform.position + new Vector3(0f, 1f, 0f), transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            return true;
+        }
+        else
+        {
+            Debug.DrawRay(transform.position + new Vector3(0f, 1f, 0f), transform.TransformDirection(Vector3.forward) * 7.5f, Color.white);
+            return false;
+        }
+    }
+
 }
+
+
