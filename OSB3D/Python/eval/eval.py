@@ -4,11 +4,10 @@ import logging as logs
 import json
 
 class OSB3DEval:
-    def __init__(self, datapath, schema):
+    def __init__(self, datapath, trajectory):
         self.datapath = datapath
-        self.data = self.load_json(self.datapath["session"])
+        self.data = trajectory
         self.bugdata = self.load_json(self.datapath["bug"])
-        self.schema = schema
         self.agent_positions = self.parse_agent()
         self.bug_positions = self.parse_bug()
 

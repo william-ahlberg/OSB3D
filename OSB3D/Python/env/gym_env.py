@@ -4,11 +4,17 @@ from mlagents_envs.base_env import ActionTuple
 from mlagents_envs.environment import UnityEnvironment
 import matplotlib.pyplot as plt
 from env.unity_env import OSB3DEnv
+from mlagents_envs.environment import UnityEnvironment
 
 class GymEnv(gym.Env):
-    def __init__(self, unity_env):
-        self.unity_env = unity_env
-
+    def __init__(self, game_name, worker_id, seed, no_graphics):
+        #Environment fields
+        self.game_name = game_name
+        self.worker_id = worker_id
+        self.seed = seed
+        self.no_graphics = no_graphics
+        self.unity_env = UnityEnvironment(self.file_name, worker_id=worker_id,seed=self.seed, no_graphics=self.no_graphics)
+        
     def step(self, action):
         action = np.asarray(action)
         action_tuple = ActionTuple()
@@ -44,7 +50,7 @@ class GymEnv(gym.Env):
 
         return observation, info
     def render(self):
-        logger.warning("Could not render ")
+        logger.warning("Could not render")
         return
     def close(self):
         self.unity_env.close()

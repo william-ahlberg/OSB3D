@@ -1,23 +1,19 @@
 import numpy as np
-from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
-from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
-from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
+from env.osb3d_env import OSB3DEnv
 def main():
-    env_channel = EnvironmentParametersChannel()
-    eng_channel = EngineConfigurationChannel()
-    env_channel.set_float_parameter("seed", 15)
-    eng_channel.set_configuration()
 
-    unity_env = UnityEnvironment("games/OSB3D", no_graphics=False, side_channels=[eng_channel,env_channel])
-    env = UnityToGymWrapper(unity_env=unity_env, uint8_visual=False)
+
+    env = OSB3DEnv(game_name=r"C:\Users\William\Projects\osb3d\OSB3D\Build\OSB3D",
+                   worker_id=1,
+                   no_graphics=True,
+                   seed=1337,
+                   config_file=r"C:\Users\William\Projects\osb3d\OSB3D\Python\config\basic.yaml")
     observation = env.reset()
-    for _ in range(1000):
+    for _ in range(100000):
+        action = env.action_sample()
+        observation, reward, terminated, _, info = env.step(action)
 
-        action = env.action_space.sample()
-        observation, reward, done, info = env.step(action)
-
-        if done:
+        if terminated:
             observation, info = env.reset()
     env.close()
 
