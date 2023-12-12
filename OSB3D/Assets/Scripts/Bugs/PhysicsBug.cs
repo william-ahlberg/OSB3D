@@ -37,10 +37,6 @@ public class PhysicsBug : BugBase
     
     }
 
-    public override void Initialize(int id)
-    { 
-        base.Initialize(id);
-    }
 
 
     protected virtual void ToggleBugVisual()

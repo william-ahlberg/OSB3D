@@ -26,10 +26,9 @@ public class BugBase : MonoBehaviour
     
     }
 
-    public virtual void Initialize(int id)
+    public void Initialize(int id)
     {
         id = id;
-        bugType ="Bug";
         scale = this.transform.localScale;
         bugClass = this.GetType().Name;
         position = this.transform.position;
@@ -76,9 +75,6 @@ public class BugBase : MonoBehaviour
         return position;
 
     }*/
-
-    
-
 
 
 }

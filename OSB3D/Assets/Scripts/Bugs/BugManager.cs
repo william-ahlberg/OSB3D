@@ -56,6 +56,7 @@ public class BugManager : MonoBehaviour
             cube.transform.position = PlaceBugArea(cube, 0);
             bug = cube.AddComponent<PhysicsBug>();
             bug.Initialize(i);
+            bug.id = i;
         }
     
     }
@@ -155,7 +156,7 @@ public class BugLogger
             logs[i].bugType = bug.bugType;
             logs[i].isActive = bug.isActive;
 
-            i++;        
+            i = i+1;        
             
         }
     
@@ -165,7 +166,7 @@ public class BugLogger
     {
         string json = JsonHelper.ToJson(logs, true);
         Debug.Log(json);
-        string filePath = "C:\\Users\\William\\Projects\\osb3d\\OSB3D\\Data\\" + "data.json";
+        string filePath = Application.dataPath + "/Data/data.json";
         System.IO.File.WriteAllText(filePath, json);
 
     }
