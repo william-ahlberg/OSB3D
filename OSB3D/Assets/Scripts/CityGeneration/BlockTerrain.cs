@@ -73,7 +73,10 @@ public class BlockTerrain : MonoBehaviour
         colourKeys[1] = new GradientColorKey(Color.black, 1.0f - edgeDistance);
         colourKeys[2] = new GradientColorKey(Color.white, 1.0f);
 
-        GradientAlphaKey[] alphaKeys = new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 1.0f), new GradientAlphaKey(1.0f, 1.0f) };
+        GradientAlphaKey[] alphaKeys = new GradientAlphaKey[] { 
+        new GradientAlphaKey(1.0f, 1.0f), 
+        new GradientAlphaKey(1.0f, 1.0f) 
+        };
 
         gradient.SetKeys(colourKeys, alphaKeys);
 
@@ -101,7 +104,7 @@ public class BlockTerrain : MonoBehaviour
         {
             for (int y = 1; y < _res; y++)
             {
-                 float xCoord = (float)x / _res * scale + _offsetX;
+                float xCoord = (float)x / _res * scale + _offsetX;
                 float yCoord = (float)y / _res * scale + _offsetY;
 
                 float sample = Mathf.PerlinNoise(xCoord, yCoord);

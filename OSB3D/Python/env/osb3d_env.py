@@ -14,6 +14,7 @@ from mlagents_envs.side_channel.environment_parameters_channel import Environmen
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from eval.eval import OSB3DEval
+
 class OSB3DEnv(gym.Env):
     def __init__(self, game_name, worker_id, no_graphics, seed, config_file):
         self.game_name = game_name
@@ -25,9 +26,10 @@ class OSB3DEnv(gym.Env):
 
         self.set_config()
         self.engine_channel = None
+        self.parameter_channel = None
         self.set_engine_channel()
-
-        self.side_channels = [self.engine_channel]
+        self.set_parameter_channel()
+        self.side_channels = [self.engine_channel,self.parameter_channel]
         self.behavior_name = "AgentBehavior?team=0"
 
         self.unity_env = UnityEnvironment(self.game_name, worker_id=worker_id,seed=self.seed, no_graphics=self.no_graphics,side_channels=self.side_channels)
@@ -50,10 +52,17 @@ class OSB3DEnv(gym.Env):
         engine_config = self.config["unity_engine_config"]
         self.engine_channel.set_configuration_parameters(**engine_config)
 
+    def set_parameter_channel(self):
+        self.parameter_channel = EnvironmentParametersChannel()
+        parameter_config = self.config["pcg_config"]
+        for key, value in parameter_config.items():
+            self.parameter_channel.set_float_parameter(key,value)
+        
+
+
     def step(self, action):
         action = np.asarray(action)
         action_tuple = ActionTuple()
-
         if (self.unity_env.behavior_specs[self.behavior_name].action_spec.is_continuous()):
             action = np.reshape(action, [1, self.action_size])
             action_tuple.add_continuous(action)
@@ -65,7 +74,6 @@ class OSB3DEnv(gym.Env):
         self.unity_env.step()
         # decision_steps: obs, reward, agent_id, action_mask
         (decision_steps, terminal_steps) = self.unity_env.get_steps(self.behavior_name)
-        print(terminal_steps)
         if (terminal_steps.interrupted == True):
             print("done")
             terminated = True
@@ -87,7 +95,8 @@ class OSB3DEnv(gym.Env):
             info = None
         self.unity_env.reset()
         self.episode += 1
-        print("New episode!")
+        
+        print("New episode!",self.episode)
         self.trajectories[self.episode] = []
         decision_step, _ = self.unity_env.get_steps(self.behavior_name)
         observation = decision_step.obs
@@ -103,8 +112,8 @@ class OSB3DEnv(gym.Env):
 
     def __get_info(self):
         print(self.trajectory)
-        self.eval = OSB3DEval({"bug": "C:/Users/William/Projects/osb3d/OSB3D/Assets/Data/data.json"}, self.trajectory)
-        print(self.eval.check_bug())
+        #self.eval = OSB3DEval({"bug": "/home/wilah/Projects/osb3d/OSB3D/Assets/Data/data.json"}, self.trajectory)
+        #print(self.eval.check_bug())
         info = {
             "bugs_found": 0,
             "bugs_found_cumulative": 0,
@@ -125,7 +134,7 @@ class OSB3DEnv(gym.Env):
             return action_sample
 
 
-
+    
 
 
 

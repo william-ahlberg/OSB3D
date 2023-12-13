@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.7
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4949932, g: 0.44035766, b: 0.3742539, a: 0.7}
+  m_IndirectSpecularColor: {r: 0.49498683, g: 0.44034344, b: 0.37423936, a: 0.7}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -864,7 +864,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 2000
-  field of view: 95
+  field of view: 94.99999
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -1019,7 +1019,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1350788191
 Transform:
   m_ObjectHideFlags: 0
@@ -1264,8 +1264,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seed: 0
-  blockCountX: 2
-  blockCountZ: 2
+  blockCountX: 10
+  blockCountZ: 10
   parkRatio: 0.25
   crossing: {fileID: 4005743241734848231, guid: 767244c251a7bd24180332c707fc2f9a, type: 3}
   edgeBlock: {fileID: 5917777203468375160, guid: 54285ac9cc2a1af49af24014232e5ce9, type: 3}
@@ -1343,11 +1343,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d285fb3f7f63fc649aac44eb8ce29186, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 32
-  scale: 3.5
+  resolution: 512
+  scale: 1.5
   minHeight: 0
-  maxHeight: 100
-  edgeDistance: 0.6
+  maxHeight: 5
+  edgeDistance: 1
   material: {fileID: 2100000, guid: f284f06a78ed0bb489cbbed2ec9218ec, type: 2}
 --- !u!114 &1856633438
 MonoBehaviour:
@@ -1364,7 +1364,6 @@ MonoBehaviour:
   bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
-  savePath: C:\Users\William\Projects\osb3d\OSB3D\Data
   bug: {fileID: 0}
 --- !u!1 &1891355897
 GameObject:
@@ -1525,7 +1524,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 100
+  MaxStep: 0
 --- !u!114 &1993042074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1543,8 +1542,8 @@ MonoBehaviour:
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 5
-      BranchSizes: 05000000
-    VectorActionSize: 
+      BranchSizes: 
+    VectorActionSize: 05000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1

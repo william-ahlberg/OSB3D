@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.ProBuilder.MeshOperations;
+using Unity.MLAgents;
 
 public class LevelController : MonoBehaviour
 {
@@ -30,9 +31,20 @@ public class LevelController : MonoBehaviour
 
     private float blockSize, roadWidth;
 
+
+
+
+
+
     void Start()
     {
+        EnvironmentParameters envParameters = Academy.Instance.EnvironmentParameters;
+        blockCountX = (int)envParameters.GetWithDefault("block_count_x", blockCountX);
+        blockCountZ = (int)envParameters.GetWithDefault("block_count_z", blockCountZ);
+        parkRatio = envParameters.GetWithDefault("park_ratio ", parkRatio);
+        seed = (int)envParameters.GetWithDefault("seed", seed);
         Setup();
+       
     }
 
     //Setup() is to to also be able to generate a city from the editor 

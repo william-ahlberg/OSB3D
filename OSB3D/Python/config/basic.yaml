@@ -3,23 +3,29 @@
 
 # Unity engine options
 unity_engine_config:
-    width: 256
-    height: 256
+    width: 1024
+    height: 1024
     quality_level: 1
-    time_scale: 100 # Allows for faster training time, but may introduce unwanted physics behaviour
+    time_scale: 1 # Allows for faster training time, but may introduce unwanted physics behaviour
     target_frame_rate: 60
     capture_frame_rate: 60
 
 # City generation options
 pcg_config:
     seed: 1337
-    block_count_x: 2
-    block_count_z: 2
+    block_count_x: 10
+    block_count_z: 10
     park_ratio: 0.25
     car_min: 1
     car_max: 4
     item_min: 1
     item_max: 10
+
+terrain_config:
+    scale: 0
+    min_height: 0
+    max_height: 0
+    edge_distance: 0
 
 # Observation space
 

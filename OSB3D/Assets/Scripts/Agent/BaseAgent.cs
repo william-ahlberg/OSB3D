@@ -7,6 +7,7 @@ using Unity.MLAgents.Sensors;
 using Unity.VisualScripting;
 using System;
 
+
 public class BaseAgent : Agent
 {
     float[] actions = new float[5];
@@ -15,7 +16,6 @@ public class BaseAgent : Agent
     Transform agentBody;
     Rigidbody rb;
     PlayerController playerController;
-
 
     // Start is called before the first frame update
     private void Start()
@@ -53,8 +53,19 @@ public class BaseAgent : Agent
 
     }
 
+    public void NormalizePosition()
+    {
+        
+
+
+    }
+
     public override void CollectObservations(VectorSensor sensor)
     {
+
+        
+
+
         sensor.AddObservation(agentBody.localRotation);
         sensor.AddObservation(transform.position);
 

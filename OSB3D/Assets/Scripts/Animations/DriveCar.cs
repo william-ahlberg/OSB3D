@@ -128,7 +128,6 @@ public class DriveCar : MonoBehaviour
         // Does the ray intersect any objects excluding the player layer
         if (Physics.Raycast(transform.position + new Vector3(0f, 1f, 0f), transform.TransformDirection(Vector3.forward), out hit, 7.5f, layerMask))
         {
-            Debug.Log(hit.collider.tag);
             if (hit.collider.CompareTag("Edge")) { return false; }
             Debug.DrawRay(transform.position + new Vector3(0f, 1f, 0f), transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             return true;
