@@ -9,6 +9,7 @@ TagManager:
   - Car
   - Edge
   - Bug
+  - Sensor
   layers:
   - Default
   - TransparentFX

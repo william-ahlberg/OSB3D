@@ -30,6 +30,7 @@ public class LevelController : MonoBehaviour
     RoadGenerator roadGenerator;
 
     private float blockSize, roadWidth;
+    EnvironmentParameters envParameters
 
 
 
@@ -38,7 +39,7 @@ public class LevelController : MonoBehaviour
 
     void Start()
     {
-        EnvironmentParameters envParameters = Academy.Instance.EnvironmentParameters;
+        envParameters = Academy.Instance.EnvironmentParameters;
         blockCountX = (int)envParameters.GetWithDefault("block_count_x", blockCountX);
         blockCountZ = (int)envParameters.GetWithDefault("block_count_z", blockCountZ);
         parkRatio = envParameters.GetWithDefault("park_ratio ", parkRatio);

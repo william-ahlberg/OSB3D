@@ -66,8 +66,107 @@ Depending on what you are making, it can be a good idea to include screenshots o
 ## Installation
 Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
+* Python 3.8.13
+
+```
+pip install -r requirements.txt
+```
+
 ## Usage
 Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+
+
+### Configuration
+---
+#### Basic yaml configuration
+
+#### Unity engine options
+- width
+> (default = 1024) resolution width of the environment session. 
+- height
+> (default = 1024) resolution width of the environment session. 
+- quality_level
+> (default = 1) quality level of the environment simulation.
+- time_scale 
+> (default = 1) Changes the environment simulation time to allow for faster training, but can introduce unwanted physics behaviour. Use with caution. Typical range: 1-100
+- target_frame_rate
+> (default = -1) Specifies the frame rate at which Unity tries to render your game.
+- capture_frame_rate
+> I don't know yet.
+
+#### City generation options
+- seed
+> (default = 1337) random generation seed.
+- block_count_x
+> (default = 2) number of city blocks generated in the x direction in the city environment.
+- block_count_z
+> (default = 2) number of city blocks generated in the z direction in the city environment.
+- park_ratio
+> (default = 0.25) the ratio between blocks with parks and blocks with buildings.
+- car_min
+- car_max
+- item_min
+- item_max
+
+terrain_config:
+    scale: 0
+    min_height: 0
+    max_height: 0
+    edge_distance: 0
+
+# Observation space
+
+# Vector observations
+vector_obs_config:
+    absolute_position: false
+    relative_position: true
+    bug_position: false
+    normalization_bounds:
+        - -1
+        - 1
+
+# Camera sensor
+camera_config:
+    screen_buffer: true
+    rgb_array: false
+    screen_buffer_width: 256
+    screen_buffer_height: 256
+    depth_buffer: false
+    depth_buffer_width: 256
+    depth_buffer_height: 256
+
+# Lidar sensors
+ray_perception_config:
+    ray_perception: true
+    ray_perception_plane: 10
+    ray_perception_cone : 10
+    ray_perception_slice: 10
+
+# Semantic map sensor
+semantic_map_config:
+    semantic_map: false
+    semantic_map_x: 5
+    semantic_map_y: 5
+    semantic_map_z: 5
+
+# Actions allowed
+available_actions:
+    - move_forward
+    - move_backwards
+    - move_right
+    - move_left
+    - mouse_y
+    - mouse_x
+    - jump
+    - identify_bug
+
+# Bugs
+bug_types:
+    gadget: 10
+    state: 10
+    geometry: 10
+    physics: 10
+    logic: 10
 
 ## Support
 Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.

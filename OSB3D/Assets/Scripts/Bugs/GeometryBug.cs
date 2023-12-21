@@ -10,7 +10,7 @@ public class GeometryBug : BugBase
     private string searchName = "EdgeNarrow";
     [SerializeField] private int _numberOfBugs = 0;
     LevelController levelController;
-
+    /*
     public int NumberOfBugs
     {
         get
@@ -33,8 +33,6 @@ public class GeometryBug : BugBase
             if (obj.GetComponent<Collider>() != null && obj.name == searchName)
             {
                 edgeNarrowColliders.Add(obj.GetComponent<Collider>());
-
-
             }
 
         }
@@ -46,7 +44,32 @@ public class GeometryBug : BugBase
         
         
         }
+    }*/
+
+    private void OnTriggerEnter(Collider collider)
+    {
+
+        
+        if (true)
+        {
+            collider.enabled = false;
+            Debug.Log("Enter");
+        }
+
     }
+
+    private void OnTriggerExit(Collider collider)
+    {
+
+        if (true)
+        {
+            collider.enabled = true;
+            Debug.Log("Exit");
+
+        }
+
+    }
+
 
     // Update is called once per frame
     void Update()

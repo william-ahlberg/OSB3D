@@ -16,7 +16,7 @@ public class AgentInfoSideChannel : SideChannel
 
     protected override void OnMessageReceived(IncomingMessage msg)
     {
-        Debug.Log("#");
+        Debug.Log(msg.ToString()); 
     }
 
     public void SendAgentInfo()

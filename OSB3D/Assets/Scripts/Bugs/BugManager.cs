@@ -1,29 +1,23 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using Random = UnityEngine.Random;
 
 public class BugManager : MonoBehaviour
 {
     public Bounds bounds;
-    public PhysicsBug bug;
+    //public PhysicsBug bug;
     bool firstFrame = true;
-    PhysicsBug[] bugs;
-    int nBugs = 100;
+    //PhysicsBug[] bugs;
+    int nBugs = 500;
     BugLogger bugLogger = new BugLogger();
 
     // Start is called before the first frame update
     void Start()
     {
-        CalcBounds();
-        firstFrame = false;
-        CreateBugArea(nBugs);
-        SearchBugObject();
-        Debug.Log(Application.dataPath);
-        bugs = FindObjectsByType<PhysicsBug>(FindObjectsSortMode.None);
-        bugLogger.LogBug(bugs);
-        Debug.Log("Test: " + bugLogger.logs[0].bugType);
-        bugLogger.SerializeJson();
+       
     }
 
     // Update is called once per frame
@@ -31,52 +25,69 @@ public class BugManager : MonoBehaviour
     {
         if (firstFrame == true)
         {
-
-        } 
-              
-
+            CalcBounds();
+            firstFrame = false;
+            CreateBugArea<GeometryBug>(100);
+            CreateBugArea<PhysicsBug>(100);
+            SearchBugObject();
+            Debug.Log(Application.dataPath);
+            /*bugs = FindObjectsByType<PhysicsBug>(FindObjectsSortMode.None);
+            bugLogger.LogBug(bugs);
+            Debug.Log("Test: " + bugLogger.logs[0].bugType);
+            bugLogger.SerializeJson();*/
+        }
     }
 
 
 
-    void CreateBugArea(int nBugs)
+    private void CreateBugArea<T>(int numberOfBugs) where T : UnityEngine.Component
     {
         int cubeScaleMin = 1;
         int cubeScaleMax = 5;
 
-        GameObject parentObject = new GameObject("CubeParent");
-        for (int i = 0; i < nBugs; i++)
+        GameObject parentObject = new GameObject("GameBugs");
+        for (int i = 0; i < numberOfBugs; i++)
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.localScale = new Vector3(Random.Range(cubeScaleMin, cubeScaleMax), cubeScaleMax / 2, Random.Range(cubeScaleMin, cubeScaleMax));
+
+            if (typeof(T) == typeof(PhysicsBug))
+            {
+                cube.transform.localScale = new Vector3(
+                    Random.Range(cubeScaleMin, cubeScaleMax),
+                    cubeScaleMax / 2,
+                    Random.Range(cubeScaleMin, cubeScaleMax));
+            }
+            else if (typeof(T) == typeof(GeometryBug))
+            {
+                cube.transform.localScale = new Vector3(
+                    Random.Range(cubeScaleMin, cubeScaleMax),
+                    cubeScaleMax / 2,
+                    Random.Range(cubeScaleMin, cubeScaleMax));
+
+
+            }
+
+
+          
+
             cube.tag = "Bug";
             cube.GetComponent<Collider>().isTrigger = true;
             cube.transform.parent = parentObject.transform;
+           
+            cube.AddComponent<T>();
             cube.transform.position = PlaceBugArea(cube, 0);
-            bug = cube.AddComponent<PhysicsBug>();
-            bug.Initialize(i);
-            bug.id = i;
-        }
-    
-    }
+            
 
-    public void CalcBounds()
-    {
-            Renderer[] renderers = GetComponentsInChildren<Renderer>();
-            if (renderers.Length > 0)
-            {
-                bounds = renderers[0].bounds;
-                for (int i = 1; i < renderers.Length - 1; i++)
-                {
-                    bounds.Encapsulate(renderers[i].bounds);
-                }
-            }
+
+            //bug.Initialize(i);
+            //bug.id = i;
+        }
 
     }
 
     public void SearchBugObject()
     {
-        GameObject[] bugObjects; 
+        GameObject[] bugObjects;
         bugObjects = GameObject.FindGameObjectsWithTag("Bug");
         foreach (GameObject bugObject in bugObjects)
         {
@@ -92,40 +103,59 @@ public class BugManager : MonoBehaviour
     public Vector3 PlaceBugArea(GameObject cube, int depth)
     {
         RaycastHit hit;
-        Vector3 position = new Vector3(Random.Range(bounds.min.x, bounds.max.x), Random.Range(bounds.min.y, bounds.max.y/2), Random.Range(bounds.min.z, bounds.max.z));
-        Collider[] checkColliders = Physics.OverlapBox(cube.transform.position, cube.transform.localScale / 2);
-
         bool validPosition = true;
+        Vector3 position = new Vector3(
+            Random.Range(bounds.min.x, bounds.max.x),
+            Random.Range(bounds.min.y * 1.1f, bounds.max.y / 2),
+            Random.Range(bounds.min.z, bounds.max.z));
 
-        if (checkColliders.Length > 1)
+        Collider[] checkColliders = Physics.OverlapBox(position, cube.transform.localScale / 2);
+
+        foreach (Collider c in checkColliders)
         {
-            validPosition = false;
+            Debug.Log(c.gameObject.tag);
+            if (!c.gameObject.CompareTag("Bug"))
+            { 
+                validPosition = false;
+                break;
+            }
+        }
+        
+
+        if (!validPosition && depth < 256)
+        {
+            Debug.Log("Depth: " + depth);
+            position = PlaceBugArea(cube, ++depth);
         }
 
-        foreach (Collider collider in checkColliders)
-        {
-            
-            
-                if (!collider.gameObject.CompareTag("Bug"))
-                {
-                    validPosition = false;
-                    break;
-                }
-            }
 
-            if (!validPosition && (depth < 100))
-            {
-                position = PlaceBugArea(cube, ++depth);
-            }
+        Physics.Raycast(position, Vector3.down, out hit, Mathf.Infinity);
+        position.y = hit.point.y + cube.transform.localScale.y / 2;
 
-            Physics.Raycast(position, Vector3.down, out hit, Mathf.Infinity);
-            position.y = hit.point.y + cube.transform.localScale.y / 2;
-
-            return position;
-        
+        Debug.Log("Number of colliders: " + checkColliders.Length);
+        return position;
     }
 
+
+    public void CalcBounds()
+    {
+        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+        if (renderers.Length > 0)
+        {
+            bounds = renderers[0].bounds;
+            for (int i = 1; i < renderers.Length - 1; i++)
+            {
+                bounds.Encapsulate(renderers[i].bounds);
+            }
+        }
+
+    }
+
+
 }
+
+
+
 
 [System.Serializable]
 public class BugLogEntry
