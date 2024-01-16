@@ -2,84 +2,70 @@
 # Basic yaml configuration
 
 # Unity engine options
-unity_engine_config:
+engine_settings:
     width: 1024
     height: 1024
     quality_level: 1
     time_scale: 1 # Allows for faster training time, but may introduce unwanted physics behaviour
-    target_frame_rate: 60
+    target_frame_rate: -1
     capture_frame_rate: 60
 
 # City generation options
-pcg_config:
+env_settings:
     seed: 1337
-    block_count_x: 10
-    block_count_z: 10
+    block_count_x: 2
+    block_count_z: 2
     park_ratio: 0.25
-    car_min: 1
-    car_max: 4
-    item_min: 1
-    item_max: 10
 
-terrain_config:
-    scale: 0
-    min_height: 0
-    max_height: 0
-    edge_distance: 0
+action_space_settings:
+    continuous_actions: true
+    available_actions:
+        - move_forward
+        - move_backwards
+        - move_right
+        - move_left
+        - mouse_y
+        - mouse_x
+        - jump
+        - identify_bug
 
 # Observation space
+observation_space_settings:
+    # Vector observations
+    vector_obs_settings:
+        position_type: "normalized"
+        bug_position: false
 
-# Vector observations
-vector_obs_config:
-    absolute_position: false
-    relative_position: true
-    bug_position: false
-    normalization_bounds:
-        - -1
-        - 1
+    # Camera sensor
+    camera_settings:
+        camera_sensor: true
+        grayscale: false
+        camera_resolution_width: 256
+        camera_resolution_height: 256
 
-# Camera sensor
-camera_config:
-    screen_buffer: true
-    rgb_array: false
-    screen_buffer_width: 256
-    screen_buffer_height: 256
-    depth_buffer: false
-    depth_buffer_width: 256
-    depth_buffer_height: 256
 
-# Lidar sensors
-ray_perception_config:
-    ray_perception: true
-    ray_perception_plane: 10
-    ray_perception_cone : 10
-    ray_perception_slice: 10
+    # Lidar sensors
+    ray_perception_settings:
+        ray_perception: true
+        ray_perception_plane: 10
+        ray_perception_cone : 10
+        ray_perception_slice: 10
 
-# Semantic map sensor
-semantic_map_config:
-    semantic_map: false
-    semantic_map_x: 5
-    semantic_map_y: 5
-    semantic_map_z: 5
+    # Semantic map sensor
+    semantic_map_settings:
+        semantic_map: false
+        semantic_map_x: 5
+        semantic_map_y: 5
+        semantic_map_z: 5
 
-# Actions allowed
-available_actions:
-    - move_forward
-    - move_backwards
-    - move_right
-    - move_left
-    - mouse_y
-    - mouse_x
-    - jump
-    - identify_bug
-
-# Bugs
-bug_types:
-    gadget: 10
-    state: 10
-    geometry: 10
-    physics: 10
-    logic: 10
+bug_settings:
+    # Bugs
+    bug_types:
+        gadget: 10
+        state: 10
+        geometry: 10
+        physics: 10
+        logic: 10
 ...
 
 

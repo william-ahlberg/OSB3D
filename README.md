@@ -1,58 +1,9 @@
 # OSB3D
 
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.liu.se/dande27/osb3d.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.liu.se/dande27/osb3d/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+**O**pen-**S**ource **B**enchmark for Automated Testing and Validation
+of Complex **3D** Game Environments (OSB3D) is an open source game-testing environment to test and validate Automated Testing Agents (ATA).
 
 ***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
 
 ## Description
 Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
@@ -64,109 +15,174 @@ On some READMEs, you may see small images that convey metadata, such as whether 
 Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
 
 ## Installation
+
 Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-* Python 3.8.13
-
-```
-pip install -r requirements.txt
-```
+OSB3D can be used after installing the both the required Unity and Python packages.
+- For Python run 
+    ```
+    pip install -r requirements.txt
+    ```
+  for the required Python libraries. OSB3D was developed and verified for Python 3.8.13.
+- For Unity install the `com.unity.ml-agents`, `com.unity.barracuda` and `com.unity.probuilder`. OSB3D was developed and verified for Unity 2021.3.24f1.
+* Barracuda 3.0.0
+* Ml Agents 2.01
+* ProBuilder 5.0.7
 
 ## Usage
+Once all the packages are installed, locate the 
+
+Linux: https://docs.unity3d.com/2022.1/Documentation/Manual/Buildsettings-linux.html
+
+Windows: https://docs.unity3d.com/2022.1/Documentation/Manual/WindowsStandaloneBinaries.html
+
 Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
+## Configuration
+The OSB3D environment is configurable through a yaml file. In the file it is possible to define the agent's observations and action space, and parameters controlling unity and the procedural generation of the environment. To change configuration parameters, just include the top level setting and the sub level parameters and their value. For example if the user want's to use a camera sensor for the agent observation space, just include `camera_settings` and a parameter such as `grayscale: true`. Those settings and parameters not explicitly defined in the config file will revert to default values.
 
-### Configuration
----
-#### Basic yaml configuration
+#### Unity engine settings
+```yaml
+engine_settings:
+    width: 1024
+    height: 1024
+    quality_level: 1
+    time_scale: 1
+    target_frame_rate: -1
+    capture_frame_rate: 60
+```
+#### Environment generation settings
+```yaml
+env_settings:
+    seed: 1337
+    block_count_x: 2
+    block_count_z: 2
+    park_ratio: 0.25
+```
+#### Action space settings
+```yaml
+action_space_settings:
+    continuous_actions: true
+    available_actions:
+        - move_forward
+        - move_backwards
+        - move_right
+        - move_left
+        - mouse_y
+        - mouse_x
+        - jump
+        - identify_bug
+```
+#### Observation space settings
+```yaml
+observation_space_settings:
+    # Vector observations
+    vector_obs_settings:
+        position_type: "normalized"
+        bug_position: false
+
+    # Camera sensor
+    camera_settings:
+        grayscale: false
+        camera_resolution_width: 256
+        camera_resolution_height: 256
+
+
+    # Lidar sensors
+    ray_perception_settings:
+        ray_perception_plane: 10
+        ray_perception_cone : 10
+        ray_perception_slice: 10
+
+    # Semantic map sensor
+    semantic_map_settings:
+        semantic_map_x: 5
+        semantic_map_y: 5
+        semantic_map_z: 5
+```
+#### Bug generation settings
+```yaml
+bug_settings:
+    bug_types:
+        gadget: 10
+        state: 10
+        geometry: 10
+        physics: 10
+        logic: 10
+```
 
 #### Unity engine options
-- width
-> (default = 1024) resolution width of the environment session. 
-- height
-> (default = 1024) resolution width of the environment session. 
-- quality_level
-> (default = 1) quality level of the environment simulation.
-- time_scale 
-> (default = 1) Changes the environment simulation time to allow for faster training, but can introduce unwanted physics behaviour. Use with caution. Typical range: 1-100
-- target_frame_rate
-> (default = -1) Specifies the frame rate at which Unity tries to render your game.
-- capture_frame_rate
-> I don't know yet.
+| **Setting**                   | **Description**                                                                                                                                                                |
+|:------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `width`                       | (int, default = 1024): resolution width of the environment session.                                                                                                            |
+| `height`                      | (int, default = 1024): resolution width of the environment session.                                                                                                            |
+| `quality_level`               | (int, default = 1): quality level of the environment simulation.                                                                                                               |
+| `time_scale`                  | (int, default = 1): Changes the environment simulation time to allow for faster training, but can introduce unwanted physics behaviour. Use with caution. Typical range: 1-100 |
+| `target_frame_rate`           | (int, default = -1): Specifies the frame rate at which Unity tries to render your game.                                                                                        |
+| `capture_frame_rate`          | I don't know yet.                                                                                                                                                              |
 
-#### City generation options
-- seed
-> (default = 1337) random generation seed.
-- block_count_x
-> (default = 2) number of city blocks generated in the x direction in the city environment.
-- block_count_z
-> (default = 2) number of city blocks generated in the z direction in the city environment.
-- park_ratio
-> (default = 0.25) the ratio between blocks with parks and blocks with buildings.
-- car_min
-- car_max
-- item_min
-- item_max
 
-terrain_config:
-    scale: 0
-    min_height: 0
-    max_height: 0
-    edge_distance: 0
+| **Setting**                         | **Description**                                                                                                                                                                                                                                                              |
+|:------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `seed`                              | (int, default = 1337): random generation seed.                                                                                                                                                                                                                               |
+| `block_count_x`                     | (int, default = 2): number of city blocks generated in the x direction in the city environment.                                                                                                                                                                              |
+| `block_count_z`                     | (int, default = 2): number of city blocks generated in the z direction in the city environment.                                                                                                                                                                              |
+| `park_ratio`                        | (int, default = 0.25): the ratio between blocks with parks and blocks with buildings.                                                                                                                                                                                        |
 
-# Observation space
+#### Vector observations
 
-# Vector observations
-vector_obs_config:
-    absolute_position: false
-    relative_position: true
-    bug_position: false
-    normalization_bounds:
-        - -1
-        - 1
+| **Settings**            | **Description**                                                                                                                                     |
+|:------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `position_type`         | (str, default="normalized"): if to include the agent's xyz position in its observation space. The cooridnates can either be "absolute", "normalized"|
+| `bug_position `         | (bool, default=false): if to include the bug positions in the observation space.                                                                    |
 
-# Camera sensor
-camera_config:
-    screen_buffer: true
-    rgb_array: false
-    screen_buffer_width: 256
-    screen_buffer_height: 256
-    depth_buffer: false
-    depth_buffer_width: 256
-    depth_buffer_height: 256
+#### Camera sensor
+| **Settings**                   | **Description**                                                                                                                                                                                                  |
+|:-------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `camera_sensor`                | (bool, default=false): if to include a camera sensor in the observation space.                                                                                                                                   |
+| `grayscale`                    | (bool, default=true): whether to use rgb or grayscale image data.                                                                                                                                                |
+| `camera_resolution_width`      | (int, default=512): resolution width of the image observation.                                                                                                                                                   |
+| `camera_resolution_height`     | (int, default=512): resolution height of image observation.                                                                                                                                                      |
 
-# Lidar sensors
-ray_perception_config:
-    ray_perception: true
-    ray_perception_plane: 10
-    ray_perception_cone : 10
-    ray_perception_slice: 10
+#### Ray perception
+| **Settings**           | **Description**                                                                                                                    |
+|:-----------------------|:-----------------------------------------------------------------------------------------------------------------------------------|
+| `ray_perception`       | (bool, default=false): if to include a ray perception sensor in the observation space.                                             |
+| `number_of_rays_plane` | (int, default=10): number of ray perception rays directed parallell to the ground to be used in the agent's observation space.     |
+| `number_of_rays_cone`  | (int, default=10): number of ray perception rays directed as a above cone to be used in the agent's observation space.             |
+| `number_of_rays_slice` | (int, default=10): number of ray perception rays directed perpendicular to the ground to be used in the agent's observation space. |
 
-# Semantic map sensor
-semantic_map_config:
-    semantic_map: false
-    semantic_map_x: 5
-    semantic_map_y: 5
-    semantic_map_z: 5
+#### Semantic map sensor
+| **Settings**     | **Description**                                                                      |
+|:-----------------|:-------------------------------------------------------------------------------------|
+| `semantic_map`   | (bool, default=false): if to include a semantic map sensor in the observation space. |
+| `semantic_map_x` | (int, default=5): number of cubes of the semantic map in the x direction.            |
+| `semantic_map_y` | (int, default=5): number of cubes of the semantic map in the y direction.            |
+| `semantic_map_z` | (int, default=5): number of cubes of the semantic map in the z direction.            |
 
-# Actions allowed
-available_actions:
-    - move_forward
-    - move_backwards
-    - move_right
-    - move_left
-    - mouse_y
-    - mouse_x
-    - jump
-    - identify_bug
+#### Actions allowed
+| **Settings**        | **Description                                      |
+|:--------------------|:---------------------------------------------------|
+| `available_actions` |                                                    |
+| `move_forward`      | Walking forwards (W)                               |
+| `move_backwards`    | Walking backwards (S)                              |
+| `move_right`        | Walking right (D)                                  |
+| `move_left`         | Walking left (A)                                   |
+| `mouse_y`           | Turning in the plane (side-to-side mouse movement) |
+| `mouse_x `          | Turning head up and down (up down mouse movement)  |
+| `jump`              | Jumping (SPACE)                                    |
+| `identify_bug`      | Agent identifies bug (E)                           |
 
-# Bugs
-bug_types:
-    gadget: 10
-    state: 10
-    geometry: 10
-    physics: 10
-    logic: 10
+#### Bugs
+| **Settings** | **Description**                                                              |
+|:-------------|:-----------------------------------------------------------------------------|
+| `bug_types`  | if to include bugs in the environment                                        |
+| `gadget`     | (int, default=5): number of bugs relating to interactions with game objects. |
+| `state`      | (int, default=5): number of bugs relating to mismatch of game states.        |
+| `geometry`   | (int, default=5): number of bugs relating to the environment mesh.           |
+| `physics`    | (int, default=5): number of bugs relating to the physics engine.             |
+| `logic`      | (int, default=5): number of bugs relating to game logic.                     |
+
 
 ## Support
 Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.

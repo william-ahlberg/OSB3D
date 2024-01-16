@@ -43,7 +43,7 @@ public class Semantic3DMapComponent : SensorComponent
     [Tooltip("The number of cubes in the z-axis")]
     public int _gridY = 5;
 
-    [Tooltip("The root game object. NB! The map will rotate if the root rotates")]
+    [Tooltip("The root game object. NB! The map will rotate if the   rotates")]
     public GameObject root;
 
     private bool _debug = true;

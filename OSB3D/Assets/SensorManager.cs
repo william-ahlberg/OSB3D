@@ -4,31 +4,70 @@ using UnityEngine;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents;
 
-
 public class SensorManager : MonoBehaviour
 {
 
+    GameObject body;
+    GameObject sensors;
 
+    //Camera
+    bool haveCameraSensor = false;
     Camera agentCamera;
     CameraSensorComponent cameraSensor;
     int cameraSensorWidth = 1920;
     int cameraSensorHeight = 1080;
     bool isGrayscale = false;
-    EnvironmentParameters envParameters
+    
+    //Rays
+    bool haveRaySensor = true;
+    RayPerceptionSensorComponent3D raySensor;
+    float maxRayDegrees = 180;
+
+    //Semantic Map
+    bool haveSemanticMap = false;
+    Semantic3DMapComponent semanticMapSensor;
+    EnvironmentParameters envParameters;
+    float gridX = 5;
+    float gridY = 5;
+    float gridZ = 5;
 
     // Start is called before the first frame update
     void Start()
     {
+        body = GameObject.Find("Body");
+        sensors = GameObject.Find("Sensors");
         envParameters = Academy.Instance.EnvironmentParameters;
+        if (haveCameraSensor)
+        { 
+            agentCamera = GetComponentInChildren<Camera>();
+            cameraSensor = gameObject.AddComponent<CameraSensorComponent>();
+            cameraSensor.Width = (int)envParameters.GetWithDefault("camera_sensor_width", cameraSensorWidth);
+            cameraSensor.Height = (int)envParameters.GetWithDefault("camera_sensor_height",cameraSensorHeight);
+            cameraSensor.Grayscale = isGrayscale;
+            cameraSensor.SensorName = "AgentCameraSensor";
+            cameraSensor.Camera = agentCamera;
+        }
 
-        agentCamera = GetComponentInChildren<Camera>();
-        cameraSensor = gameObject.AddComponent<CameraSensorComponent>();
+        if (haveRaySensor)
+        {
+            raySensor = sensors.AddComponent<RayPerceptionSensorComponent3D>();
+            raySensor.SensorName = "RaySensor";
+            raySensor.RaysPerDirection = (int)31f;
+            raySensor.MaxRayDegrees = envParameters.GetWithDefault("max_ray_degrees", maxRayDegrees);
+            raySensor.DetectableTags = new List<string>() { "Building", "Item", "Road", "Car", "Ground" };
+        }
 
-        cameraSensor.Width = (int)envParameters.GetWithDefault("camera_sensor_width", cameraSensorWidth);
-        cameraSensor.Height = (int)envParameters.GetWithDefault("camera_sensor_height",cameraSensorHeight);
-        cameraSensor.Grayscale = isGrayscale;
-        cameraSensor.SensorName = "AgentCameraSensor";
-        cameraSensor.Camera = agentCamera;
+        if (haveSemanticMap)
+        {
+            
+            semanticMapSensor = sensors.AddComponent<Semantic3DMapComponent>();
+            semanticMapSensor.root = body;
+            semanticMapSensor._gridX = (int)envParameters.GetWithDefault("semantic_grid_x", gridX);
+            semanticMapSensor._gridY = (int)envParameters.GetWithDefault("semantic_grid_y", gridY);
+            semanticMapSensor._gridZ = (int)envParameters.GetWithDefault("semantic_grid_z", gridZ);
+            semanticMapSensor.Tags = new List<string>() { "Building", "Item", "Road", "Car", "Ground" };
+
+        }
 
 
     }

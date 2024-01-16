@@ -30,7 +30,7 @@ public class LevelController : MonoBehaviour
     RoadGenerator roadGenerator;
 
     private float blockSize, roadWidth;
-    EnvironmentParameters envParameters
+    EnvironmentParameters envParameters;
 
 
 

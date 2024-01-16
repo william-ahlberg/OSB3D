@@ -1,14 +1,19 @@
 import numpy as np
+import argparse
 from env.osb3d_env import OSB3DEnv
 def main():
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-cfg", "--configuration-file", help=None)
+    parser.add_argument("-vrb", "--verbose", help=None, default=False)
+    args = parser.parse_args()
 
     env = OSB3DEnv(
-                   game_name="/home/wilah/Projects/osb3d/OSB3D/Python/games/game.x86_64",
+                   game_name=None,
                    worker_id=1,
                    no_graphics=False,
                    seed=1337,
-                   config_file="/home/wilah/Projects/osb3d/OSB3D/Python/config/basic.yaml")
+                   config_file=args.configuration_file)
     observation = env.reset()
     for _ in range(100000):
         action = env.action_sample()

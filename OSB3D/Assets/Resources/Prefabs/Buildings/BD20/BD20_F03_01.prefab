@@ -114,7 +114,7 @@ GameObject:
   - component: {fileID: 3815187948268254779}
   m_Layer: 0
   m_Name: BD20_F03_01
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

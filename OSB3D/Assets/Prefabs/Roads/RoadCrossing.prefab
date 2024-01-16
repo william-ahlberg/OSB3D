@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4005743241734848216}
   m_Layer: 0
   m_Name: RoadCrossing
-  m_TagString: Untagged
+  m_TagString: Road
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -203,11 +203,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 561fe592320e27a408544d95897ca6d0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -19.999998
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 561fe592320e27a408544d95897ca6d0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.0000021
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 561fe592320e27a408544d95897ca6d0, type: 3}
       propertyPath: m_LocalPosition.z

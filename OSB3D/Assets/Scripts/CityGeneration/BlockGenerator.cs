@@ -62,7 +62,6 @@ public class BlockGenerator : MonoBehaviour
         {
             buildingTypes.Add(buildingType, index);
             string directory = "Prefabs/Buildings/" + buildingType;
-
             List<GameObject> objects = new List<GameObject>();
             objects.AddRange(Utility.FromDirectory(directory));
 

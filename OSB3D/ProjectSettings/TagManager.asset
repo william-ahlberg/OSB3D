@@ -10,6 +10,11 @@ TagManager:
   - Edge
   - Bug
   - Sensor
+  - Road
+  - Item
+  - Tree
+  - Building
+  - Ground
   layers:
   - Default
   - TransparentFX

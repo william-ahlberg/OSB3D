@@ -11,7 +11,6 @@ public class BugManager : MonoBehaviour
     //public PhysicsBug bug;
     bool firstFrame = true;
     //PhysicsBug[] bugs;
-    int nBugs = 500;
     BugLogger bugLogger = new BugLogger();
 
     // Start is called before the first frame update
@@ -27,9 +26,8 @@ public class BugManager : MonoBehaviour
         {
             CalcBounds();
             firstFrame = false;
-            CreateBugArea<GeometryBug>(100);
-            CreateBugArea<PhysicsBug>(100);
-            SearchBugObject();
+
+
             Debug.Log(Application.dataPath);
             /*bugs = FindObjectsByType<PhysicsBug>(FindObjectsSortMode.None);
             bugLogger.LogBug(bugs);
@@ -49,7 +47,6 @@ public class BugManager : MonoBehaviour
         for (int i = 0; i < numberOfBugs; i++)
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-
             if (typeof(T) == typeof(PhysicsBug))
             {
                 cube.transform.localScale = new Vector3(
@@ -85,16 +82,47 @@ public class BugManager : MonoBehaviour
 
     }
 
-    public void SearchBugObject()
+    private void SearchBugObject<T>(int numberOfBugs) where T : UnityEngine.Component
     {
         GameObject[] bugObjects;
+        string bugRegex = "";
         bugObjects = GameObject.FindGameObjectsWithTag("Bug");
+        int numberOfPlacedBugs = 0;
+
+
+        if (typeof(T) == typeof(GadgetBug))
+        {
+            bugRegex = "^BP\\w*";
+        }
+        else if (typeof(T) == typeof(LogicBug)) 
+        {
+            bugRegex = "Elevator\\(Clone\\)";
+        }
+
         foreach (GameObject bugObject in bugObjects)
         {
-            if (Regex.IsMatch(bugObject.name, "Elevator"))
+
+            if (Regex.IsMatch(bugObject.name, bugRegex))
             {
-                bugObject.AddComponent<GadgetBug>();
+                Debug.Log(bugRegex);
+                if ((typeof(T) == typeof(GadgetBug)) & (numberOfPlacedBugs < numberOfBugs))
+                {
+                    bugObject.AddComponent<GadgetBug>();
+                    ++numberOfPlacedBugs;
+                    Debug.Log("Placed Gadget Bug");
+                }
+                else if ((typeof(T) == typeof(LogicBug)) & (numberOfPlacedBugs < numberOfBugs))
+                {
+                    bugObject.AddComponent<LogicBug>();
+                    ++numberOfPlacedBugs;
+                    Debug.Log("Placed Logic Bug");
+                }
+                
+
+
+
             }
+            
 
 
         }
@@ -113,7 +141,6 @@ public class BugManager : MonoBehaviour
 
         foreach (Collider c in checkColliders)
         {
-            Debug.Log(c.gameObject.tag);
             if (!c.gameObject.CompareTag("Bug"))
             { 
                 validPosition = false;
@@ -124,7 +151,7 @@ public class BugManager : MonoBehaviour
 
         if (!validPosition && depth < 256)
         {
-            Debug.Log("Depth: " + depth);
+
             position = PlaceBugArea(cube, ++depth);
         }
 
@@ -132,7 +159,6 @@ public class BugManager : MonoBehaviour
         Physics.Raycast(position, Vector3.down, out hit, Mathf.Infinity);
         position.y = hit.point.y + cube.transform.localScale.y / 2;
 
-        Debug.Log("Number of colliders: " + checkColliders.Length);
         return position;
     }
 

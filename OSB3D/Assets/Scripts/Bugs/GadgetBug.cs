@@ -13,14 +13,12 @@ public class GadgetBug : BugBase
 	
 	
     private List<GameObject> doors = new List<GameObject>();
-    [SerializeField] private int numberOfBugs = 1000;
     
     // Start is called before the first frame update
     private void Start()
     {
         base.Start();
         DisableGadget("Door");
-        DisableGadget("Elevator");
     }
 
     private void Update()

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 883803026623131088}
   m_Layer: 0
   m_Name: BCL30_F06_01
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 1174611295166330968}
   m_Layer: 0
   m_Name: BCL30_F06_01_import
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

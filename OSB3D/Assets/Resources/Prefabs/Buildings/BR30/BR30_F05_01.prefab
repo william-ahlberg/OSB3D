@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7910474573250170751}
   m_Layer: 0
   m_Name: BR30_F05_01
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
