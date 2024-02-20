@@ -14,6 +14,14 @@ from mlagents_envs.side_channel.environment_parameters_channel import Environmen
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from eval.eval import OSB3DEval
+import uuid
+from typing import TypeVar
+
+from mlagents_envs.side_channel.side_channel import (
+    SideChannel,
+    IncomingMessage,
+    OutgoingMessage,
+)
 
 class OSB3DEnv(gym.Env):
     def __init__(self, game_name, worker_id, no_graphics, seed, config_file):
@@ -27,9 +35,11 @@ class OSB3DEnv(gym.Env):
         self.set_config()
         self.engine_channel = None
         self.parameter_channel = None
+        self.sensor_channel = None
         self.set_engine_channel()
-        self.set_parameter_channel()
-        self.side_channels = [self.engine_channel,self.parameter_channel]
+        self.set_env_channel()
+        self.set_sensor_channel()
+        self.side_channels = [self.engine_channel, self.parameter_channel, self.sensor_channel]
         self.behavior_name = "AgentBehavior?team=0"
 
         self.unity_env = UnityEnvironment(self.game_name, worker_id=worker_id,seed=self.seed, no_graphics=self.no_graphics,side_channels=self.side_channels)
@@ -49,15 +59,20 @@ class OSB3DEnv(gym.Env):
 
     def set_engine_channel(self):
         self.engine_channel = EngineConfigurationChannel()
-        engine_config = self.config["unity_engine_config"]
+        engine_config = self.config["unity_engine_settings"]
+        print("Engine ",engine_config)
+
         self.engine_channel.set_configuration_parameters(**engine_config)
 
-    def set_parameter_channel(self):
+    def set_env_channel(self):
         self.parameter_channel = EnvironmentParametersChannel()
-        parameter_config = self.config["pcg_config"]
+        parameter_config = self.config["env_settings"]
         for key, value in parameter_config.items():
             self.parameter_channel.set_float_parameter(key,value)
         
+    def set_sensor_channel(self):
+        self.sensor_channel = SensorSideChannel(self.config)
+        self.sensor_channel.set_sensor_parameter()
 
 
     def step(self, action):
@@ -79,7 +94,6 @@ class OSB3DEnv(gym.Env):
             terminated = True
             reward = terminal_steps.reward[0]
         else:
-            print("not done")
             reward = decision_steps.reward[0]
             terminated = False
         observation = decision_steps.obs
@@ -112,8 +126,6 @@ class OSB3DEnv(gym.Env):
 
     def __get_info(self):
         print(self.trajectory)
-        #self.eval = OSB3DEval({"bug": "/home/wilah/Projects/osb3d/OSB3D/Assets/Data/data.json"}, self.trajectory)
-        #print(self.eval.check_bug())
         info = {
             "bugs_found": 0,
             "bugs_found_cumulative": 0,
@@ -127,6 +139,7 @@ class OSB3DEnv(gym.Env):
     def set_config(self):
         with open(self.config_file, "r") as f:
             self.config = yaml.safe_load(f)
+            print(self.config)
 
     def action_sample(self):
         if self.unity_env.behavior_specs[self.behavior_name].action_spec.is_continuous():
@@ -134,32 +147,56 @@ class OSB3DEnv(gym.Env):
             return action_sample
 
 
-    
+class SensorSideChannel(SideChannel):
+
+    T = TypeVar("T")
+    def __init__(self, config) -> None:
+        super().__init__(uuid.UUID("aa97d987-4c42-4878-b597-3de40edf66a6"))
+        self.config = config
+
+    def on_message_received(self, msg: IncomingMessage) -> None:
+        """
+        Note: We must implement this method of the SideChannel interface to
+        receive messages from Unity
+        """
+        # We simply read a string from the message and print it.
+        print(msg.read_string())
+
+    def send_string(self, data: str) -> None:
+        # Add the string to an OutgoingMessage
+        msg = OutgoingMessage()
+        msg.write_string(data)
+        # We call this method to queue the data we want to send
+        super().queue_message_to_send(msg)
+    def set_sensor_parameter(self):
+        if "observation_space_settings" not in self.config.keys():
+            print("No sensor configuration was defined, using default values!")
+        else:
+            sensor_config = self.config["observation_space_settings"]
+            for key1, value1 in sensor_config.items():
+                for key2, value2 in value1.items():
+                    self.send_typed_message(key2, value2)
+                    print(value2)
+    def send_typed_message(self, key, value):
+        msg = OutgoingMessage()
+        msg.write_string(key)
+
+        if isinstance(value, str):
+            msg.write_string(value)
+
+        elif isinstance(value, bool):
+            msg.write_bool(value)
+
+        elif isinstance(value, int):
+            msg.write_int32(value)
+
+        elif isinstance(value, float):
+            msg.write_float32(value)
+        print(msg)
+        super().queue_message_to_send(msg)
 
 
 
-    """
-    EngineConfiguration (width,height,quality_level,time_scale,target_frame_rate,capture_frame_rate)
-    EnvironmentParametersChannel (key,value)
-
-    Environment
-    seed
-    Block Count X
-    Block Count Z
-    Park Ratio
-    Car Min
-    Car Max
-    Item Min
-    Item Max
-
-    Bug
-
-    Agent
-    Camera Resolution
-    Rayperception config
-    CheatingASensor
-    VectorObservations
 
 
 
-    """

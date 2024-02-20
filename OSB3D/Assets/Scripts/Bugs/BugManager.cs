@@ -10,7 +10,7 @@ public class BugManager : MonoBehaviour
     public Bounds bounds;
     //public PhysicsBug bug;
     bool firstFrame = true;
-    //PhysicsBug[] bugs;
+    PhysicsBug[] bugs;
     BugLogger bugLogger = new BugLogger();
 
     // Start is called before the first frame update
@@ -27,12 +27,16 @@ public class BugManager : MonoBehaviour
             CalcBounds();
             firstFrame = false;
 
+            CreateBugArea<GeometryBug>(1);
+            CreateBugArea<PhysicsBug>(1);
+            SearchBugObject<GadgetBug>(1);
+            SearchBugObject<StateBug>(3);
 
             Debug.Log(Application.dataPath);
-            /*bugs = FindObjectsByType<PhysicsBug>(FindObjectsSortMode.None);
+            bugs = FindObjectsByType<PhysicsBug>(FindObjectsSortMode.None);
             bugLogger.LogBug(bugs);
             Debug.Log("Test: " + bugLogger.logs[0].bugType);
-            bugLogger.SerializeJson();*/
+            bugLogger.SerializeJson();
         }
     }
 
@@ -70,7 +74,7 @@ public class BugManager : MonoBehaviour
             cube.tag = "Bug";
             cube.GetComponent<Collider>().isTrigger = true;
             cube.transform.parent = parentObject.transform;
-           
+        
             cube.AddComponent<T>();
             cube.transform.position = PlaceBugArea(cube, 0);
             
@@ -94,9 +98,13 @@ public class BugManager : MonoBehaviour
         {
             bugRegex = "^BP\\w*";
         }
-        else if (typeof(T) == typeof(LogicBug)) 
+        else if (typeof(T) == typeof(LogicBug))
         {
             bugRegex = "Elevator\\(Clone\\)";
+        }
+        else if (typeof(T) == typeof(StateBug))
+        {
+            bugRegex = "^BP\\w*";
         }
 
         foreach (GameObject bugObject in bugObjects)
@@ -104,7 +112,6 @@ public class BugManager : MonoBehaviour
 
             if (Regex.IsMatch(bugObject.name, bugRegex))
             {
-                Debug.Log(bugRegex);
                 if ((typeof(T) == typeof(GadgetBug)) & (numberOfPlacedBugs < numberOfBugs))
                 {
                     bugObject.AddComponent<GadgetBug>();
@@ -117,14 +124,18 @@ public class BugManager : MonoBehaviour
                     ++numberOfPlacedBugs;
                     Debug.Log("Placed Logic Bug");
                 }
-                
+                else if ((typeof(T) == typeof(StateBug)) & (numberOfPlacedBugs < numberOfBugs))
+                {
+                    bugObject.AddComponent<StateBug>();
+                    ++numberOfPlacedBugs;
+                    Debug.Log("Placed State Bug");
+                }
+
 
 
 
             }
             
-
-
         }
     }
 

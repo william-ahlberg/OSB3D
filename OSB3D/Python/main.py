@@ -10,14 +10,15 @@ def main():
 
     env = OSB3DEnv(
                    game_name=None,
-                   worker_id=1,
+                   worker_id=0,
                    no_graphics=False,
                    seed=1337,
                    config_file=args.configuration_file)
     observation = env.reset()
-    for _ in range(100000):
+    for _ in range(10000):
         action = env.action_sample()
-        action = np.zeros(action.shape)
+        #print(action)
+        #action = np.zeros(action.shape)
         observation, reward, terminated, _, info = env.step(action)
         
         if terminated:

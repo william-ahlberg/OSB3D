@@ -16,6 +16,7 @@ public class BaseAgent : Agent
     Transform agentBody;
     Rigidbody rb;
     PlayerController playerController;
+    Collider[] agentColliders;
 
     // Start is called before the first frame update
     private void Start()
@@ -90,6 +91,20 @@ public class BaseAgent : Agent
     {
         rb.velocity = Vector3.zero;
         transform.position = startPosition;
+        agentColliders = GetComponentsInChildren<Collider>();
+        foreach (Collider agentCollider in agentColliders)
+        {
+            if ( agentCollider.GetType() != typeof(MeshCollider) )
+            {
+
+
+                agentCollider.enabled = true;
+
+            }
+
+
+
+        }
     }
 
 

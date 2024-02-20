@@ -155,7 +155,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1350788191}
   - {fileID: 245632091}
   m_Father: {fileID: 1993042068}
   m_RootOrder: 1
@@ -299,7 +298,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 34955110}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!850595691 &252549864
 LightingSettings:
@@ -660,69 +659,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 732b4b230f2a71c42b49c50300754283, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1350788190
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1350788191}
-  - component: {fileID: 1350788192}
-  m_Layer: 0
-  m_Name: Semantic3DMap
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1350788191
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1350788190}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 34955110}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1350788192
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1350788190}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06180b3a823f8ec4bb6888589df4fd79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sensorName: Semantic3DMap
-  _inUp: 0
-  _gridScale: 1
-  _gridHeight: 1
-  layersMask:
-    serializedVersion: 2
-    m_Bits: 1
-  Tags:
-  - Agent
-  - Car
-  - Bug
-  offset_x: 0
-  offset_y: 0
-  offset_z: 0
-  _inFront: 0
-  _gridX: 5
-  _gridZ: 5
-  _gridY: 5
-  root: {fileID: 34955109}
 --- !u!1 &1609095045
 GameObject:
   m_ObjectHideFlags: 0
@@ -862,9 +798,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3d7d1218ccd214db5f61542cea8c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 1
-  blockCountX: 10
-  blockCountZ: 10
+  seed: 2
+  blockCountX: 2
+  blockCountZ: 2
   parkRatio: 0.25
   crossing: {fileID: 4005743241734848231, guid: 767244c251a7bd24180332c707fc2f9a, type: 3}
   edgeBlock: {fileID: 5917777203468375160, guid: 54285ac9cc2a1af49af24014232e5ce9, type: 3}
@@ -922,7 +858,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxPlaceAttempts: 100
-  carsDriving: 1
+  carsDriving: 0
   stopOnCollision: 1
   carSpeed: 5
   carMin: 1

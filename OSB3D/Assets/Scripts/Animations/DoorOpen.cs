@@ -9,9 +9,11 @@ public class DoorOpen : MonoBehaviour
     [SerializeField] Material buttonGreen;
     [SerializeField] Material buttonRed;
 
-    void OnTriggerEnter(Collider _collider) 
+    private void OnTriggerEnter(Collider _collider) 
     {
-        if(_collider.gameObject.tag == "Player")
+
+ 
+       if (_collider.gameObject.tag == "Player")
        {
             
             bool opened = doorAnimator[0].GetBool("Opened");
@@ -44,5 +46,5 @@ public class DoorOpen : MonoBehaviour
                 }
             }
         }
-    }
+        }
 }

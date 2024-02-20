@@ -17,7 +17,6 @@ env_settings:
     block_count_z: 2
     park_ratio: 0.25
 
-# Action space
 action_space_settings:
     continuous_actions: true
     available_actions:
@@ -37,33 +36,12 @@ observation_space_settings:
         position_type: "normalized"
         include_bug_position: false
 
-    # Camera sensor
-    camera_settings:
-        grayscale: false
-        camera_resolution_width: 256
-        camera_resolution_height: 256
-
-
-    # Lidar sensors
-    ray_perception_settings:
-        ray_perception_plane: 10
-        ray_perception_cone : 10
-        ray_perception_slice: 10
-
     # Semantic map sensor
     semantic_map_settings:
         semantic_map_x: 5
         semantic_map_y: 5
         semantic_map_z: 5
 
-bug_settings:
-    # Bugs
-    bug_types:
-        gadget: 10
-        state: 10
-        geometry: 10
-        physics: 10
-        logic: 10
 ...
 
 

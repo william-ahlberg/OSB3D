@@ -33,11 +33,7 @@ public class PhysicsBug : BugBase
     {
     
     
-    
-    
     }
-
-
 
     protected virtual void ToggleBugVisual()
     {

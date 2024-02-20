@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents;
+using Unity.MLAgents.SideChannels;
 
 public class SensorManager : MonoBehaviour
 {
-
+    //Channel
+    SensorSideChannel sensorSideChannel;
+    
     GameObject body;
     GameObject sensors;
 
@@ -30,6 +33,12 @@ public class SensorManager : MonoBehaviour
     float gridX = 5;
     float gridY = 5;
     float gridZ = 5;
+
+    public void Awake()
+    {
+        sensorSideChannel = new SensorSideChannel();
+        SideChannelManager.RegisterSideChannel(sensorSideChannel);
+    }
 
     // Start is called before the first frame update
     void Start()
