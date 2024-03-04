@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
@@ -7,17 +7,15 @@ using Unity.MLAgents.SideChannels;
 using System.Text;
 using System;
 
-public class BugSideChannel : SideChannel
+public class ActionSideChannel : SideChannel
 {
-    Hashtable m_BugParameters = new Hashtable();
+    Hashtable m_ActionParameters = new Hashtable();
 
     private Dictionary<string, Type> configurationType = new Dictionary<string, Type>
     {
-        {"gadget", typeof(int)},
-        {"state", typeof(int)},
-        {"geometry", typeof(int)},
-        {"physics", typeof(int)},
-        {"logic", typeof(int)},
+        {"action_space_settings", typeof(bool)},
+        {"continuous_actions", typeof(bool)},
+        {"available_actions", typeof(List<string>)},
     };
 
 
@@ -30,9 +28,9 @@ public class BugSideChannel : SideChannel
         {typeof(List<string>), 4},
     };
 
-    public BugSideChannel()
+    public ActionSideChannel()
     {
-        ChannelId = new Guid("b1961881-7cec-498d-9f45-1f7d8a299378");
+        ChannelId = new Guid("4a6982f9-d298-4f7b-b7eb-bb7012603bba");
     }
 
     protected override void OnMessageReceived(IncomingMessage msg)
@@ -45,16 +43,16 @@ public class BugSideChannel : SideChannel
         switch (messageCaseType)
         {
             case 0:
-                m_BugParameters.Add(key, msg.ReadBoolean());
+                m_ActionParameters.Add(key, msg.ReadBoolean());
                 break;
             case 1:
-                m_BugParameters.Add(key, msg.ReadInt32());
+                m_ActionParameters.Add(key, msg.ReadInt32());
                 break;
             case 2:
-                m_BugParameters.Add(key, msg.ReadFloat32());
+                m_ActionParameters.Add(key, msg.ReadFloat32());
                 break;
             case 3:
-                m_BugParameters.Add(key, msg.ReadString());
+                m_ActionParameters.Add(key, msg.ReadString());
                 break;
             case 4:
                 int len = msg.ReadInt32();
@@ -64,16 +62,16 @@ public class BugSideChannel : SideChannel
                 {
                     value[i] = msg.ReadString();
                 }
-                m_BugParameters.Add(key, value);
+                m_ActionParameters.Add(key, value);
                 break;
         }
     }
 
     public T GetWithDefault<T>(string key, T defaultValue)
     {
-        if (m_BugParameters.ContainsKey(key))
+        if (m_ActionParameters.ContainsKey(key))
         {
-            var value = (T)m_BugParameters[key];
+            var value = (T)m_ActionParameters[key];
             return value;
         }
         else

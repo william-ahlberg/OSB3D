@@ -20,14 +20,8 @@ env_settings:
 action_space_settings:
     continuous_actions: true
     available_actions:
-        - move_forward
-        - move_backwards
-        - move_right
-        - move_left
-        - mouse_y
-        - mouse_x
-        - jump
-        - identify_bug
+        - move_vertical
+        - move_horizontal
 
 # Observation space
 observation_space_settings:
@@ -37,11 +31,18 @@ observation_space_settings:
         include_bug_position: false
 
     # Semantic map sensor
-    semantic_map_settings:
-        semantic_map_x: 5
-        semantic_map_y: 5
-        semantic_map_z: 5
+    camera_settings:
+        grayscale: true
+        camera_resolution_width: 1024
+        camera_resolution_height: 1024
 
+
+bug_settings:
+    gadget: 10
+    state: 10
+    geometry: 10
+    physics: 10
+    logic: 10
 ...
 
 

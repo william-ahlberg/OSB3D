@@ -14,30 +14,35 @@ public class SensorManager : MonoBehaviour
     GameObject sensors;
 
     //Camera
-    bool haveCameraSensor = false;
+    bool cameraSettings;
     Camera agentCamera;
     CameraSensorComponent cameraSensor;
     int cameraSensorWidth = 1920;
     int cameraSensorHeight = 1080;
-    bool isGrayscale = false;
-    
+
     //Rays
-    bool haveRaySensor = true;
+    bool rayPerceptionSettings;
     RayPerceptionSensorComponent3D raySensor;
     float maxRayDegrees = 180;
 
     //Semantic Map
-    bool haveSemanticMap = false;
+    bool semanticMapSettings;
     Semantic3DMapComponent semanticMapSensor;
     EnvironmentParameters envParameters;
-    float gridX = 5;
-    float gridY = 5;
-    float gridZ = 5;
+
+    float gridX = 3;
+    float gridY = 3;
+    float gridZ = 3;
 
     public void Awake()
     {
         sensorSideChannel = new SensorSideChannel();
         SideChannelManager.RegisterSideChannel(sensorSideChannel);
+        rayPerceptionSettings = sensorSideChannel.GetWithDefault<bool>("ray_perception_settings", false);
+        semanticMapSettings = sensorSideChannel.GetWithDefault<bool>("semantic_map_settings", false);
+        cameraSettings = sensorSideChannel.GetWithDefault<bool>("camera_settings", false);
+
+
     }
 
     // Start is called before the first frame update
@@ -45,19 +50,19 @@ public class SensorManager : MonoBehaviour
     {
         body = GameObject.Find("Body");
         sensors = GameObject.Find("Sensors");
-        envParameters = Academy.Instance.EnvironmentParameters;
-        if (haveCameraSensor)
-        { 
+
+        if (cameraSettings)
+        {
             agentCamera = GetComponentInChildren<Camera>();
-            cameraSensor = gameObject.AddComponent<CameraSensorComponent>();
-            cameraSensor.Width = (int)envParameters.GetWithDefault("camera_sensor_width", cameraSensorWidth);
-            cameraSensor.Height = (int)envParameters.GetWithDefault("camera_sensor_height",cameraSensorHeight);
-            cameraSensor.Grayscale = isGrayscale;
+            cameraSensor = sensors.AddComponent<CameraSensorComponent>();
+            cameraSensor.Width = sensorSideChannel.GetWithDefault<int>("camera_resolution_width", cameraSensorWidth);
+            cameraSensor.Height = sensorSideChannel.GetWithDefault<int>("camera_resolution_height", cameraSensorHeight);
+            cameraSensor.Grayscale = sensorSideChannel.GetWithDefault<bool>("grayscale", false);
             cameraSensor.SensorName = "AgentCameraSensor";
             cameraSensor.Camera = agentCamera;
         }
 
-        if (haveRaySensor)
+        if (rayPerceptionSettings)
         {
             raySensor = sensors.AddComponent<RayPerceptionSensorComponent3D>();
             raySensor.SensorName = "RaySensor";
@@ -66,16 +71,14 @@ public class SensorManager : MonoBehaviour
             raySensor.DetectableTags = new List<string>() { "Building", "Item", "Road", "Car", "Ground" };
         }
 
-        if (haveSemanticMap)
+        if (semanticMapSettings)
         {
-            
             semanticMapSensor = sensors.AddComponent<Semantic3DMapComponent>();
             semanticMapSensor.root = body;
             semanticMapSensor._gridX = (int)envParameters.GetWithDefault("semantic_grid_x", gridX);
             semanticMapSensor._gridY = (int)envParameters.GetWithDefault("semantic_grid_y", gridY);
             semanticMapSensor._gridZ = (int)envParameters.GetWithDefault("semantic_grid_z", gridZ);
             semanticMapSensor.Tags = new List<string>() { "Building", "Item", "Road", "Car", "Ground" };
-
         }
 
 

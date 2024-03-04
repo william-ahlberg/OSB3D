@@ -36,10 +36,16 @@ class OSB3DEnv(gym.Env):
         self.engine_channel = None
         self.parameter_channel = None
         self.sensor_channel = None
+        self.action_channel = None
         self.set_engine_channel()
         self.set_env_channel()
         self.set_sensor_channel()
-        self.side_channels = [self.engine_channel, self.parameter_channel, self.sensor_channel]
+        self.set_action_channel()
+        self.side_channels = [self.engine_channel,
+                              self.parameter_channel,
+                              self.sensor_channel,
+                              self.action_channel]
+
         self.behavior_name = "AgentBehavior?team=0"
 
         self.unity_env = UnityEnvironment(self.game_name, worker_id=worker_id,seed=self.seed, no_graphics=self.no_graphics,side_channels=self.side_channels)
@@ -53,7 +59,7 @@ class OSB3DEnv(gym.Env):
 
         self.coverage_of_points = []
         self.pos_buffer = dict()
-        self.action_size = 5
+        self.action_size = 6
         self.trajectory = []
         self.trajectories = dict()
 
@@ -73,6 +79,10 @@ class OSB3DEnv(gym.Env):
     def set_sensor_channel(self):
         self.sensor_channel = SensorSideChannel(self.config)
         self.sensor_channel.set_sensor_parameter()
+
+    def set_action_channel(self):
+        self.action_channel = ActionSideChannel(self.config)
+        self.action_channel.set_sensor_parameter()
 
 
     def step(self, action):
@@ -97,7 +107,7 @@ class OSB3DEnv(gym.Env):
             reward = decision_steps.reward[0]
             terminated = False
         observation = decision_steps.obs
-        self.trajectories[self.episode].append(list(observation[-1][0]))
+        #self.trajectories[self.episode].append(list(observation[-1][0]))
 
         return observation, reward, terminated, False, None
 
@@ -144,7 +154,7 @@ class OSB3DEnv(gym.Env):
     def action_sample(self):
         if self.unity_env.behavior_specs[self.behavior_name].action_spec.is_continuous():
             action_sample = np.random.rand(self.unity_env.behavior_specs[self.behavior_name].action_spec.continuous_size)
-            return action_sample
+            return 2 * action_sample - 1
 
 
 class SensorSideChannel(SideChannel):
@@ -162,21 +172,17 @@ class SensorSideChannel(SideChannel):
         # We simply read a string from the message and print it.
         print(msg.read_string())
 
-    def send_string(self, data: str) -> None:
-        # Add the string to an OutgoingMessage
-        msg = OutgoingMessage()
-        msg.write_string(data)
-        # We call this method to queue the data we want to send
-        super().queue_message_to_send(msg)
     def set_sensor_parameter(self):
         if "observation_space_settings" not in self.config.keys():
             print("No sensor configuration was defined, using default values!")
         else:
             sensor_config = self.config["observation_space_settings"]
             for key1, value1 in sensor_config.items():
+                self.send_typed_message(key1,True)
                 for key2, value2 in value1.items():
                     self.send_typed_message(key2, value2)
                     print(value2)
+
     def send_typed_message(self, key, value):
         msg = OutgoingMessage()
         msg.write_string(key)
@@ -192,9 +198,109 @@ class SensorSideChannel(SideChannel):
 
         elif isinstance(value, float):
             msg.write_float32(value)
-        print(msg)
+
+        elif isinstance(value, list):
+            msg.write_int32(len(value))
+            for i in value:
+                msg.write_string(i)
+
         super().queue_message_to_send(msg)
 
+class ActionSideChannel(SideChannel):
+
+    T = TypeVar("T")
+
+    def __init__(self, config) -> None:
+        super().__init__(uuid.UUID("4a6982f9-d298-4f7b-b7eb-bb7012603bba"))
+        self.config = config
+
+    def on_message_received(self, msg: IncomingMessage) -> None:
+        """
+        Note: We must implement this method of the SideChannel interface to
+        receive messages from Unity
+        """
+        # We simply read a string from the message and print it.
+        print(msg.read_string())
+
+    def set_sensor_parameter(self):
+        if "observation_space_settings" not in self.config.keys():
+            print("No sensor configuration was defined, using default values!")
+        else:
+            action_config = self.config["action_space_settings"]
+            for key, value in action_config.items():
+                self.send_typed_message(key, value)
+                print(value)
+
+    def send_typed_message(self, key, value):
+        msg = OutgoingMessage()
+        msg.write_string(key)
+
+        if isinstance(value, str):
+            msg.write_string(value)
+
+        elif isinstance(value, bool):
+            msg.write_bool(value)
+
+        elif isinstance(value, int):
+            msg.write_int32(value)
+
+        elif isinstance(value, float):
+            msg.write_float32(value)
+
+        elif isinstance(value, list):
+            msg.write_int32(len(value))
+            for i in value:
+                msg.write_string(i)
+
+        super().queue_message_to_send(msg)
+
+class BugSideChannel(SideChannel):
+
+    T = TypeVar("T")
+
+    def __init__(self, config) -> None:
+        super().__init__(uuid.UUID("b1961881-7cec-498d-9f45-1f7d8a299378"))
+        self.config = config
+
+    def on_message_received(self, msg: IncomingMessage) -> None:
+        """
+        Note: We must implement this method of the SideChannel interface to
+        receive messages from Unity
+        """
+        # We simply read a string from the message and print it.
+        print(msg.read_string())
+
+    def set_bug_parameter(self):
+        if "observation_space_settings" not in self.config.keys():
+            print("No sensor configuration was defined, using default values!")
+        else:
+            bug_config = self.config["bug_settings"]
+            for key, value in bug_config.items():
+                self.send_typed_message(key, value)
+                print(value)
+
+    def send_typed_message(self, key, value):
+        msg = OutgoingMessage()
+        msg.write_string(key)
+
+        if isinstance(value, str):
+            msg.write_string(value)
+
+        elif isinstance(value, bool):
+            msg.write_bool(value)
+
+        elif isinstance(value, int):
+            msg.write_int32(value)
+
+        elif isinstance(value, float):
+            msg.write_float32(value)
+
+        elif isinstance(value, list):
+            msg.write_int32(len(value))
+            for i in value:
+                msg.write_string(i)
+
+        super().queue_message_to_send(msg)
 
 
 

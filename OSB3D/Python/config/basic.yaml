@@ -21,10 +21,8 @@ env_settings:
 action_space_settings:
     continuous_actions: true
     available_actions:
-        - move_forward
-        - move_backwards
-        - move_right
-        - move_left
+        - move_vertical
+        - move_horizontal
         - mouse_y
         - mouse_x
         - jump
@@ -40,8 +38,8 @@ observation_space_settings:
     # Camera sensor
     camera_settings:
         grayscale: false
-        camera_resolution_width: 256
-        camera_resolution_height: 256
+        camera_resolution_width: 1024
+        camera_resolution_height: 1024 
 
 
     # Lidar sensors
@@ -56,14 +54,13 @@ observation_space_settings:
         semantic_map_y: 5
         semantic_map_z: 5
 
+# Bugs
 bug_settings:
-    # Bugs
-    bug_types:
-        gadget: 10
-        state: 10
-        geometry: 10
-        physics: 10
-        logic: 10
+    gadget: 10
+    state: 10
+    geometry: 10
+    physics: 10
+    logic: 10
 ...
 
 

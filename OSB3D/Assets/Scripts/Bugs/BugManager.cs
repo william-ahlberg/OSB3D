@@ -4,39 +4,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using Random = UnityEngine.Random;
+using Unity.MLAgents.SideChannels;
+
 
 public class BugManager : MonoBehaviour
 {
     public Bounds bounds;
-    //public PhysicsBug bug;
     bool firstFrame = true;
     PhysicsBug[] bugs;
     BugLogger bugLogger = new BugLogger();
+    BugSideChannel bugSideChannel;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-       
+        bugSideChannel = new BugSideChannel();
+        SideChannelManager.RegisterSideChannel(bugSideChannel);
     }
 
-    // Update is called once per frame
     void Update()
     {
+
+
+
         if (firstFrame == true)
         {
             CalcBounds();
             firstFrame = false;
 
-            CreateBugArea<GeometryBug>(1);
-            CreateBugArea<PhysicsBug>(1);
-            SearchBugObject<GadgetBug>(1);
-            SearchBugObject<StateBug>(3);
-
-            Debug.Log(Application.dataPath);
-            bugs = FindObjectsByType<PhysicsBug>(FindObjectsSortMode.None);
+            CreateBugArea<GeometryBug>(bugSideChannel.GetWithDefault<int>("geometry", 10));
+            CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", 10));
+            SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", 10));
+            SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", 10));
+            SearchBugObject<LogicBug>(bugSideChannel.GetWithDefault<int>("logic", 10));
+            
+   
+            /*bugs = FindObjectsByType<BugBase>(FindObjectsSortMode.None);
             bugLogger.LogBug(bugs);
-            Debug.Log("Test: " + bugLogger.logs[0].bugType);
-            bugLogger.SerializeJson();
+            bugLogger.SerializeJson();*/
         }
     }
 
@@ -51,12 +55,15 @@ public class BugManager : MonoBehaviour
         for (int i = 0; i < numberOfBugs; i++)
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.AddComponent<T>();
+
             if (typeof(T) == typeof(PhysicsBug))
             {
                 cube.transform.localScale = new Vector3(
                     Random.Range(cubeScaleMin, cubeScaleMax),
                     cubeScaleMax / 2,
                     Random.Range(cubeScaleMin, cubeScaleMax));
+                cube.GetComponent<PhysicsBug>().id = 33;
             }
             else if (typeof(T) == typeof(GeometryBug))
             {
@@ -68,20 +75,11 @@ public class BugManager : MonoBehaviour
 
             }
 
-
-          
-
             cube.tag = "Bug";
             cube.GetComponent<Collider>().isTrigger = true;
             cube.transform.parent = parentObject.transform;
-        
-            cube.AddComponent<T>();
             cube.transform.position = PlaceBugArea(cube, 0);
             
-
-
-            //bug.Initialize(i);
-            //bug.id = i;
         }
 
     }
@@ -162,7 +160,6 @@ public class BugManager : MonoBehaviour
 
         if (!validPosition && depth < 256)
         {
-
             position = PlaceBugArea(cube, ++depth);
         }
 
@@ -190,9 +187,6 @@ public class BugManager : MonoBehaviour
 
 
 }
-
-
-
 
 [System.Serializable]
 public class BugLogEntry

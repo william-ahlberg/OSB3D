@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using Unity.MLAgents.SideChannels;
+
 
 public class AgentController : MonoBehaviour
 {
@@ -38,15 +41,29 @@ public class AgentController : MonoBehaviour
     private float rotationX;
     private float rotationY;
 
+    [SerializeField] ActionSideChannel actionSideChannel;
+    string[] availableActions;
 
-    
-    private void Start()
+    string[] defaultActions =
+        {"move_vertical",
+        "move_horizontal",
+        "mouse_x",
+        "mouse_y",
+        "jump",
+        "identify_bug"};
+
+
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
 
         playerController = GetComponent<PlayerController>();
         readyToJump = true;
+
+        actionSideChannel = new ActionSideChannel();
+        SideChannelManager.RegisterSideChannel(actionSideChannel);
 
     }
 
@@ -75,6 +92,15 @@ public class AgentController : MonoBehaviour
 
     public void MoveAgent(float[] actions)
     {
+        availableActions = actionSideChannel.GetWithDefault("available_actions", defaultActions);
+
+        actions[0] = availableActions.Contains("move_vertical") ? actions[0] : 0f;
+        actions[1] = availableActions.Contains("move_horizontal") ? actions[1] : 0f;
+        actions[2] = availableActions.Contains("mouse_x") ? actions[2] : 0f;
+        actions[3] = availableActions.Contains("mouse_y") ? actions[3] : 0f;
+        actions[4] = availableActions.Contains("jump") ? actions[4] : 0f;
+        actions[5] = availableActions.Contains("identify_bug") ? actions[5] : 0f;
+
         // calculate movement direction
         moveDirection = forwardFace.forward * actions[0] + forwardFace.right * actions[1];
 
