@@ -107,6 +107,7 @@ class OSB3DEnv(gym.Env):
             reward = decision_steps.reward[0]
             terminated = False
         observation = decision_steps.obs
+        print(decision_steps.action_mask)
         #self.trajectories[self.episode].append(list(observation[-1][0]))
 
         return observation, reward, terminated, False, None

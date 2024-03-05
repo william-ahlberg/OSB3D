@@ -20,7 +20,7 @@ def main():
         #print(action)
         #action = np.zeros(action.shape)
         observation, reward, terminated, _, info = env.step(action)
-        
+        print(observation)
         if terminated:
             observation, info = env.reset()
     env.close()
