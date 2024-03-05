@@ -35,14 +35,18 @@ observation_space_settings:
         grayscale: true
         camera_resolution_width: 1024
         camera_resolution_height: 1024
+    
+    # Lidar sensors
+    ray_perception_settings:
+        ray_perception_plane: 10
 
 
 bug_settings:
-    gadget: 10
-    state: 10
-    geometry: 10
-    physics: 10
-    logic: 10
+    gadget: 1
+    state: 1
+    geometry: 1
+    physics: 1
+    logic: 1
 ...
 
 
