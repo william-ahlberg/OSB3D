@@ -36,18 +36,21 @@ public class SensorManager : MonoBehaviour
 
     public void Awake()
     {
-        sensorSideChannel = new SensorSideChannel();
-        SideChannelManager.RegisterSideChannel(sensorSideChannel);
-        rayPerceptionSettings = sensorSideChannel.GetWithDefault<bool>("ray_perception_settings", false);
-        semanticMapSettings = sensorSideChannel.GetWithDefault<bool>("semantic_map_settings", false);
-        cameraSettings = sensorSideChannel.GetWithDefault<bool>("camera_settings", false);
-
-
     }
 
     // Start is called before the first frame update
     void Start()
     {
+    }
+
+    public void AddSensors(SensorSideChannel sensorSideChannel)
+    {
+        // We need to do rhis otherwise we can't receive messages to this point
+        envParameters = Academy.Instance.EnvironmentParameters;
+        rayPerceptionSettings = sensorSideChannel.GetWithDefault<bool>("ray_perception_settings", false);
+        semanticMapSettings = sensorSideChannel.GetWithDefault<bool>("semantic_map_settings", false);
+        cameraSettings = sensorSideChannel.GetWithDefault<bool>("camera_settings", false);
+
         body = GameObject.Find("Body");
         sensors = GameObject.Find("Sensors");
 
@@ -67,7 +70,7 @@ public class SensorManager : MonoBehaviour
             raySensor = sensors.AddComponent<RayPerceptionSensorComponent3D>();
             raySensor.SensorName = "RaySensor";
             raySensor.RaysPerDirection = (int)31f;
-            raySensor.MaxRayDegrees = envParameters.GetWithDefault("max_ray_degrees", maxRayDegrees);
+            raySensor.MaxRayDegrees = sensorSideChannel.GetWithDefault<float>("max_ray_degrees", maxRayDegrees);
             raySensor.DetectableTags = new List<string>() { "Building", "Item", "Road", "Car", "Ground" };
         }
 
@@ -80,8 +83,6 @@ public class SensorManager : MonoBehaviour
             semanticMapSensor._gridZ = (int)envParameters.GetWithDefault("semantic_grid_z", gridZ);
             semanticMapSensor.Tags = new List<string>() { "Building", "Item", "Road", "Car", "Ground" };
         }
-
-
     }
 
     // Update is called once per frame

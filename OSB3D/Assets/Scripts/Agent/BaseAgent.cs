@@ -6,6 +6,8 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.VisualScripting;
 using System;
+using Unity.MLAgents.SideChannels;
+
 
 
 public class BaseAgent : Agent
@@ -23,6 +25,21 @@ public class BaseAgent : Agent
     BugManager bugManager = new BugManager();
     string vectorObsSettings;
 
+    SensorManager sensorManager;
+
+    private void Awake()
+    {
+        sensorSideChannel = new SensorSideChannel();
+        SideChannelManager.RegisterSideChannel(sensorSideChannel);
+
+    }
+
+    private void OnEnable()
+    {
+        sensorManager = GetComponent<SensorManager>();
+        sensorManager.AddSensors(sensorSideChannel);
+        base.OnEnable();
+    }
 
     // Start is called before the first frame update
     private void Start()
@@ -34,11 +51,10 @@ public class BaseAgent : Agent
         agentBody = transform.Find("Body");
         startPosition = transform.position;
 
-        sensorSideChannel = new SensorSideChannel();
+        //sensorSideChannel = new SensorSideChannel();
         Debug.Log($"From the BaseAgent, Env Bounds {bugManager.bounds}");
 
-        string vectorObsSettings = sensorSideChannel.GetWithDefault<string>("vector_obs_settings", "normalized");
-        Debug.Log($"Vector obs {vectorObsSettings}");
+        vectorObsSettings = sensorSideChannel.GetWithDefault<string>("position_type", "none");
     }
 
     // Update is called once per frame
@@ -75,7 +91,6 @@ public class BaseAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-
         if (vectorObsSettings == "normalized")
         {
             sensor.AddObservation(agentBody.localRotation);
@@ -87,8 +102,6 @@ public class BaseAgent : Agent
             sensor.AddObservation(agentBody.localRotation);
             sensor.AddObservation(transform.position);
         }
-    
-
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
