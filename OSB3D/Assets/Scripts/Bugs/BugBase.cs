@@ -8,6 +8,7 @@ public class BugBase : MonoBehaviour
     public Vector3 position;
     public Vector3 scale;
     public int id;
+    
     public string bugClass;
     public string bugType; 
     public bool isActive;
@@ -26,14 +27,6 @@ public class BugBase : MonoBehaviour
     
     }
 
-    public void Initialize(int id)
-    {
-        id = id;
-        scale = this.transform.localScale;
-        bugClass = this.GetType().Name;
-        position = this.transform.position;
-        isActive = true;
-    }
 
     protected virtual void BugBehavior()
     {

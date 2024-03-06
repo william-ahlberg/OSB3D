@@ -14,7 +14,21 @@ public class BugManager : MonoBehaviour
     PhysicsBug[] bugs;
     BugLogger bugLogger = new BugLogger();
     BugSideChannel bugSideChannel;
+    
+    private int highestBugId = 0;
+    
+    public int HighestBugId 
+    { 
 
+        get 
+        { 
+            highestBugId++;
+            return highestBugId;
+        }
+    
+    
+    
+    }
     void Awake()
     {
         bugSideChannel = new BugSideChannel();
@@ -33,8 +47,8 @@ public class BugManager : MonoBehaviour
 
             CreateBugArea<GeometryBug>(bugSideChannel.GetWithDefault<int>("geometry", 10));
             CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", 10));
-            SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", 0));
-            SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", 100));
+            SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", 10));
+            SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", 10));
             SearchBugObject<LogicBug>(bugSideChannel.GetWithDefault<int>("logic", 10));
             
    
@@ -63,7 +77,8 @@ public class BugManager : MonoBehaviour
                     Random.Range(cubeScaleMin, cubeScaleMax),
                     cubeScaleMax / 2,
                     Random.Range(cubeScaleMin, cubeScaleMax));
-                cube.GetComponent<PhysicsBug>().id = 33;
+
+                cube.GetComponent<PhysicsBug>().id = HighestBugId;
             }
             else if (typeof(T) == typeof(GeometryBug))
             {
@@ -71,7 +86,8 @@ public class BugManager : MonoBehaviour
                     Random.Range(cubeScaleMin, cubeScaleMax),
                     cubeScaleMax / 2,
                     Random.Range(cubeScaleMin, cubeScaleMax));
-
+                
+                cube.GetComponent<GeometryBug>().id = HighestBugId;
 
             }
 
@@ -115,23 +131,26 @@ public class BugManager : MonoBehaviour
                     bugObject.AddComponent<GadgetBug>();
                     ++numberOfPlacedBugs;
                     Debug.Log("Placed Gadget Bug");
+                    
+                    GadgetBug gadgetBug = bugObject.GetComponent<GadgetBug>();
+                    gadgetBug.id = HighestBugId;
                 }
                 else if ((typeof(T) == typeof(LogicBug)) & (numberOfPlacedBugs < numberOfBugs))
                 {
                     bugObject.AddComponent<LogicBug>();
                     ++numberOfPlacedBugs;
                     Debug.Log("Placed Logic Bug");
+                    LogicBug logicBug = bugObject.GetComponent<LogicBug>();
+                    logicBug.id = HighestBugId;
                 }
                 else if ((typeof(T) == typeof(StateBug)) & (numberOfPlacedBugs < numberOfBugs))
                 {
                     bugObject.AddComponent<StateBug>();
                     ++numberOfPlacedBugs;
+                    StateBug stateBug = bugObject.GetComponent<StateBug>();
+                    stateBug.id = HighestBugId;
                     Debug.Log("Placed State Bug");
                 }
-
-
-
-
             }
             
         }

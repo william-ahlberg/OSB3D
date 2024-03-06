@@ -8,8 +8,7 @@ public class StateBug : BugBase
 
     private Dictionary<string, string> searchNameGadgetPairs = new Dictionary<string, string>()
         {
-        {"Door", "BP[10][05]_Door\\w*"},
-       
+            {"Door", "BP[10][05]_Door\\w*"}, 
         };
 
 
@@ -45,16 +44,7 @@ public class StateBug : BugBase
 
     }
 
-    private void Update()
-    {
-    }
 
-    private void CrossState(string stateKey)
-    { 
-        
-        
-    
-    }
 
 
 
