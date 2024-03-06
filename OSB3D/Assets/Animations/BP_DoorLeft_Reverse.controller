@@ -76,7 +76,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BP_DoorRight_Reverse
+  m_Name: BP_DoorLeft_Reverse
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Opened

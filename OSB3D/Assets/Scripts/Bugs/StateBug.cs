@@ -8,20 +8,31 @@ public class StateBug : BugBase
 
     private Dictionary<string, string> searchNameGadgetPairs = new Dictionary<string, string>()
         {
-        {"Door", "BP10_Door\\w*"},
+        {"Door", "BP[10][05]_Door\\w*"},
        
         };
 
 
     private List<GameObject> doors = new List<GameObject>();
+    Transform bugDoor;
+    Transform bugDoorLeft;
+    Transform bugDoorRight;
+
 
     // Start is called before the first frame update
     private void Start()
     {
         base.Start();
-        Transform bugDoor = transform.Find("BugDoor");
+        
+        bugDoor = transform.Find("BugDoor");
+        bugDoorLeft = transform.Find("BugDoorRight");
+        bugDoorRight = transform.Find("BugDoorLeft");
+
         Collider[] doorColliders = GetComponentsInChildren<Collider>();
-        bugDoor.gameObject.SetActive(true);
+
+        bugDoor?.gameObject.SetActive(true);
+        bugDoorRight?.gameObject.SetActive(true);
+        bugDoorLeft?.gameObject.SetActive(true);
 
         foreach (Collider doorCollider in doorColliders)
         {

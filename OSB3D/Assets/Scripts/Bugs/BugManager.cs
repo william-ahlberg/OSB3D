@@ -33,8 +33,8 @@ public class BugManager : MonoBehaviour
 
             CreateBugArea<GeometryBug>(bugSideChannel.GetWithDefault<int>("geometry", 10));
             CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", 10));
-            SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", 10));
-            SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", 10));
+            SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", 0));
+            SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", 100));
             SearchBugObject<LogicBug>(bugSideChannel.GetWithDefault<int>("logic", 10));
             
    
