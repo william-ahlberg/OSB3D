@@ -11,7 +11,7 @@ public class BugManager : MonoBehaviour
 {
     public Bounds bounds;
     bool firstFrame = true;
-    PhysicsBug[] bugs;
+    BugBase[] bugs;
     BugLogger bugLogger = new BugLogger();
     BugSideChannel bugSideChannel;
     
@@ -52,9 +52,9 @@ public class BugManager : MonoBehaviour
             SearchBugObject<LogicBug>(bugSideChannel.GetWithDefault<int>("logic", 10));
             
    
-            /*bugs = FindObjectsByType<BugBase>(FindObjectsSortMode.None);
+            bugs = FindObjectsByType<BugBase>(FindObjectsSortMode.None);
             bugLogger.LogBug(bugs);
-            bugLogger.SerializeJson();*/
+            bugLogger.SerializeJson();
         }
     }
 
@@ -71,6 +71,10 @@ public class BugManager : MonoBehaviour
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.AddComponent<T>();
 
+            cube.tag = "Bug";
+            cube.GetComponent<Collider>().isTrigger = true;
+            cube.transform.parent = parentObject.transform;
+            cube.transform.position = PlaceBugArea(cube, 0);
             if (typeof(T) == typeof(PhysicsBug))
             {
                 cube.transform.localScale = new Vector3(
@@ -78,7 +82,10 @@ public class BugManager : MonoBehaviour
                     cubeScaleMax / 2,
                     Random.Range(cubeScaleMin, cubeScaleMax));
 
+                cube.GetComponent<PhysicsBug>().position = cube.transform.position;    
                 cube.GetComponent<PhysicsBug>().id = HighestBugId;
+                cube.GetComponent<PhysicsBug>().bugClass = "PhysicsBug";
+                cube.GetComponent<PhysicsBug>().bugType = "B8";
             }
             else if (typeof(T) == typeof(GeometryBug))
             {
@@ -86,16 +93,15 @@ public class BugManager : MonoBehaviour
                     Random.Range(cubeScaleMin, cubeScaleMax),
                     cubeScaleMax / 2,
                     Random.Range(cubeScaleMin, cubeScaleMax));
-                
+                cube.GetComponent<GeometryBug>().position = cube.transform.position;    
                 cube.GetComponent<GeometryBug>().id = HighestBugId;
-
+                cube.GetComponent<GeometryBug>().bugClass = "GeometryBug" ;
+                cube.GetComponent<GeometryBug>().bugType = "B5" ;
             }
 
-            cube.tag = "Bug";
-            cube.GetComponent<Collider>().isTrigger = true;
-            cube.transform.parent = parentObject.transform;
-            cube.transform.position = PlaceBugArea(cube, 0);
             
+            
+             
         }
 
     }
@@ -134,6 +140,10 @@ public class BugManager : MonoBehaviour
                     
                     GadgetBug gadgetBug = bugObject.GetComponent<GadgetBug>();
                     gadgetBug.id = HighestBugId;
+                    gadgetBug.position = bugObject.transform.position;
+                    gadgetBug.bugClass = "GadgetBug";
+                    gadgetBug.bugType = "B2";
+
                 }
                 else if ((typeof(T) == typeof(LogicBug)) & (numberOfPlacedBugs < numberOfBugs))
                 {
@@ -142,6 +152,9 @@ public class BugManager : MonoBehaviour
                     Debug.Log("Placed Logic Bug");
                     LogicBug logicBug = bugObject.GetComponent<LogicBug>();
                     logicBug.id = HighestBugId;
+                    logicBug.position = bugObject.transform.position;
+                    logicBug.bugClass = "LogicBug";
+                    logicBug.bugType = "B9";
                 }
                 else if ((typeof(T) == typeof(StateBug)) & (numberOfPlacedBugs < numberOfBugs))
                 {
@@ -149,6 +162,9 @@ public class BugManager : MonoBehaviour
                     ++numberOfPlacedBugs;
                     StateBug stateBug = bugObject.GetComponent<StateBug>();
                     stateBug.id = HighestBugId;
+                    stateBug.position = bugObject.transform.position;
+                    stateBug.bugClass = "StateBug";
+                    stateBug.bugType = "B4";
                     Debug.Log("Placed State Bug");
                 }
             }
@@ -220,7 +236,7 @@ public class BugLogEntry
 }
 public class BugLogger
 {
-    private string savePath = "/home/wilah/Projects/osb3d/OSB3D/Assets";
+    private string savePath = "C://Users//William//Projects//osb3d//OSB3D//Assets";
     public List<BugLogEntry> logs = new List<BugLogEntry>();
 
     public void LogBug(BugBase[] bugs)
@@ -244,7 +260,7 @@ public class BugLogger
     public void SerializeJson()
     {
         string json = JsonHelper.ToJson(logs, true);
-        string filePath = savePath + "/Data/data.json";
+        string filePath = savePath + "//Data//data.json";
         System.IO.File.WriteAllText(filePath, json);
 
     }

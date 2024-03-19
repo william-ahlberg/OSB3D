@@ -18,6 +18,7 @@ public class GadgetBug : BugBase
     private void Start()
     {
         base.Start();
+
         DisableGadget("Door");
     }
 

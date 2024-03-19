@@ -1,1104 +1,301 @@
 {
     "BugLog": [
         {
-            "id": 15,
+            "id": 3,
             "position": {
-                "x": 512.252685546875,
-                "y": 1.0,
-                "z": 96.75172424316406
+                "x": 53.89525604248047,
+                "y": 0.6996049880981445,
+                "z": 81.10658264160156
             },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 76,
-            "position": {
-                "x": 33.924930572509769,
-                "y": 1.0,
-                "z": 380.9671325683594
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 93,
-            "position": {
-                "x": 494.6212158203125,
-                "y": 1.0,
-                "z": 612.6680908203125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 57,
-            "position": {
-                "x": 556.641845703125,
-                "y": 1.0,
-                "z": 451.8975524902344
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 36,
-            "position": {
-                "x": 72.60323333740235,
-                "y": 1.0,
-                "z": 959.6358642578125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 89,
-            "position": {
-                "x": 589.0393676757813,
-                "y": 1.0,
-                "z": 476.3977966308594
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 24,
-            "position": {
-                "x": 950.07080078125,
-                "y": 1.0,
-                "z": 615.4698486328125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 18,
-            "position": {
-                "x": 878.5158081054688,
-                "y": 1.0,
-                "z": 430.4129943847656
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 68,
-            "position": {
-                "x": 155.92098999023438,
-                "y": 1.0,
-                "z": 241.8505401611328
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 4,
-            "position": {
-                "x": 651.8589477539063,
-                "y": 1.0,
-                "z": 755.8551025390625
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 80,
-            "position": {
-                "x": 3.859333038330078,
-                "y": 1.0,
-                "z": 839.6355590820313
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 10,
-            "position": {
-                "x": 555.5863647460938,
-                "y": 1.0,
-                "z": 1128.9881591796875
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 97,
-            "position": {
-                "x": 874.39208984375,
-                "y": 1.0,
-                "z": 181.0613250732422
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 61,
-            "position": {
-                "x": 347.8854675292969,
-                "y": 1.0,
-                "z": 370.5167541503906
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 2,
-            "position": {
-                "x": 318.1369934082031,
-                "y": 1.0,
-                "z": 143.9212188720703
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 40,
-            "position": {
-                "x": 322.97698974609377,
-                "y": 1.0,
-                "z": 820.4517822265625
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 52,
-            "position": {
-                "x": 772.5685424804688,
-                "y": 1.0,
-                "z": 345.1545104980469
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 1,
-            "position": {
-                "x": 259.9485778808594,
-                "y": 1.0,
-                "z": 1105.3472900390625
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
+            "isActive": false
         },
         {
             "id": 8,
             "position": {
-                "x": 210.46173095703126,
-                "y": 1.0,
-                "z": 874.4627075195313
+                "x": 46.72547149658203,
+                "y": 0.5496025085449219,
+                "z": 61.87899398803711
             },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 28,
-            "position": {
-                "x": 1160.9647216796875,
-                "y": 1.0,
-                "z": 941.4549560546875
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 46,
-            "position": {
-                "x": 993.5247802734375,
-                "y": 1.0,
-                "z": 220.5132598876953
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 72,
-            "position": {
-                "x": 372.8728942871094,
-                "y": 1.0,
-                "z": 243.97940063476563
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 84,
-            "position": {
-                "x": 161.34458923339845,
-                "y": 1.0,
-                "z": 788.61865234375
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 14,
-            "position": {
-                "x": 1164.0877685546875,
-                "y": 1.0,
-                "z": 516.3035278320313
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 75,
-            "position": {
-                "x": 190.72003173828126,
-                "y": 1.0,
-                "z": 534.3417358398438
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 99,
-            "position": {
-                "x": 593.611083984375,
-                "y": 1.0,
-                "z": 740.5271606445313
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 44,
-            "position": {
-                "x": 801.5498657226563,
-                "y": 1.0,
-                "z": 687.439453125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 56,
-            "position": {
-                "x": 165.7481689453125,
-                "y": 1.0,
-                "z": 316.1440124511719
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 64,
-            "position": {
-                "x": 1026.748779296875,
-                "y": 1.0,
-                "z": 731.2136840820313
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 35,
-            "position": {
-                "x": 109.85442352294922,
-                "y": 1.0,
-                "z": 258.1796875
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 88,
-            "position": {
-                "x": 179.66018676757813,
-                "y": 1.0,
-                "z": 1012.4183959960938
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 23,
-            "position": {
-                "x": 663.544677734375,
-                "y": 1.0,
-                "z": 502.9629211425781
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 67,
-            "position": {
-                "x": 576.494873046875,
-                "y": 1.0,
-                "z": 805.1577758789063
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 79,
-            "position": {
-                "x": 825.7247314453125,
-                "y": 1.0,
-                "z": 369.0442810058594
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 96,
-            "position": {
-                "x": 589.1611328125,
-                "y": 1.0,
-                "z": 1018.4762573242188
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 60,
-            "position": {
-                "x": 427.6380310058594,
-                "y": 1.0,
-                "z": 864.7510986328125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 65,
-            "position": {
-                "x": 331.72747802734377,
-                "y": 1.0,
-                "z": 148.95828247070313
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 17,
-            "position": {
-                "x": 1014.5804443359375,
-                "y": 1.0,
-                "z": 170.65390014648438
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 39,
-            "position": {
-                "x": 163.14004516601563,
-                "y": 1.0,
-                "z": 206.33726501464845
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 51,
-            "position": {
-                "x": 192.85784912109376,
-                "y": 1.0416239500045777,
-                "z": 314.1710205078125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 92,
-            "position": {
-                "x": 90.12521362304688,
-                "y": 1.0,
-                "z": 1163.997314453125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 45,
-            "position": {
-                "x": 815.3949584960938,
-                "y": 1.0,
-                "z": 1158.149169921875
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 71,
-            "position": {
-                "x": 1080.181884765625,
-                "y": 1.0,
-                "z": -42.150142669677737
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 27,
-            "position": {
-                "x": 643.6527099609375,
-                "y": 1.0,
-                "z": 930.39306640625
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 7,
-            "position": {
-                "x": 940.0770263671875,
-                "y": 1.0,
-                "z": 1026.122314453125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 83,
-            "position": {
-                "x": 1041.9139404296875,
-                "y": 1.0,
-                "z": 1111.790283203125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 13,
-            "position": {
-                "x": 126.02986145019531,
-                "y": 1.0,
-                "z": 534.9517211914063
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 16,
-            "position": {
-                "x": 696.8795166015625,
-                "y": 1.0,
-                "z": 905.4366455078125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 74,
-            "position": {
-                "x": 789.5481567382813,
-                "y": 1.0,
-                "z": 88.77984619140625
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 50,
-            "position": {
-                "x": 524.57958984375,
-                "y": 1.0,
-                "z": 1096.1173095703125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 98,
-            "position": {
-                "x": 274.57672119140627,
-                "y": 1.0,
-                "z": 776.38720703125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 43,
-            "position": {
-                "x": -1.7930564880371094,
-                "y": 1.0,
-                "z": 310.54827880859377
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 55,
-            "position": {
-                "x": 674.5612182617188,
-                "y": 1.0,
-                "z": 793.10546875
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 31,
-            "position": {
-                "x": 92.0252914428711,
-                "y": 1.0,
-                "z": 1119.1798095703125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 34,
-            "position": {
-                "x": 29.493331909179689,
-                "y": 1.0,
-                "z": 467.1429443359375
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 87,
-            "position": {
-                "x": 829.2501831054688,
-                "y": 1.0,
-                "z": 432.9949951171875
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 66,
-            "position": {
-                "x": 528.6671752929688,
-                "y": 1.0,
-                "z": 67.27882385253906
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 78,
-            "position": {
-                "x": 948.0255737304688,
-                "y": 1.0,
-                "z": 575.3831176757813
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 0,
-            "position": {
-                "x": 166.44183349609376,
-                "y": 1.0,
-                "z": 1077.365234375
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 47,
-            "position": {
-                "x": -22.210796356201173,
-                "y": 1.0,
-                "z": 887.8284912109375
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 95,
-            "position": {
-                "x": 1100.9556884765625,
-                "y": 1.0,
-                "z": 1028.3211669921875
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 59,
-            "position": {
-                "x": 71.1624755859375,
-                "y": 1.0,
-                "z": 397.00054931640627
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 38,
-            "position": {
-                "x": 252.05426025390626,
-                "y": 1.0,
-                "z": 111.59498596191406
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 91,
-            "position": {
-                "x": 1003.166015625,
-                "y": 1.0,
-                "z": 703.6542358398438
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 26,
-            "position": {
-                "x": 433.05706787109377,
-                "y": 1.0,
-                "z": 888.1564331054688
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
+            "isActive": false
         },
         {
             "id": 20,
             "position": {
-                "x": 805.7649536132813,
-                "y": 1.0,
-                "z": 461.0049743652344
+                "x": 125.6456069946289,
+                "y": 18.850000381469728,
+                "z": 159.76742553710938
             },
             "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 70,
-            "position": {
-                "x": 599.6915283203125,
-                "y": 1.0,
-                "z": 347.9566650390625
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 6,
-            "position": {
-                "x": 157.57791137695313,
-                "y": 1.0,
-                "z": 769.8050537109375
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 82,
-            "position": {
-                "x": 652.1001586914063,
-                "y": 1.0,
-                "z": 675.3547973632813
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 12,
-            "position": {
-                "x": 952.176025390625,
-                "y": 1.0,
-                "z": 790.1502075195313
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 63,
-            "position": {
-                "x": 888.421630859375,
-                "y": 1.0,
-                "z": 917.3602294921875
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 73,
-            "position": {
-                "x": 351.8537902832031,
-                "y": 1.0,
-                "z": 404.96435546875
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 49,
-            "position": {
-                "x": 857.6358032226563,
-                "y": 1.0,
-                "z": 401.33837890625
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 42,
-            "position": {
-                "x": 1078.4755859375,
-                "y": 1.0,
-                "z": 1097.012939453125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 54,
-            "position": {
-                "x": 704.0397338867188,
-                "y": 1.0,
-                "z": 318.2695007324219
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 30,
-            "position": {
-                "x": 465.19207763671877,
-                "y": 1.0,
-                "z": 1158.4417724609375
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 3,
-            "position": {
-                "x": 598.259033203125,
-                "y": 1.0,
-                "z": 1029.6202392578125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 33,
-            "position": {
-                "x": 748.4285888671875,
-                "y": 1.0,
-                "z": 984.7391967773438
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 22,
-            "position": {
-                "x": 322.2834777832031,
-                "y": 1.0,
-                "z": 874.0773315429688
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 86,
-            "position": {
-                "x": 1146.44140625,
-                "y": 1.0,
-                "z": 389.1799621582031
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 32,
-            "position": {
-                "x": 577.40966796875,
-                "y": 1.0,
-                "z": 963.8429565429688
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 77,
-            "position": {
-                "x": 218.4801025390625,
-                "y": 1.0,
-                "z": 644.1094360351563
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 94,
-            "position": {
-                "x": 388.3643493652344,
-                "y": 1.0,
-                "z": 768.2716674804688
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 58,
-            "position": {
-                "x": 277.5426025390625,
-                "y": 1.0,
-                "z": 4.946281433105469
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 37,
-            "position": {
-                "x": 422.1780090332031,
-                "y": 1.0,
-                "z": 1051.0416259765625
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 90,
-            "position": {
-                "x": 315.5279846191406,
-                "y": 1.0,
-                "z": 365.6717529296875
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 19,
-            "position": {
-                "x": 998.26220703125,
-                "y": 1.0,
-                "z": 998.0148315429688
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 69,
-            "position": {
-                "x": 141.29812622070313,
-                "y": 1.0,
-                "z": 730.6817626953125
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 25,
-            "position": {
-                "x": 716.8995971679688,
-                "y": 1.0,
-                "z": 210.1858367919922
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugType": "B8",
+            "isActive": false
         },
         {
             "id": 5,
             "position": {
-                "x": 1029.9873046875,
-                "y": 1.0,
-                "z": 830.5892333984375
+                "x": 68.05010986328125,
+                "y": 0.5496014356613159,
+                "z": 40.332862854003909
             },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
-        },
-        {
-            "id": 81,
-            "position": {
-                "x": 1003.0564575195313,
-                "y": 1.0,
-                "z": 723.8090209960938
-            },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
+            "isActive": false
         },
         {
             "id": 11,
             "position": {
-                "x": 836.1563110351563,
-                "y": 1.0,
-                "z": 356.44549560546877
+                "x": 30.961273193359376,
+                "y": 2.1536858081817629,
+                "z": 122.8816146850586
             },
             "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugType": "B8",
+            "isActive": false
         },
         {
-            "id": 62,
+            "id": 25,
             "position": {
-                "x": 497.6976318359375,
-                "y": 1.0,
-                "z": 533.0506591796875
+                "x": 102.5,
+                "y": 0.0,
+                "z": 40.00000762939453
+            },
+            "bugClass": "StateBug",
+            "bugType": "B4",
+            "isActive": false
+        },
+        {
+            "id": 22,
+            "position": {
+                "x": 102.5,
+                "y": 0.0,
+                "z": 40.00000762939453
+            },
+            "bugClass": "GadgetBug",
+            "bugType": "B2",
+            "isActive": false
+        },
+        {
+            "id": 26,
+            "position": {
+                "x": 85.0,
+                "y": 0.0,
+                "z": 100.0
+            },
+            "bugClass": "StateBug",
+            "bugType": "B4",
+            "isActive": false
+        },
+        {
+            "id": 2,
+            "position": {
+                "x": 103.72828674316406,
+                "y": 0.999997615814209,
+                "z": 46.65653991699219
+            },
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
+            "isActive": false
+        },
+        {
+            "id": 23,
+            "position": {
+                "x": 85.0,
+                "y": 0.0,
+                "z": 100.0
+            },
+            "bugClass": "GadgetBug",
+            "bugType": "B2",
+            "isActive": false
+        },
+        {
+            "id": 4,
+            "position": {
+                "x": 78.64524841308594,
+                "y": 0.550000011920929,
+                "z": -3.689350128173828
+            },
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
+            "isActive": false
+        },
+        {
+            "id": 12,
+            "position": {
+                "x": 157.1833953857422,
+                "y": 0.5496028661727905,
+                "z": 59.19150924682617
             },
             "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugType": "B8",
+            "isActive": false
         },
         {
             "id": 9,
             "position": {
-                "x": 1107.4285888671875,
-                "y": 1.0,
-                "z": 209.05059814453126
+                "x": 103.97509765625,
+                "y": 18.850000381469728,
+                "z": 84.64054107666016
             },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
+            "isActive": false
         },
         {
-            "id": 48,
+            "id": 27,
             "position": {
-                "x": 199.8330078125,
-                "y": 1.0,
-                "z": 1014.0523071289063
+                "x": -40.000003814697269,
+                "y": 0.0,
+                "z": -11.425003051757813
             },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugClass": "LogicBug",
+            "bugType": "B9",
+            "isActive": false
         },
         {
-            "id": 41,
+            "id": 7,
             "position": {
-                "x": 513.2068481445313,
-                "y": 1.0,
-                "z": 1053.4862060546875
+                "x": 143.64218139648438,
+                "y": 0.550000011920929,
+                "z": 26.337501525878908
             },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
+            "isActive": false
         },
         {
-            "id": 53,
+            "id": 24,
             "position": {
-                "x": 930.162109375,
-                "y": 1.0,
-                "z": 580.1221313476563
+                "x": -7.500004768371582,
+                "y": 0.0,
+                "z": 40.000003814697269
+            },
+            "bugClass": "StateBug",
+            "bugType": "B4",
+            "isActive": false
+        },
+        {
+            "id": 6,
+            "position": {
+                "x": 49.01585388183594,
+                "y": 0.5654423832893372,
+                "z": 127.47161865234375
+            },
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
+            "isActive": false
+        },
+        {
+            "id": 18,
+            "position": {
+                "x": 115.29669189453125,
+                "y": 17.0,
+                "z": -37.61448669433594
             },
             "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugType": "B8",
+            "isActive": false
+        },
+        {
+            "id": 15,
+            "position": {
+                "x": -7.301361083984375,
+                "y": 14.899999618530274,
+                "z": -35.51396179199219
+            },
+            "bugClass": "PhysicsBug",
+            "bugType": "B8",
+            "isActive": false
+        },
+        {
+            "id": 10,
+            "position": {
+                "x": 92.74468231201172,
+                "y": 0.550000011920929,
+                "z": -5.3942718505859379
+            },
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
+            "isActive": false
+        },
+        {
+            "id": 17,
+            "position": {
+                "x": 10.812335968017579,
+                "y": 6.559605121612549,
+                "z": 140.2631072998047
+            },
+            "bugClass": "PhysicsBug",
+            "bugType": "B8",
+            "isActive": false
+        },
+        {
+            "id": 19,
+            "position": {
+                "x": 76.85076904296875,
+                "y": 0.699603259563446,
+                "z": 72.12470245361328
+            },
+            "bugClass": "PhysicsBug",
+            "bugType": "B8",
+            "isActive": false
         },
         {
             "id": 21,
             "position": {
-                "x": 761.8702392578125,
-                "y": 1.0,
-                "z": 1162.4075927734375
+                "x": -7.500004768371582,
+                "y": 0.0,
+                "z": 40.000003814697269
             },
-            "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugClass": "GadgetBug",
+            "bugType": "B2",
+            "isActive": false
         },
         {
-            "id": 29,
+            "id": 16,
             "position": {
-                "x": 16.022281646728517,
-                "y": 1.0,
-                "z": 835.7802734375
+                "x": -40.45294189453125,
+                "y": 1.0675106048583985,
+                "z": 154.39376831054688
             },
             "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugType": "B8",
+            "isActive": false
         },
         {
-            "id": 85,
+            "id": 14,
             "position": {
-                "x": 273.65338134765627,
-                "y": 1.0,
-                "z": 1155.4512939453125
+                "x": 5.83099365234375,
+                "y": 1.0458900928497315,
+                "z": 88.78964233398438
             },
             "bugClass": "PhysicsBug",
-            "bugType": "",
-            "isActive": true
+            "bugType": "B8",
+            "isActive": false
+        },
+        {
+            "id": 13,
+            "position": {
+                "x": 151.63238525390626,
+                "y": 17.0,
+                "z": -49.8432731628418
+            },
+            "bugClass": "PhysicsBug",
+            "bugType": "B8",
+            "isActive": false
+        },
+        {
+            "id": 1,
+            "position": {
+                "x": -47.80620574951172,
+                "y": 0.6613826751708984,
+                "z": 112.68216705322266
+            },
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
+            "isActive": false
         }
     ]
 }
