@@ -33,6 +33,7 @@ public class BugManager : MonoBehaviour
     {
         bugSideChannel = new BugSideChannel();
         SideChannelManager.RegisterSideChannel(bugSideChannel);
+        
     }
 
     void Update()
@@ -46,7 +47,7 @@ public class BugManager : MonoBehaviour
             firstFrame = false;
 
             CreateBugArea<GeometryBug>(bugSideChannel.GetWithDefault<int>("geometry", 10));
-            CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", 10));
+            CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", 1000));
             SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", 10));
             SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", 10));
             SearchBugObject<LogicBug>(bugSideChannel.GetWithDefault<int>("logic", 10));
@@ -217,6 +218,8 @@ public class BugManager : MonoBehaviour
                 bounds.Encapsulate(renderers[i].bounds);
             }
         }
+
+        
 
     }
 

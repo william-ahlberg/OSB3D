@@ -8,8 +8,6 @@ using Unity.VisualScripting;
 using System;
 using Unity.MLAgents.SideChannels;
 
-
-
 public class BaseAgent : Agent
 {
     float[] actions = new float[6];
@@ -19,19 +17,16 @@ public class BaseAgent : Agent
     Rigidbody rb;
     PlayerController playerController;
     Collider[] agentColliders;
-    
-    
-    SensorSideChannel sensorSideChannel;
-    BugManager bugManager = new BugManager();
-    string vectorObsSettings;
 
+    SensorSideChannel sensorSideChannel;
+    string vectorObsSettings;
+    public BugManager bugManager; 
     SensorManager sensorManager;
 
     private void Awake()
     {
         sensorSideChannel = new SensorSideChannel();
         SideChannelManager.RegisterSideChannel(sensorSideChannel);
-
     }
 
     private void OnEnable()
@@ -44,16 +39,14 @@ public class BaseAgent : Agent
     // Start is called before the first frame update
     private void Start()
     {
+        bugManager = FindObjectOfType<BugManager>();
         agentController = GetComponent<AgentController>();
         playerController = GetComponent<PlayerController>();
-
         rb = GetComponent<Rigidbody>();
         agentBody = transform.Find("Body");
         startPosition = transform.position;
-
         //sensorSideChannel = new SensorSideChannel();
-        Debug.Log($"From the BaseAgent, Env Bounds {bugManager.bounds}");
-
+        
         vectorObsSettings = sensorSideChannel.GetWithDefault<string>("position_type", "none");
     }
 
@@ -65,13 +58,13 @@ public class BaseAgent : Agent
 
     private void FixedUpdate()
     {
+            
     }
 
     public override void OnEpisodeBegin()
     {
         ResetAgent();
         Debug.Log("Episode Begin");
-
 
     }
 
@@ -82,11 +75,22 @@ public class BaseAgent : Agent
 
     }
 
-    public void NormalizePosition()
+    public Vector3 DivideComponentWise(Vector3 a, Vector3 b)
     {
         
+       
+    
+    
+    
+        return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z); 
+    }
 
 
+    public Vector3 NormalizedPosition()
+    {
+        Vector3 positionNorm = 2 * DivideComponentWise(transform.position - bugManager.bounds.min, bugManager.bounds.max - bugManager.bounds.min) - new Vector3(1f,1f,1f);
+        Debug.Log(positionNorm);    
+        return positionNorm;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -94,7 +98,7 @@ public class BaseAgent : Agent
         if (vectorObsSettings == "normalized")
         {
             sensor.AddObservation(agentBody.localRotation);
-            sensor.AddObservation(transform.position);
+            sensor.AddObservation(NormalizedPosition());
         }
 
         else if (vectorObsSettings == "absolute")
