@@ -35,18 +35,6 @@ observation_space_settings:
         position_type: "normalized"
         include_bug_position: false
 
-    # Camera sensor
-    camera_settings:
-        grayscale: false
-        camera_resolution_width: 1024
-        camera_resolution_height: 1024 
-
-
-    # Lidar sensors
-    ray_perception_settings:
-        ray_perception_plane: 10
-        ray_perception_cone : 10
-        ray_perception_slice: 10
 
     # Semantic map sensor
     semantic_map_settings:

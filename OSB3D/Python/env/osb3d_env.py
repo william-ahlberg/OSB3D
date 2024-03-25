@@ -16,6 +16,8 @@ from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from eval.eval import OSB3DEval
 import uuid
 from typing import TypeVar
+from typing import List
+import json
 
 from mlagents_envs.side_channel.side_channel import (
     SideChannel,
@@ -41,10 +43,12 @@ class OSB3DEnv(gym.Env):
         self.set_env_channel()
         self.set_sensor_channel()
         self.set_action_channel()
+        self.set_info_channel()
         self.side_channels = [self.engine_channel,
                               self.parameter_channel,
                               self.sensor_channel,
-                              self.action_channel]
+                              self.action_channel,
+                              self.info_channel]
 
         self.behavior_name = "AgentBehavior?team=0"
 
@@ -62,11 +66,13 @@ class OSB3DEnv(gym.Env):
         self.action_size = 6
         self.trajectory = []
         self.trajectories = dict()
+        self.bug_data = None
+         
 
     def set_engine_channel(self):
         self.engine_channel = EngineConfigurationChannel()
         engine_config = self.config["unity_engine_settings"]
-        print("Engine ",engine_config)
+        #print("Engine ",engine_config)
 
         self.engine_channel.set_configuration_parameters(**engine_config)
 
@@ -84,6 +90,9 @@ class OSB3DEnv(gym.Env):
         self.action_channel = ActionSideChannel(self.config)
         self.action_channel.set_sensor_parameter()
 
+    def set_info_channel(self):
+        self.info_channel = InfoSideChannel()
+
 
     def step(self, action):
         action = np.asarray(action)
@@ -99,6 +108,7 @@ class OSB3DEnv(gym.Env):
         self.unity_env.step()
         # decision_steps: obs, reward, agent_id, action_mask
         (decision_steps, terminal_steps) = self.unity_env.get_steps(self.behavior_name)
+        
         if (terminal_steps.interrupted == True):
             print("done")
             terminated = True
@@ -109,11 +119,13 @@ class OSB3DEnv(gym.Env):
         observation = decision_steps.obs
         print(decision_steps.action_mask)
         #self.trajectories[self.episode].append(list(observation[-1][0]))
-
-        return observation, reward, terminated, False, None
+        info = self._get_info()
+        print(info)
+        return observation, reward, terminated, False, info
 
     def reset(self):
         super().reset(seed=self.seed)
+        self.import_bugdata()
         if (self.episode != -1):
             info = self.__get_info()
         else:
@@ -135,28 +147,43 @@ class OSB3DEnv(gym.Env):
     def close(self):
         self.unity_env.close()
 
-    def __get_info(self):
-        print(self.trajectory)
+    def _get_info(self):
+        
+        agent_positions = np.array(self.info_channel.message_log).reshape((len(self.info_channel.message_log),3))
+        bug_positions = np.zeros((len(self.bug_data["BugLog"]),3))
+        for index, bug in enumerate(self.bug_data["BugLog"]):
+            x = bug["position"]["x"]
+            y = bug["position"]["y"]
+            z = bug["position"]["z"]
+            bug_positions[index,:] = (x,y,z)
+        distances = np.linalg.norm(bug_positions[:, np.newaxis, :] - agent_positions, axis=2)
+        within_distance_mask = distances <= 10;
+        bug_key = "BugLog" 
         info = {
-            "bugs_found": 0,
+            "bugs_found": f"{100 * np.sum(within_distance_mask.any(axis=1)) / len(self.bug_data[bug_key])}%" ,
             "bugs_found_cumulative": 0,
             "area_covered": 0,
-            "area_covered_cumulative": 0}
-
+            "area_covered_cumulative": 0,
+        }
         return info
 
     def set_seed(self):
         pass
+    
     def set_config(self):
         with open(self.config_file, "r") as f:
             self.config = yaml.safe_load(f)
-            print(self.config)
+            #print(self.config)
 
     def action_sample(self):
         if self.unity_env.behavior_specs[self.behavior_name].action_spec.is_continuous():
             action_sample = np.random.rand(self.unity_env.behavior_specs[self.behavior_name].action_spec.continuous_size)
             return 2 * action_sample - 1
 
+    def import_bugdata(self):
+        with open(r"C:\Users\William\Projects\osb3d\OSB3D\Assets\Data\data.json", "r") as json_file:
+            self.bug_data = json.load(json_file)
+             
 
 class SensorSideChannel(SideChannel):
 
@@ -302,6 +329,28 @@ class BugSideChannel(SideChannel):
                 msg.write_string(i)
 
         super().queue_message_to_send(msg)
+
+class InfoSideChannel(SideChannel):
+    
+    def __init__(self) -> None:
+        super().__init__(uuid.UUID("a0b3abca-2146-4ddb-ac7b-713aebedd67f"))
+        self._message_log = []
+
+    @property
+    def message_log(self) -> List[float]:
+        return self._message_log
+    
+    @message_log.setter
+    def message_log(self, value) -> None:
+        self._message_log = value
+        
+    def on_message_received(self, msg: IncomingMessage) -> None:
+        """
+        Note: We must implement this method of the SideChannel interface to
+        receive messages from Unity
+        """
+        # We simply read a string from the message and print it.
+        self._message_log.append(msg.read_float32_list())
 
 
 
