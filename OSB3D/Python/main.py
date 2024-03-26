@@ -13,6 +13,7 @@ def main():
                    worker_id=0,
                    no_graphics=False,
                    seed=1337,
+                   max_episode_timestep=1000,
                    config_file=args.configuration_file)
     observation = env.reset()
     for _ in range(10000):
@@ -23,6 +24,7 @@ def main():
        # print(observation)
         if terminated:
             observation, info = env.reset()
+            print(info)
     env.close()
 
 if __name__=="__main__":

@@ -1,3 +1,4 @@
+﻿from tkinter import W
 from mlagents_envs.environment import UnityEnvironment
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,7 +19,7 @@ import uuid
 from typing import TypeVar
 from typing import List
 import json
-
+import time
 from mlagents_envs.side_channel.side_channel import (
     SideChannel,
     IncomingMessage,
@@ -26,11 +27,25 @@ from mlagents_envs.side_channel.side_channel import (
 )
 
 class OSB3DEnv(gym.Env):
-    def __init__(self, game_name, worker_id, no_graphics, seed, config_file):
+    def __init__(self, game_name, worker_id, no_graphics, seed, max_episode_timestep, config_file):
+
+#===============================================      
+#====██████╗ ███████╗██████╗ ██████╗ ██████╗==== 
+#===██╔═══██╗██╔════╝██╔══██╗╚════██╗██╔══██╗===
+#===██║   ██║███████╗██████╔╝ █████╔╝██║  ██║===
+#===██║   ██║╚════██║██╔══██╗ ╚═══██╗██║  ██║===
+#===╚██████╔╝███████║██████╔╝██████╔╝██████╔╝===
+#====╚═════╝ ╚══════╝╚═════╝ ╚═════╝ ╚═════╝==== 
+#===============================================
+
+        print("Starting Environment...")
+        time.sleep(3)
+        print("You can know start the Unity scene")
         self.game_name = game_name
         self.seed = seed
         self.no_graphics = no_graphics
-        self._max_episode_timesteps = 1000
+        self._max_episode_timestep = max_episode_timestep
+        self.timesteps = 0
         self.config_file = config_file
         self.config = {}
 
@@ -39,16 +54,20 @@ class OSB3DEnv(gym.Env):
         self.parameter_channel = None
         self.sensor_channel = None
         self.action_channel = None
+        self.info_channel = None
+        self.bug_channel = None
         self.set_engine_channel()
         self.set_env_channel()
         self.set_sensor_channel()
         self.set_action_channel()
         self.set_info_channel()
+        self.set_bug_channel()
         self.side_channels = [self.engine_channel,
                               self.parameter_channel,
                               self.sensor_channel,
                               self.action_channel,
-                              self.info_channel]
+                              self.info_channel,
+                              self.bug_channel]
 
         self.behavior_name = "AgentBehavior?team=0"
 
@@ -66,9 +85,23 @@ class OSB3DEnv(gym.Env):
         self.action_size = 6
         self.trajectory = []
         self.trajectories = dict()
-        self.bug_data = None
-         
+        self.bug_data = self.import_bugdata() 
+        
+        self.bugs_found = 0
+        self.bugs_found_cumulative = 0
+        self.env_size = 0 
+        
+        
+        self._bug_positions = np.zeros((len(self.bug_data["BugLog"]),3))
+        
+        for index, bug in enumerate(self.bug_data["BugLog"]):
+            x = bug["position"]["x"]
+            y = bug["position"]["y"]
+            z = bug["position"]["z"]
+            self._bug_positions[index,:] = (x,y,z)
 
+        
+        
     def set_engine_channel(self):
         self.engine_channel = EngineConfigurationChannel()
         engine_config = self.config["unity_engine_settings"]
@@ -93,6 +126,9 @@ class OSB3DEnv(gym.Env):
     def set_info_channel(self):
         self.info_channel = InfoSideChannel()
 
+    def set_bug_channel(self):
+        self.bug_channel = BugSideChannel(self.config)
+        self.bug_channel.set_bug_parameter()
 
     def step(self, action):
         action = np.asarray(action)
@@ -117,19 +153,22 @@ class OSB3DEnv(gym.Env):
             reward = decision_steps.reward[0]
             terminated = False
         observation = decision_steps.obs
-        print(decision_steps.action_mask)
         #self.trajectories[self.episode].append(list(observation[-1][0]))
-        info = self._get_info()
-        print(info)
-        return observation, reward, terminated, False, info
+        self.timesteps += 1
+        if (self.timesteps > self._max_episode_timestep):
+            terminated = True
+
+        return observation, reward, terminated, False, dict()
 
     def reset(self):
         super().reset(seed=self.seed)
         self.import_bugdata()
         if (self.episode != -1):
-            info = self.__get_info()
+            info = self._get_info()
         else:
             info = None
+            self.env_size = self.info_channel.message_log.pop(0)
+            print("Environment size: ", self.env_size)    
         self.unity_env.reset()
         self.episode += 1
         
@@ -137,7 +176,9 @@ class OSB3DEnv(gym.Env):
         self.trajectories[self.episode] = []
         decision_step, _ = self.unity_env.get_steps(self.behavior_name)
         observation = decision_step.obs
-
+        self.bugs_found = 0
+        self.timesteps = 0
+        
         return observation, info
 
     def render(self):
@@ -147,24 +188,28 @@ class OSB3DEnv(gym.Env):
     def close(self):
         self.unity_env.close()
 
+    @property
+    def bug_positions(self):
+        return self._bug_positions
+
+    @bug_positions.setter
+    def bug_positions(self, value):
+        self._bug_position = value
+
     def _get_info(self):
-        
-        agent_positions = np.array(self.info_channel.message_log).reshape((len(self.info_channel.message_log),3))
-        bug_positions = np.zeros((len(self.bug_data["BugLog"]),3))
-        for index, bug in enumerate(self.bug_data["BugLog"]):
-            x = bug["position"]["x"]
-            y = bug["position"]["y"]
-            z = bug["position"]["z"]
-            bug_positions[index,:] = (x,y,z)
-        distances = np.linalg.norm(bug_positions[:, np.newaxis, :] - agent_positions, axis=2)
-        within_distance_mask = distances <= 10;
+        agent_positions = np.array(self.info_channel.message_log).reshape((len(self.info_channel.message_log),3)) 
+        distances = np.linalg.norm(self._bug_positions[:, np.newaxis, :] - agent_positions, axis=2)
+        within_distance_mask = distances <= 3;
         bug_key = "BugLog" 
-        info = {
-            "bugs_found": f"{100 * np.sum(within_distance_mask.any(axis=1)) / len(self.bug_data[bug_key])}%" ,
-            "bugs_found_cumulative": 0,
+        self.bugs_found = np.sum(within_distance_mask.any(axis=1))        
+        self.bugs_found_cumulative += self.bugs_found
+        info = { 
+            "bugs_found": f"{(100 * self.bugs_found / len(self.bug_data[bug_key])):.2f}%",
+            "bugs_found_cumulative": f"{(100 * self.bugs_found_cumulative / len(self.bug_data[bug_key])):.2f}%",
             "area_covered": 0,
             "area_covered_cumulative": 0,
         }
+        self._bug_positions = self._bug_positions[np.invert(within_distance_mask.any(axis=1)),...]
         return info
 
     def set_seed(self):
@@ -182,8 +227,8 @@ class OSB3DEnv(gym.Env):
 
     def import_bugdata(self):
         with open(r"C:\Users\William\Projects\osb3d\OSB3D\Assets\Data\data.json", "r") as json_file:
-            self.bug_data = json.load(json_file)
-             
+            bug_data = json.load(json_file)
+        return bug_data     
 
 class SensorSideChannel(SideChannel):
 
@@ -209,7 +254,6 @@ class SensorSideChannel(SideChannel):
                 self.send_typed_message(key1,True)
                 for key2, value2 in value1.items():
                     self.send_typed_message(key2, value2)
-                    print(value2)
 
     def send_typed_message(self, key, value):
         msg = OutgoingMessage()
@@ -257,7 +301,6 @@ class ActionSideChannel(SideChannel):
             action_config = self.config["action_space_settings"]
             for key, value in action_config.items():
                 self.send_typed_message(key, value)
-                print(value)
 
     def send_typed_message(self, key, value):
         msg = OutgoingMessage()
@@ -299,13 +342,12 @@ class BugSideChannel(SideChannel):
         print(msg.read_string())
 
     def set_bug_parameter(self):
-        if "observation_space_settings" not in self.config.keys():
-            print("No sensor configuration was defined, using default values!")
+        if "bug_settings" not in self.config.keys():
+            print("No bug configuration was defined, using default values!")
         else:
             bug_config = self.config["bug_settings"]
             for key, value in bug_config.items():
                 self.send_typed_message(key, value)
-                print(value)
 
     def send_typed_message(self, key, value):
         msg = OutgoingMessage()
@@ -350,8 +392,8 @@ class InfoSideChannel(SideChannel):
         receive messages from Unity
         """
         # We simply read a string from the message and print it.
+        
         self._message_log.append(msg.read_float32_list())
-
 
 
 

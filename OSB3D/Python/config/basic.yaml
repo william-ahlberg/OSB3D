@@ -6,7 +6,7 @@ unity_engine_settings:
     width: 1024
     height: 1024
     quality_level: 1
-    time_scale: 1 # Allows for faster training time, but may introduce unwanted physics behaviour
+    time_scale: 100 # Allows for faster training time, but may introduce unwanted physics behaviour
     target_frame_rate: -1
     capture_frame_rate: 60
 
@@ -47,7 +47,7 @@ bug_settings:
     gadget: 10
     state: 10
     geometry: 10
-    physics: 10
+    physics: 1000
     logic: 10
 ...
 
