@@ -228,7 +228,25 @@ class OSB3DEnv(gym.Env):
     def import_bugdata(self):
         with open(r"C:\Users\William\Projects\osb3d\OSB3D\Assets\Data\data.json", "r") as json_file:
             bug_data = json.load(json_file)
-        return bug_data     
+        return bug_data
+    
+
+class DiscreteEnvironment():
+    
+    def __init__(self, min_x, max_x, min_y, max_y, min_z, max_z) -> None:
+        self.max_x = max_x
+        self.max_x = max_y
+        self.max_x = max_z
+        self.min_x = min_x
+        self.min_x = min_y
+        self.min_x = min_z
+        self.x_disc = x_disc
+        self.y_disc = y_disc
+        self.z_disc = z_disc
+
+
+    
+        
 
 class SensorSideChannel(SideChannel):
 
