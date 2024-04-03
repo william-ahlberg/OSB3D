@@ -1036,9 +1036,21 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 25
       objectReference: {fileID: 0}
+    - target: {fileID: -2711797202675304816, guid: 582596467a3d8a647baf28702901293e, type: 3}
+      propertyPath: m_TagString
+      value: Item
+      objectReference: {fileID: 0}
+    - target: {fileID: 249608219087743143, guid: 582596467a3d8a647baf28702901293e, type: 3}
+      propertyPath: m_TagString
+      value: Item
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 582596467a3d8a647baf28702901293e, type: 3}
       propertyPath: m_Name
       value: Park01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1462383442664422229, guid: 582596467a3d8a647baf28702901293e, type: 3}
+      propertyPath: m_TagString
+      value: Item
       objectReference: {fileID: 0}
     - target: {fileID: 1952462573153049155, guid: 582596467a3d8a647baf28702901293e, type: 3}
       propertyPath: m_LocalScale.x
@@ -1055,6 +1067,18 @@ PrefabInstance:
     - target: {fileID: 1952462573153049155, guid: 582596467a3d8a647baf28702901293e, type: 3}
       propertyPath: m_LocalPosition.y
       value: 3.24
+      objectReference: {fileID: 0}
+    - target: {fileID: 2161991078819051721, guid: 582596467a3d8a647baf28702901293e, type: 3}
+      propertyPath: m_TagString
+      value: Item
+      objectReference: {fileID: 0}
+    - target: {fileID: 6462690371552954974, guid: 582596467a3d8a647baf28702901293e, type: 3}
+      propertyPath: m_TagString
+      value: Item
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655633259851401260, guid: 582596467a3d8a647baf28702901293e, type: 3}
+      propertyPath: m_TagString
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 582596467a3d8a647baf28702901293e, type: 3}

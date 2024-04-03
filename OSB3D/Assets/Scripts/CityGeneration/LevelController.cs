@@ -176,6 +176,13 @@ public class LevelController : MonoBehaviour
 
                 //placed all instances in the a game object
                 newInstance.transform.parent = city.transform;
+                newInstance.tag = "Road";
+                foreach (Transform t in newInstance.transform)
+                {
+                    t.gameObject.tag = "Road";
+                }
+
+
 
                 currentPosZ += addToPos;
             }
@@ -291,6 +298,7 @@ public class LevelController : MonoBehaviour
         GameObject gameObject;
         int choosePark = UnityEngine.Random.Range(0, parks.Count);
         gameObject = Instantiate(parks[choosePark]);
+        gameObject.tag = "Ground";
         gameObject.transform.Translate(_blockPos);
         gameObject.transform.Rotate(0, _rotateBlock, 0, Space.World);
         return gameObject;
@@ -331,6 +339,7 @@ public class LevelController : MonoBehaviour
             edgeObject.transform.Translate(_blockPos);
             edgeObject.transform.Rotate(0, _edges[k].Item2, 0, Space.World);
             edgeObject.transform.parent = city.transform;
+            edgeObject.tag = "Building";
         }
 
         return _gameObject;
@@ -346,6 +355,7 @@ public class LevelController : MonoBehaviour
         else if (_i == _loopX - 1) edgeRotation = 180;
 
         GameObject edge = Instantiate(edgeRoad);
+        edge.tag = "Building";
         edge.transform.Translate(_roadPosition);
         edge.transform.Rotate(0, edgeRotation, 0, Space.World);
 

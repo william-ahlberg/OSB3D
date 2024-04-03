@@ -59,6 +59,7 @@ public class RoadGenerator : MonoBehaviour
         GameObject roadObject = new(roadName);
 
         GameObject newRoad = Instantiate(road);
+        newRoad.tag = "Road";
         newRoad.transform.parent = roadObject.transform;
 
         PlaceTrees(newRoad);
@@ -86,6 +87,7 @@ public class RoadGenerator : MonoBehaviour
             float rotate = Random.Range(0, 359);
             int index = Random.Range(0, streetTrees.Count);
             GameObject newTree = Instantiate(streetTrees[index], treePositions[i], Quaternion.identity);
+            newTree.tag = "Tree";
             newTree.transform.localScale = scaleVector;
             newTree.transform.localRotation = Quaternion.Euler(0, rotate, 0);
             newTree.transform.parent = _newRoad.transform;
@@ -236,6 +238,7 @@ public class RoadGenerator : MonoBehaviour
 
                 int carIndex = Random.Range(0, cars.Count);
                 newItem = Instantiate(cars[carIndex], new Vector3(_positions[i].x, 0, _positions[i].z), Quaternion.identity);
+                newItem.tag = "Car";
                 DriveCar drive = newItem.GetComponent<DriveCar>();
                 drive.NewCar(carsDriving, _minValue, _maxX, _maxZ, carSpeed, stopOnCollision);
             }
@@ -248,6 +251,7 @@ public class RoadGenerator : MonoBehaviour
 
                 int itemIndex = Random.Range(0, streetItems.Count);
                 newItem = Instantiate(streetItems[itemIndex], new Vector3(_positions[i].x, 0, _positions[i].z), Quaternion.identity);
+                newItem.tag = "Item";
             }
 
             newItem.transform.Rotate(0, rotation, 0, Space.World);

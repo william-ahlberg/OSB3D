@@ -87,6 +87,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrafficLight_import
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: dcd91cc2f6e417d4393902674d9cc8f3, type: 3}
+      propertyPath: m_TagString
+      value: Item
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dcd91cc2f6e417d4393902674d9cc8f3, type: 3}
 --- !u!4 &2364780041639728299 stripped

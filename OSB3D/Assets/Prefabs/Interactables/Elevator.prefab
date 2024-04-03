@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 3806771145703012408}
   m_Layer: 0
   m_Name: Elevator
-  m_TagString: Bug
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -400,6 +400,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 4524260020956081710, guid: e6a7b6a68bc8c0544800f18e1b9546ad, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e6a7b6a68bc8c0544800f18e1b9546ad, type: 3}
 --- !u!23 &1524232529620642137 stripped
@@ -466,6 +470,10 @@ PrefabInstance:
     - target: {fileID: 5474128347699163215, guid: 6c40ad12366572249b36b3db66416fbe, type: 3}
       propertyPath: m_Name
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5474128347699163215, guid: 6c40ad12366572249b36b3db66416fbe, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 5498838619906093987, guid: 6c40ad12366572249b36b3db66416fbe, type: 3}
       propertyPath: m_Size.x
@@ -550,6 +558,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 2885260515231469093, guid: d20fbe2bcf961644fb44ace04250f76a, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d20fbe2bcf961644fb44ace04250f76a, type: 3}
 --- !u!23 &5795930057055097208 stripped
@@ -580,6 +592,10 @@ PrefabInstance:
     - target: {fileID: 3486064552463416609, guid: 8915837c15ae53b458b2e2bbc4e919ac, type: 3}
       propertyPath: m_Name
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3486064552463416609, guid: 8915837c15ae53b458b2e2bbc4e919ac, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 4263551573216061339, guid: 8915837c15ae53b458b2e2bbc4e919ac, type: 3}
       propertyPath: m_RootOrder
@@ -647,6 +663,10 @@ PrefabInstance:
     - target: {fileID: 1162446418210506130, guid: 388cdc5f198de8544afaf2238414f148, type: 3}
       propertyPath: m_Name
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1162446418210506130, guid: 388cdc5f198de8544afaf2238414f148, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 1975398496226549544, guid: 388cdc5f198de8544afaf2238414f148, type: 3}
       propertyPath: m_RootOrder

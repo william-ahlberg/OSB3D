@@ -18,7 +18,7 @@ public class Semantic3DMap : ISensor
     public float _gridHeight = 1f;
 
     // Let developers specify which mask we want to use
-    public LayerMask layersMask;
+    public LayerMask layersMask = ~0;
 
     [Range(0f, 3f)]
     public float offset_x = 0;
@@ -60,7 +60,8 @@ public class Semantic3DMap : ISensor
         this.Tags = Tags;
         this._gridScale = _gridScale;
         this._gridHeight = _gridHeight;
-        this.layersMask = layersMask;
+        // TODO Set this via config in Python
+        this.layersMask = ~0;
         this.offset_x = offset_x;
         this.offset_y = offset_y;
         this.offset_z = offset_z;
@@ -69,7 +70,8 @@ public class Semantic3DMap : ISensor
         this._gridY = _gridY;
         this._gridZ = _gridZ;
         this.agent = agent;
-        this._debug = _debug;
+        // This is ok to be always true, for now
+        this._debug = true;
         this.sensorName = sensorName;
 
         createLocalGrid();
@@ -77,7 +79,7 @@ public class Semantic3DMap : ISensor
         
         // Create random colors for debug
         // The first color is white with no alpha
-        _materials.Add(new Color(1f, 1f, 1f, 0.25f));
+        _materials.Add(new Color(1f, 1f, 1f, 0.0f));
         for(int i = 1; i < 10; i++)
         {
             Color randomColor = new Color(
@@ -224,7 +226,7 @@ public class Semantic3DMap : ISensor
     {
         List<float> values = new List<float>();
         
-        int finalMask = layersMask;
+        int finalMask = ~0;
 
         for (int i = 0; i < _gridX; i++)
             for (int j = 0; j < _gridY; j++)

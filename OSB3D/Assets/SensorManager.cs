@@ -30,9 +30,9 @@ public class SensorManager : MonoBehaviour
     Semantic3DMapComponent semanticMapSensor;
     EnvironmentParameters envParameters;
 
-    float gridX = 3;
-    float gridY = 3;
-    float gridZ = 3;
+    int gridX = 5;
+    int gridY = 5;
+    int gridZ = 5;
 
     public void Awake()
     {
@@ -45,7 +45,7 @@ public class SensorManager : MonoBehaviour
 
     public void AddSensors(SensorSideChannel sensorSideChannel)
     {
-        // We need to do rhis otherwise we can't receive messages to this point
+        // We need to do this otherwise we can't receive messages to this point
         envParameters = Academy.Instance.EnvironmentParameters;
         rayPerceptionSettings = sensorSideChannel.GetWithDefault<bool>("ray_perception_settings", false);
         semanticMapSettings = sensorSideChannel.GetWithDefault<bool>("semantic_map_settings", false);
@@ -78,9 +78,16 @@ public class SensorManager : MonoBehaviour
         {
             semanticMapSensor = sensors.AddComponent<Semantic3DMapComponent>();
             semanticMapSensor.root = body;
-            semanticMapSensor._gridX = (int)envParameters.GetWithDefault("semantic_grid_x", gridX);
-            semanticMapSensor._gridY = (int)envParameters.GetWithDefault("semantic_grid_y", gridY);
-            semanticMapSensor._gridZ = (int)envParameters.GetWithDefault("semantic_grid_z", gridZ);
+            semanticMapSensor._gridX = sensorSideChannel.GetWithDefault<int>("semantic_map_x", gridX);
+            semanticMapSensor._gridY = sensorSideChannel.GetWithDefault<int>("semantic_map_y", gridY);
+            semanticMapSensor._gridZ = sensorSideChannel.GetWithDefault<int>("semantic_map_z", gridZ);
+            semanticMapSensor.offset_x = 1.0f;
+            semanticMapSensor.offset_y = 1.0f;
+            semanticMapSensor.offset_z = 1.0f;
+            semanticMapSensor._gridScale = 2.0f;
+            semanticMapSensor._gridHeight = 2.0f;
+
+
             semanticMapSensor.Tags = new List<string>() { "Building", "Item", "Road", "Car", "Ground" };
         }
     }

@@ -214,6 +214,11 @@ public class BlockGenerator : MonoBehaviour
 
                 GameObject building = Instantiate(buildings[type][chosen], position, Quaternion.identity);
                 SetBuildingMaterials(building);
+                building.tag = "Building";
+                foreach (Transform t in building.transform)
+                {
+                    t.gameObject.tag = "Building";
+                }
                 building.transform.Rotate(0, buildingRotation, 0, Space.World);
                 building.transform.parent = block.transform;
 
@@ -247,11 +252,16 @@ public class BlockGenerator : MonoBehaviour
         {
             ground = blockTerrain.Generate(_blockSize);
         }
-
         else
         {
             ground = Instantiate(groundPlate);
+
             ground.transform.parent = _block.transform;
+        }
+        ground.tag = "Ground";
+        foreach (Transform t in ground.transform)
+        {
+            t.gameObject.tag = "Ground";
         }
 
         return ground;

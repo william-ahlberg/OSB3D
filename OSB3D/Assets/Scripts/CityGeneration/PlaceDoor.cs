@@ -8,6 +8,7 @@ public class PlaceDoor : MonoBehaviour
     {
         int chosenDoor = Random.Range(0, _doors.Count);
         GameObject door = Instantiate(_allBuildings[_doors[chosenDoor]].Item1, _allBuildings[_doors[chosenDoor]].Item2.Position, Quaternion.identity);
+        door.tag = "Item";
         SetMaterial(door, _facadeMaterials);
         door.transform.Rotate(0, _allBuildings[_doors[chosenDoor]].Item2.Rotation, 0, Space.World);
         return door;

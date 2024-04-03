@@ -52,7 +52,8 @@ public class Semantic3DMapComponent : SensorComponent
 
     public override ISensor[] CreateSensors()
     {
-        _semanticMap = new Semantic3DMap(sensorName, _inUp, Tags, _gridScale, _gridHeight, layersMask, offset_x, offset_y, offset_z, _inFront, _gridX, _gridY, _gridZ, root, _debug);
+        if(_semanticMap == null)
+            _semanticMap = new Semantic3DMap(sensorName, _inUp, Tags, _gridScale, _gridHeight, layersMask, offset_x, offset_y, offset_z, _inFront, _gridX, _gridY, _gridZ, root, _debug);
 
         return new ISensor[] { _semanticMap };
     }
