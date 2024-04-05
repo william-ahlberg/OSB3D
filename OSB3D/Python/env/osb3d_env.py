@@ -82,7 +82,7 @@ class OSB3DEnv(gym.Env):
 
         self.coverage_of_points = []
         self.pos_buffer = dict()
-        self.action_size = 6
+        self.action_size = 6 
         self.trajectory = []
         self.trajectories = dict()
         self.bug_data = self.import_bugdata() 
@@ -167,7 +167,7 @@ class OSB3DEnv(gym.Env):
             info = self._get_info()
         else:
             info = None
-            self.env_size = self.info_channel.message_log.pop(0)
+            #self.env_size = self.info_channel.message_log.pop(0)
             print("Environment size: ", self.env_size)    
         self.unity_env.reset()
         self.episode += 1
@@ -199,7 +199,7 @@ class OSB3DEnv(gym.Env):
     def _get_info(self):
         agent_positions = np.array(self.info_channel.message_log).reshape((len(self.info_channel.message_log),3)) 
         distances = np.linalg.norm(self._bug_positions[:, np.newaxis, :] - agent_positions, axis=2)
-        within_distance_mask = distances <= 3;
+        within_distance_mask = distances <= 5;
         bug_key = "BugLog" 
         self.bugs_found = np.sum(within_distance_mask.any(axis=1))        
         self.bugs_found_cumulative += self.bugs_found
@@ -230,6 +230,8 @@ class OSB3DEnv(gym.Env):
             bug_data = json.load(json_file)
         return bug_data
     
+    @po
+    
 
 class DiscreteEnvironment():
     
@@ -242,11 +244,7 @@ class DiscreteEnvironment():
         self.min_x = min_z
         self.x_disc = x_disc
         self.y_disc = y_disc
-        self.z_disc = z_disc
-
-
-    
-        
+        self.z_disc = z_disc 
 
 class SensorSideChannel(SideChannel):
 

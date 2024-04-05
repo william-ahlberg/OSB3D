@@ -239,7 +239,7 @@ public class BugLogEntry
 }
 public class BugLogger
 {
-    private string savePath = "C://Users//asestini//Desktop//OSB3D//osb3d//OSB3D//Assets";
+    private string savePath = "C://Users//William//Projects//osb3d//OSB3D//Assets";
     public List<BugLogEntry> logs = new List<BugLogEntry>();
 
     public void LogBug(BugBase[] bugs)
