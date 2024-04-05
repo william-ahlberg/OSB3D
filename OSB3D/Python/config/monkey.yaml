@@ -1,0 +1,37 @@
+---
+# Monkey Agent YAML Configuration
+
+unity_engine_settings:
+    width: 1024
+    height: 1024
+    quality_level: 1
+    time_scale: 10
+    target_frame_rate: -1
+    capture_frame_rate: 60
+
+env_settings:
+    seed: 1
+    block_count_x: 2
+    block_count_z: 2
+    park_ratio: 0.25
+
+action_space_settings:
+    continuous_actions: true
+    available_actions:
+        - move_vertical
+        - move_horizontal
+        - mouse_y
+        - mouse_x
+        - jump
+
+observation_space_settings:
+    vector_obs_settings:
+        position_type: "absolute"
+        include_bug_position: false
+
+bug_settings:
+    gadget: 1
+    state: 1
+    geometry: 25
+    physics: 100
+    logic: 1
