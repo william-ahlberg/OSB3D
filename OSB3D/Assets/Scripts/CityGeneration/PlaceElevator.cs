@@ -23,7 +23,6 @@ public class PlaceElevator : MonoBehaviour
         gameObject.transform.parent = gameObject.transform;
 
         GameObject elevatorObject = Instantiate(elevator);
-        elevatorObject.tag = "Item";
 
         float rotation = ElevatorRotation(_direction);
 

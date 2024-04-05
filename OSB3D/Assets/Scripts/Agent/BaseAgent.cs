@@ -77,11 +77,10 @@ public class BaseAgent : Agent
 
     public Vector3 DivideComponentWise(Vector3 a, Vector3 b)
     {
-        
-       
-    
-    
-    
+        if(b.x == 0 || b.y == 0 || b.z == 0)
+        {
+            return new Vector3(0,0,0);
+        }
         return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z); 
     }
 
@@ -98,7 +97,14 @@ public class BaseAgent : Agent
         if (vectorObsSettings == "normalized")
         {
             sensor.AddObservation(agentBody.localRotation);
-            sensor.AddObservation(NormalizedPosition());
+            try
+            {
+                sensor.AddObservation(NormalizedPosition());
+            }
+            catch
+            {
+                sensor.AddObservation(new Vector3(0,0,0));
+            }
         }
 
         else if (vectorObsSettings == "absolute")

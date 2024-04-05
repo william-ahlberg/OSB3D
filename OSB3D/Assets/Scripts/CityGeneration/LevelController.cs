@@ -177,12 +177,6 @@ public class LevelController : MonoBehaviour
                 //placed all instances in the a game object
                 newInstance.transform.parent = city.transform;
                 newInstance.tag = "Road";
-                foreach (Transform t in newInstance.transform)
-                {
-                    t.gameObject.tag = "Road";
-                }
-
-
 
                 currentPosZ += addToPos;
             }

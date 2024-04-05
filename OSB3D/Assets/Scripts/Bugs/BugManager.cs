@@ -33,7 +33,6 @@ public class BugManager : MonoBehaviour
     {
         bugSideChannel = new BugSideChannel();
         SideChannelManager.RegisterSideChannel(bugSideChannel);
-        
     }
 
     void Update()
@@ -239,7 +238,7 @@ public class BugLogEntry
 }
 public class BugLogger
 {
-    private string savePath = "C://Users//asestini//Desktop//OSB3D//osb3d//OSB3D//Assets";
+    private string savePath = "C://Users//asestini//Desktop//OSB3D//CCPT////osb3d//OSB3D//Assets";
     public List<BugLogEntry> logs = new List<BugLogEntry>();
 
     public void LogBug(BugBase[] bugs)
