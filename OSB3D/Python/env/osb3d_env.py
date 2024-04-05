@@ -100,7 +100,7 @@ class OSB3DEnv(gym.Env):
             z = bug["position"]["z"]
             self._bug_positions[index,:] = (x,y,z)
 
-        
+        self._spawn_point = [0,0,0]
         
     def set_engine_channel(self):
         self.engine_channel = EngineConfigurationChannel()
@@ -230,7 +230,9 @@ class OSB3DEnv(gym.Env):
             bug_data = json.load(json_file)
         return bug_data
     
-    @po
+    @property
+    def spawn_point(self):
+        return self._spawn_point
     
 
 class DiscreteEnvironment():

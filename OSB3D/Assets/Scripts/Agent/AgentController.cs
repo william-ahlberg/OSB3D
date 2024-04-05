@@ -134,7 +134,7 @@ public class AgentController : MonoBehaviour
 
     }
 
-    private bool CheckGround()
+    public bool CheckGround()
     {
         return Physics.Raycast(transform.position, Vector3.down, agentHeight, groundLayer);
     }

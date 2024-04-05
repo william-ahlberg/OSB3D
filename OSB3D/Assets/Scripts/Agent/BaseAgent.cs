@@ -23,9 +23,13 @@ public class BaseAgent : Agent
     public BugManager bugManager; 
     SensorManager sensorManager;
 
+    InfoSideChannel infoSideChannel;
+
     private void Awake()
     {
         sensorSideChannel = new SensorSideChannel();
+        infoSideChannel = new InfoSideChannel();
+        SideChannelManager.RegisterSideChannel(infoSideChannel); 
         SideChannelManager.RegisterSideChannel(sensorSideChannel);
     }
 
@@ -106,6 +110,15 @@ public class BaseAgent : Agent
             sensor.AddObservation(agentBody.localRotation);
             sensor.AddObservation(transform.position);
         }
+
+        sensor.AddObservation(OnGround());
+    }
+
+    public bool OnGround()
+    { 
+        
+    
+    
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
