@@ -33,7 +33,6 @@ public class BugManager : MonoBehaviour
     {
         bugSideChannel = new BugSideChannel();
         SideChannelManager.RegisterSideChannel(bugSideChannel);
-        
     }
 
     void Update()
