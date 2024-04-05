@@ -10,6 +10,7 @@ using System;
 
 public class InfoSideChannel : SideChannel
 {
+    Hashtable m_InfoParameters = new Hashtable();
 
     public InfoSideChannel()
     {
@@ -68,7 +69,23 @@ public class InfoSideChannel : SideChannel
     
     }
     */
-
+    public T GetWithDefault<T>(string key, T defaultValue)
+    {
+        if (m_InfoParameters.ContainsKey(key))
+        {
+            var value = (T)m_InfoParameters[key];
+            return value;
+        
+        
+        }
+        else
+        {
+            return defaultValue;
+        }
+    
+    
+    
+    }
 
 }
 

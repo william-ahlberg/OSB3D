@@ -16,7 +16,7 @@ class RandomMonkeyAgent:
         self._spawn_point = (0,0,0)
         self.discretization_threshold = 5
         self.position_buffer = {"positions":[], 
-                                "visitation_count": [0]}
+                                "visitation_count": []}
         self._action = np.zeros((self.action_size)) 
     
     @property
@@ -46,16 +46,13 @@ class RandomMonkeyAgent:
 
     @property
     def spawn_point(self):
-        
         visitation_count = self.position_buffer["visitation_count"] 
         sum_of_inverse = sum(1/n for n in visitation_count)
         position_probability = [count / sum_of_inverse for count in visitation_count]
-
         position_index = random.choices(population=range(len(visitation_count)), weights=position_probability)
-
-        return self.position_buffer["position"][position_index]
+        print("Position index: ",position_index)
+        return self.position_buffer["positions"][position_index[0]]
 
     @spawn_point.setter
     def spawn_point(self, value) -> None:
         self._spawn_point = value
-        

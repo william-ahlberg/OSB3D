@@ -116,16 +116,11 @@ public class BaseAgent : Agent
             sensor.AddObservation(agentBody.localRotation);
             sensor.AddObservation(transform.position);
         }
+        Debug.Log(agentController.CheckGround());
+        sensor.AddObservation(agentController.CheckGround());
 
-        sensor.AddObservation(OnGround());
     }
 
-    public bool OnGround()
-    { 
-        
-    
-    
-    }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
@@ -143,7 +138,10 @@ public class BaseAgent : Agent
     public void ResetAgent()
     {
         rb.velocity = Vector3.zero;
-        transform.position = startPosition;
+
+        transform.position = infoSideChannel.GetWithDefault<Vector3>("spawn_point", startPosition);
+        Debug.Log("Start position: " + transform.position);
+        //transform.position = startPosition;
         agentColliders = GetComponentsInChildren<Collider>();
         foreach (Collider agentCollider in agentColliders)
         {

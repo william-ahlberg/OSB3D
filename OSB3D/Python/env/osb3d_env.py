@@ -234,6 +234,11 @@ class OSB3DEnv(gym.Env):
     def spawn_point(self):
         return self._spawn_point
     
+    @spawn_point.setter
+    def spawn_point(self, value):
+        self._spawn_point = value
+        self.info_channel.send_typed_message("spawn_point", self._spawn_point)
+    
 
 class DiscreteEnvironment():
     
@@ -412,6 +417,30 @@ class InfoSideChannel(SideChannel):
         # We simply read a string from the message and print it.
         
         self._message_log.append(msg.read_float32_list())
+        
+    def send_typed_message(self, key, value):
+        msg = OutgoingMessage()
+        msg.write_string(key)
+
+        if isinstance(value, str):
+            msg.write_string(value)
+
+        elif isinstance(value, bool):
+            msg.write_bool(value)
+
+        elif isinstance(value, int):
+            msg.write_int32(value)
+
+        elif isinstance(value, float):
+            msg.write_float32(value)
+
+        elif isinstance(value, list):
+            msg.write_int32(len(value))
+            for i in value:
+                msg.write_string(i)
+
+        super().queue_message_to_send(msg)
+        
 
 
 
