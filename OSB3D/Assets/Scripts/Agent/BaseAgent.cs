@@ -58,6 +58,7 @@ public class BaseAgent : Agent
     private void Update()
     {
         if (playerController.ExtraInput()[1]) { OnEpisodeBegin(); }
+        infoSideChannel.SendAgentInfo(transform.position);
     }
 
     private void FixedUpdate()

@@ -199,7 +199,7 @@ class OSB3DEnv(gym.Env):
     def _get_info(self):
         agent_positions = np.array(self.info_channel.message_log).reshape((len(self.info_channel.message_log),3)) 
         distances = np.linalg.norm(self._bug_positions[:, np.newaxis, :] - agent_positions, axis=2)
-        within_distance_mask = distances <= 5;
+        within_distance_mask = distances <= 2;
         bug_key = "BugLog" 
         self.bugs_found = np.sum(within_distance_mask.any(axis=1))        
         self.bugs_found_cumulative += self.bugs_found

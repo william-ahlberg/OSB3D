@@ -33,5 +33,5 @@ bug_settings:
     gadget: 1
     state: 1
     geometry: 25
-    physics: 100
+    physics: 1000
     logic: 1

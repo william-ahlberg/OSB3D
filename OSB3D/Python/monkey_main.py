@@ -13,7 +13,7 @@ def main():
                    worker_id=0,
                    no_graphics=False,
                    seed=1,
-                   max_episode_timestep=3000,
+                   max_episode_timestep=1000,
                    config_file=args.configuration_file)
     observation = env.reset()
     agent = RandomMonkeyAgent(action_size = 6,
