@@ -18,14 +18,24 @@ class RandomMonkeyAgent:
         self.position_buffer = {"positions":[], 
                                 "visitation_count": []}
         self._action = np.zeros((self.action_size)) 
+        self.trajectory = []
+        self.trajectories = []
     
     @property
     def action(self):
         if self.is_continuous:
             action = 2 * np.random.random_sample(size=self.action_size) - 1
-            
             return action
     
+
+    def save_trajectory(self):
+        with open(r"C:\Users\William\Projects\osb3d\rollout.txt", "w") as f:
+            print(self.trajectories)
+            for rollout in self.trajectories:
+                f.write("%s\n" %rollout)
+
+
+
     def increment_position_count(self, index):
        self.position_buffer["visitation_count"][index] += 1   
         
@@ -50,7 +60,6 @@ class RandomMonkeyAgent:
         sum_of_inverse = sum(1/n for n in visitation_count)
         position_probability = [count / sum_of_inverse for count in visitation_count]
         position_index = random.choices(population=range(len(visitation_count)), weights=position_probability)
-        print("Position index: ",position_index)
         return self.position_buffer["positions"][position_index[0]]
 
     @spawn_point.setter

@@ -11,7 +11,7 @@ using System;
 public class InfoSideChannel : SideChannel
 {
     Hashtable m_InfoParameters = new Hashtable();
-
+    IList<float> ISpawnPoint;
     public InfoSideChannel()
     {
         ChannelId = new Guid("a0b3abca-2146-4ddb-ac7b-713aebedd67f");
@@ -25,10 +25,11 @@ public class InfoSideChannel : SideChannel
     
     protected override void OnMessageReceived(IncomingMessage msg)
     {
-    
-
-
-    
+        var key = msg.ReadString();
+        ISpawnPoint = msg.ReadFloatList();
+        Vector3 spawnPoint = new Vector3(ISpawnPoint[0], ISpawnPoint[1], ISpawnPoint[2]);
+        m_InfoParameters["spawn_point"] =  spawnPoint;
+        Debug.Log("Hashtable info" + m_InfoParameters);
     }
 
     public void SendAgentInfo(Vector3 agentPosition)
@@ -55,28 +56,12 @@ public class InfoSideChannel : SideChannel
     
     }
 
-    /*public void SendTestInfo()
-    {
-        string testMessage = "envSize";
-        using (var msgOut = new OutgoingMessage())
-        {
-            msgOut.WriteString(testMessage);
-             
-            QueueMessageToSend(msgOut);
-        
-        
-        }
-    
-    }
-    */
     public T GetWithDefault<T>(string key, T defaultValue)
     {
         if (m_InfoParameters.ContainsKey(key))
         {
             var value = (T)m_InfoParameters[key];
-            return value;
-        
-        
+            return value;    
         }
         else
         {
@@ -86,6 +71,8 @@ public class InfoSideChannel : SideChannel
     
     
     }
+
+
 
 }
 

@@ -105,44 +105,6 @@ public class SensorSideChannel : SideChannel
 
 }
 
-/*
-    public static T ReadValue<T>(IncomingMessage msg)
-    {
-        Type parameterType = typeof(T);
-        parameterType = Nullable.GetUnderlyingType(parameterType) ?? parameterType;
-
-        if ((parameterType == typeof(string)))
-        {
-            return (string)(object)msg.ReadString();
-        }
-        else if ((parameterType == typeof(float)))
-        {
-            return (float)(object)msg.ReadFloat32();
-        }
-        else if (parameterType == typeof(int))
-        {
-            return (T)(object)msg.ReadInt32();
-        }
-        else if (parameterType == typeof(IList<>) && typeof(T[0]) == typeof(string))
-        {
-            var len = msg.ReadInt32();
-            var output = new string[len];
-            for (var i = 0; i < len; i++)
-            {
-                output.Add(msg.ReadString());
-            }
-            return (T)(object)output;
-        }
-        else
-        {
-            throw new NotSupportedException($"Type {typeof(T)} is not supported.");
-        }
-
-
-    }
-    
-*/
-
 
 
 

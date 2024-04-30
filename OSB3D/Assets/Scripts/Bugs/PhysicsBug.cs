@@ -53,8 +53,6 @@ public class PhysicsBug : BugBase
         if (other.CompareTag("Player"))
         {
             playerInBug = true;
-            Debug.Log("Cube Intersection");
-            Debug.Log(agentController);
             ChangePhysics();
         }   
 
@@ -67,8 +65,6 @@ public class PhysicsBug : BugBase
         {
             playerInBug = false;
 
-            Debug.Log("Cube Intersection");
-            Debug.Log(agentController);
             ChangePhysics();
             playerInBug = false;
         }

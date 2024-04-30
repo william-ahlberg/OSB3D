@@ -182,6 +182,8 @@ class OSB3DEnv(gym.Env):
         return observation, info
 
     def render(self):
+        raise NotImplementedError
+
         logger.warning("Could not render")
         return
 
@@ -236,7 +238,7 @@ class OSB3DEnv(gym.Env):
     
     @spawn_point.setter
     def spawn_point(self, value):
-        self._spawn_point = value
+        self._spawn_point = list(value)
         self.info_channel.send_typed_message("spawn_point", self._spawn_point)
     
 
@@ -435,9 +437,7 @@ class InfoSideChannel(SideChannel):
             msg.write_float32(value)
 
         elif isinstance(value, list):
-            msg.write_int32(len(value))
-            for i in value:
-                msg.write_string(i)
+            msg.write_float32_list(value)
 
         super().queue_message_to_send(msg)
         
