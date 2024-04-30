@@ -1,7 +1,6 @@
 ﻿from tkinter import W
 from mlagents_envs.environment import UnityEnvironment
 import numpy as np
-import matplotlib.pyplot as plt
 import logging as logs
 from mlagents_envs.base_env import ActionTuple
 import yaml
@@ -9,12 +8,10 @@ import gymnasium as gym
 import numpy as np
 from mlagents_envs.base_env import ActionTuple
 from mlagents_envs.environment import UnityEnvironment
-import matplotlib.pyplot as plt
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
-from eval.eval import OSB3DEval
 import uuid
 from typing import TypeVar
 from typing import List
@@ -25,7 +22,8 @@ from mlagents_envs.side_channel.side_channel import (
     IncomingMessage,
     OutgoingMessage,
 )
-
+from pathlib import Path
+import os
 class OSB3DEnv(gym.Env):
     def __init__(self, game_name, worker_id, no_graphics, seed, max_episode_timestep, config_file):
 
@@ -226,7 +224,10 @@ class OSB3DEnv(gym.Env):
             return 2 * action_sample - 1
 
     def import_bugdata(self):
-        with open(r"C:\Users\William\Projects\osb3d\OSB3D\Assets\Data\data.json", "r") as json_file:
+
+        relative_path = "../Assets/Data/data.json"
+        datapath = os.path.join(os.getcwd(), relative_path)
+        with open(datapath, "r") as json_file:
             bug_data = json.load(json_file)
         return bug_data
     

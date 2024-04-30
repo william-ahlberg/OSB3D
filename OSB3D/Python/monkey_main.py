@@ -2,7 +2,6 @@ import numpy as np
 import argparse
 from env.osb3d_env import OSB3DEnv
 from agent.random_monkey import RandomMonkeyAgent
-import matplotlib.pyplot as plt
 
 def main():
     parser = argparse.ArgumentParser()
