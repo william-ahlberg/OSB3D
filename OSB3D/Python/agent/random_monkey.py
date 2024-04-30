@@ -1,8 +1,8 @@
 from turtle import position
 import numpy as np
 import random
-
-
+import os
+import json
 class RandomMonkeyAgent:
     
     
@@ -29,10 +29,15 @@ class RandomMonkeyAgent:
     
 
     def save_trajectory(self):
-        with open(r"C:\Users\William\Projects\osb3d\rollout.txt", "w") as f:
-            print(self.trajectories)
-            for rollout in self.trajectories:
-                f.write("%s\n" %rollout)
+        data = {}
+        for i, rollout in enumerate(self.trajectories):
+            rollout_list = [position.tolist() for position in rollout]
+            data = {i: rollout_list}
+            #f.write("%s\n" %rollout)
+        #data_serialized = json.dump(data)
+        with open(os.path.join(os.getcwd(),"../Assets/Data/rollout.json"), "w") as f:
+            json.dump(data, f)
+
 
 
 

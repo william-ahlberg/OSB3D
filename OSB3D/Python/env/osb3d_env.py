@@ -37,7 +37,6 @@ class OSB3DEnv(gym.Env):
 #===============================================
 
         print("Starting Environment...")
-        time.sleep(3)
         print("You can know start the Unity scene")
         self.game_name = game_name
         self.seed = seed
