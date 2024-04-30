@@ -45,8 +45,8 @@ public class BugManager : MonoBehaviour
             CalcBounds();
             firstFrame = false;
 
-            CreateBugArea<GeometryBug>(bugSideChannel.GetWithDefault<int>("geometry", 10));
-            CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", 1000));
+            CreateBugArea<GeometryBug>(bugSideChannel.GetWithDefault<int>("geometry", 0));
+            CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", 0));
             SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", 10));
             SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", 10));
             SearchBugObject<LogicBug>(bugSideChannel.GetWithDefault<int>("logic", 10));
@@ -55,6 +55,7 @@ public class BugManager : MonoBehaviour
             bugs = FindObjectsByType<BugBase>(FindObjectsSortMode.None);
             bugLogger.LogBug(bugs);
             bugLogger.SerializeJson();
+            SetBugColor();
         }
     }
 
@@ -136,7 +137,6 @@ public class BugManager : MonoBehaviour
                 {
                     bugObject.AddComponent<GadgetBug>();
                     ++numberOfPlacedBugs;
-                    Debug.Log("Placed Gadget Bug");
                     
                     GadgetBug gadgetBug = bugObject.GetComponent<GadgetBug>();
                     gadgetBug.id = HighestBugId;
@@ -149,7 +149,6 @@ public class BugManager : MonoBehaviour
                 {
                     bugObject.AddComponent<LogicBug>();
                     ++numberOfPlacedBugs;
-                    Debug.Log("Placed Logic Bug");
                     LogicBug logicBug = bugObject.GetComponent<LogicBug>();
                     logicBug.id = HighestBugId;
                     logicBug.position = bugObject.transform.position;
@@ -165,7 +164,6 @@ public class BugManager : MonoBehaviour
                     stateBug.position = bugObject.transform.position;
                     stateBug.bugClass = "StateBug";
                     stateBug.bugType = "B4";
-                    Debug.Log("Placed State Bug");
                 }
             }
             
@@ -220,6 +218,30 @@ public class BugManager : MonoBehaviour
 
         
 
+    }
+
+    public void SetBugColor()
+    {
+        foreach (BugBase bug in bugs)
+        {
+            Renderer[] bugRenderers = bug.GetComponentsInChildren<Renderer>();
+            foreach (Renderer bugRenderer in bugRenderers)
+            {
+                foreach (Material bugMaterial in bugRenderer.materials)
+                {
+                    bugMaterial.SetColor("_Color", Color.red);
+                }
+            
+            }
+        
+        
+        
+        
+        }
+    
+    
+    
+    
     }
 
 

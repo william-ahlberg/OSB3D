@@ -32,6 +32,6 @@ observation_space_settings:
 bug_settings:
     gadget: 1
     state: 1
-    geometry: 25
-    physics: 1000
+    geometry: 1
+    physics: 1
     logic: 1

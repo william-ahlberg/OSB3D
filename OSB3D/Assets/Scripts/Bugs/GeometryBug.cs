@@ -53,7 +53,6 @@ public class GeometryBug : BugBase
         if (true)
         {
             collider.enabled = false;
-            Debug.Log("Enter");
         }
 
     }
@@ -64,7 +63,6 @@ public class GeometryBug : BugBase
         if (true)
         {
             collider.enabled = true;
-            Debug.Log("Exit");
 
         }
 

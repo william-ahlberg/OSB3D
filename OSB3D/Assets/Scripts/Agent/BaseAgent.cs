@@ -93,7 +93,6 @@ public class BaseAgent : Agent
     public Vector3 NormalizedPosition()
     {
         Vector3 positionNorm = 2 * DivideComponentWise(transform.position - bugManager.bounds.min, bugManager.bounds.max - bugManager.bounds.min) - new Vector3(1f,1f,1f);
-        Debug.Log(positionNorm);    
         return positionNorm;
     }
 
@@ -117,7 +116,6 @@ public class BaseAgent : Agent
             sensor.AddObservation(agentBody.localRotation);
             sensor.AddObservation(transform.position);
         }
-        Debug.Log(agentController.CheckGround());
         sensor.AddObservation(agentController.CheckGround());
 
     }
@@ -139,10 +137,10 @@ public class BaseAgent : Agent
     public void ResetAgent()
     {
         rb.velocity = Vector3.zero;
-
-        transform.position = infoSideChannel.GetWithDefault<Vector3>("spawn_point", startPosition);
+        Vector3 spawnPoint = infoSideChannel.GetWithDefault<Vector3>("spawn_point", startPosition);
+        transform.position = spawnPoint;
         Debug.Log("Start position: " + transform.position);
-        //transform.position = startPosition;
+ 
         agentColliders = GetComponentsInChildren<Collider>();
         foreach (Collider agentCollider in agentColliders)
         {
