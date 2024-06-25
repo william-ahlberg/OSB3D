@@ -26,7 +26,7 @@ action_space_settings:
 
 observation_space_settings:
     vector_obs_settings:
-        position_type: "absolute"
+        position_type: "normalized"
         include_bug_position: false
 
 bug_settings:
