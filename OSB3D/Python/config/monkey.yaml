@@ -5,7 +5,7 @@ unity_engine_settings:
     width: 1024
     height: 1024
     quality_level: 1
-    time_scale: 10
+    time_scale: 1
     target_frame_rate: -1
     capture_frame_rate: 60
 
@@ -33,5 +33,6 @@ bug_settings:
     gadget: 1
     state: 1
     geometry: 1
-    physics: 1
+    physics: 100
     logic: 1
+...

@@ -8,25 +8,24 @@ import json
 
 def main():
     parser = argparse.ArgumentParser()
-    work_id = 1
-    frequency=3000
+    frequency = 3000
     parser.add_argument("-cfg", "--configuration-file", help=None)
     args = parser.parse_args()
-
+    #"../Build/osb3d_random_monkey"os.path.join(os.getcwd(), None
     env = OSB3DEnv(game_name=os.path.join(os.getcwd(), "../Build/osb3d_random_monkey"),
-                   worker_id=2,
+                   worker_id=1,
                    no_graphics=True,
                    seed=1,
                    max_episode_timestep=2000,
                    config_file=args.configuration_file)
-    
-    observation = env.reset()
-    
+    print("Got here")
+    observation, _ = env.reset()
+    print(observation)
     agent = RandomMonkeyAgent(action_size=6,
-                              observation_size=[1, 3],
+                              observation_size=[1, 8],
                               is_continuous=True)
     bug_cumulative = []
-    for i in range(int(2000)):
+    for i in range(int(10e6)):
         action = agent.action
         observation, reward, terminated, _, info = env.step(action)
         position = observation[0][0][-4:-1]

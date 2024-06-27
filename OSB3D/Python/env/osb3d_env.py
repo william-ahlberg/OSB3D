@@ -26,15 +26,16 @@ from pathlib import Path
 import os
 class OSB3DEnv(gym.Env):
     def __init__(self, game_name, worker_id, no_graphics, seed, max_episode_timestep, config_file):
-print("""
-===============================================      
-====██████╗ ███████╗██████╗ ██████╗ ██████╗==== 
-===██╔═══██╗██╔════╝██╔══██╗╚════██╗██╔══██╗===
-===██║   ██║███████╗██████╔╝ █████╔╝██║  ██║===
-===██║   ██║╚════██║██╔══██╗ ╚═══██╗██║  ██║===
-===╚██████╔╝███████║██████╔╝██████╔╝██████╔╝===
-====╚═════╝ ╚══════╝╚═════╝ ╚═════╝ ╚═════╝==== 
-===============================================""")
+        print("""
+        ===============================================      
+        ====██████╗ ███████╗██████╗ ██████╗ ██████╗==== 
+        ===██╔═══██╗██╔════╝██╔══██╗╚════██╗██╔══██╗===
+        ===██║   ██║███████╗██████╔╝ █████╔╝██║  ██║===
+        ===██║   ██║╚════██║██╔══██╗ ╚═══██╗██║  ██║===
+        ===╚██████╔╝███████║██████╔╝██████╔╝██████╔╝===
+        ====╚═════╝ ╚══════╝╚═════╝ ╚═════╝ ╚═════╝==== 
+        ===============================================
+        """)
 
         print("Starting Environment...")
         print("You can know start the Unity scene")
@@ -68,7 +69,11 @@ print("""
 
         self.behavior_name = "AgentBehavior?team=0"
 
-        self.unity_env = UnityEnvironment(self.game_name, worker_id=worker_id,seed=self.seed, no_graphics=self.no_graphics,side_channels=self.side_channels)
+        self.unity_env = UnityEnvironment(self.game_name,
+                                          worker_id=worker_id,
+                                          seed=self.seed,
+                                          no_graphics=self.no_graphics,
+                                          side_channels=self.side_channels,)
         self.worker_id = worker_id
         self.actions_for_episode = dict()
         self.episode = -1
@@ -83,7 +88,6 @@ print("""
         self.trajectory = []
         self.trajectories = dict()
         self.bug_data = self.import_bugdata() 
-        
         self.bugs_found = 0
         self.bugs_found_cumulative = 0
         self.env_size = 0 
@@ -217,7 +221,7 @@ print("""
     def set_config(self):
         with open(self.config_file, "r") as f:
             self.config = yaml.safe_load(f)
-            #print(self.config)
+            print(self.config)
 
     def action_sample(self):
         if self.unity_env.behavior_specs[self.behavior_name].action_spec.is_continuous():
@@ -226,7 +230,7 @@ print("""
 
     def import_bugdata(self):
 
-        relative_path = "../Assets/Data/data.json"
+        relative_path = "/home/william/.config/unity3d/DefaultCompany/OSB3D/Data/data.json"
         datapath = os.path.join(os.getcwd(), relative_path)
         with open(datapath, "r") as json_file:
             bug_data = json.load(json_file)
@@ -263,11 +267,6 @@ class SensorSideChannel(SideChannel):
         self.config = config
 
     def on_message_received(self, msg: IncomingMessage) -> None:
-        """
-        Note: We must implement this method of the SideChannel interface to
-        receive messages from Unity
-        """
-        # We simply read a string from the message and print it.
         print(msg.read_string())
 
     def set_sensor_parameter(self):
@@ -312,11 +311,6 @@ class ActionSideChannel(SideChannel):
         self.config = config
 
     def on_message_received(self, msg: IncomingMessage) -> None:
-        """
-        Note: We must implement this method of the SideChannel interface to
-        receive messages from Unity
-        """
-        # We simply read a string from the message and print it.
         print(msg.read_string())
 
     def set_sensor_parameter(self):
@@ -359,11 +353,6 @@ class BugSideChannel(SideChannel):
         self.config = config
 
     def on_message_received(self, msg: IncomingMessage) -> None:
-        """
-        Note: We must implement this method of the SideChannel interface to
-        receive messages from Unity
-        """
-        # We simply read a string from the message and print it.
         print(msg.read_string())
 
     def set_bug_parameter(self):
@@ -412,12 +401,6 @@ class InfoSideChannel(SideChannel):
         self._message_log = value
         
     def on_message_received(self, msg: IncomingMessage) -> None:
-        """
-        Note: We must implement this method of the SideChannel interface to
-        receive messages from Unity
-        """
-        # We simply read a string from the message and print it.
-        
         self._message_log.append(msg.read_float32_list())
         
     def send_typed_message(self, key, value):
