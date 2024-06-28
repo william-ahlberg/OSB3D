@@ -260,7 +260,6 @@ public class BugLogEntry
 }
 public class BugLogger
 {
-    private string savePath = "C://Users//William//Projects//osb3d//OSB3D//Assets";
     public List<BugLogEntry> logs = new List<BugLogEntry>();
 
     public void LogBug(BugBase[] bugs)
@@ -284,7 +283,7 @@ public class BugLogger
     public void SerializeJson()
     {
         string json = JsonHelper.ToJson(logs, true);
-        string filePath = savePath + "//Data//data.json";
+        string filePath = Application.dataPath + "/Data/data.json";
         System.IO.File.WriteAllText(filePath, json);
 
     }

@@ -1,234 +1,58 @@
 {
     "BugLog": [
         {
-            "id": 20,
+            "id": 2,
             "position": {
-                "x": 85.0,
-                "y": 0.0,
-                "z": 355.0
+                "x": 109.26116943359375,
+                "y": 2.0101571083068849,
+                "z": -4.358375549316406
             },
-            "bugClass": "StateBug",
-            "bugType": "B4",
+            "bugClass": "PhysicsBug",
+            "bugType": "B8",
             "isActive": false
         },
         {
             "id": 3,
             "position": {
-                "x": -2.4999964237213136,
+                "x": -19.999998092651368,
                 "y": 0.0,
-                "z": 415.0
+                "z": 40.00000762939453
             },
             "bugClass": "GadgetBug",
             "bugType": "B2",
-            "isActive": false
-        },
-        {
-            "id": 14,
-            "position": {
-                "x": 40.0,
-                "y": 0.0,
-                "z": 730.0
-            },
-            "bugClass": "StateBug",
-            "bugType": "B4",
-            "isActive": false
-        },
-        {
-            "id": 8,
-            "position": {
-                "x": 102.5,
-                "y": 0.0,
-                "z": 165.0
-            },
-            "bugClass": "GadgetBug",
-            "bugType": "B2",
-            "isActive": false
-        },
-        {
-            "id": 19,
-            "position": {
-                "x": 102.5,
-                "y": 0.0,
-                "z": 290.0
-            },
-            "bugClass": "StateBug",
-            "bugType": "B4",
-            "isActive": false
-        },
-        {
-            "id": 2,
-            "position": {
-                "x": 40.0,
-                "y": 0.0,
-                "z": 230.0
-            },
-            "bugClass": "GadgetBug",
-            "bugType": "B2",
-            "isActive": false
-        },
-        {
-            "id": 13,
-            "position": {
-                "x": -2.4999964237213136,
-                "y": 0.0,
-                "z": 415.0
-            },
-            "bugClass": "StateBug",
-            "bugType": "B4",
-            "isActive": false
-        },
-        {
-            "id": 7,
-            "position": {
-                "x": 85.0,
-                "y": 0.0,
-                "z": -7.499996662139893
-            },
-            "bugClass": "GadgetBug",
-            "bugType": "B2",
-            "isActive": false
-        },
-        {
-            "id": 18,
-            "position": {
-                "x": 102.5,
-                "y": 0.0,
-                "z": 165.0
-            },
-            "bugClass": "StateBug",
-            "bugType": "B4",
             "isActive": false
         },
         {
             "id": 1,
             "position": {
-                "x": -2.5000040531158449,
-                "y": 0.0,
-                "z": 165.0
+                "x": 84.72755432128906,
+                "y": 17.000001907348634,
+                "z": 139.71743774414063
             },
-            "bugClass": "GadgetBug",
-            "bugType": "B2",
-            "isActive": false
-        },
-        {
-            "id": 12,
-            "position": {
-                "x": 40.0,
-                "y": 0.0,
-                "z": 230.0
-            },
-            "bugClass": "StateBug",
-            "bugType": "B4",
-            "isActive": false
-        },
-        {
-            "id": 6,
-            "position": {
-                "x": 20.0000057220459,
-                "y": 0.0,
-                "z": 1210.0
-            },
-            "bugClass": "GadgetBug",
-            "bugType": "B2",
-            "isActive": false
-        },
-        {
-            "id": 17,
-            "position": {
-                "x": 85.0,
-                "y": 0.0,
-                "z": -7.499996662139893
-            },
-            "bugClass": "StateBug",
-            "bugType": "B4",
-            "isActive": false
-        },
-        {
-            "id": 11,
-            "position": {
-                "x": -2.5000040531158449,
-                "y": 0.0,
-                "z": 165.0
-            },
-            "bugClass": "StateBug",
-            "bugType": "B4",
+            "bugClass": "GeometryBug",
+            "bugType": "B5",
             "isActive": false
         },
         {
             "id": 5,
             "position": {
-                "x": 20.0000057220459,
+                "x": 23.5000057220459,
                 "y": 0.0,
-                "z": 915.0
-            },
-            "bugClass": "GadgetBug",
-            "bugType": "B2",
-            "isActive": false
-        },
-        {
-            "id": 16,
-            "position": {
-                "x": 20.0000057220459,
-                "y": 0.0,
-                "z": 1210.0
-            },
-            "bugClass": "StateBug",
-            "bugType": "B4",
-            "isActive": false
-        },
-        {
-            "id": 10,
-            "position": {
-                "x": 85.0,
-                "y": 0.0,
-                "z": 355.0
-            },
-            "bugClass": "GadgetBug",
-            "bugType": "B2",
-            "isActive": false
-        },
-        {
-            "id": 4,
-            "position": {
-                "x": 40.0,
-                "y": 0.0,
-                "z": 730.0
-            },
-            "bugClass": "GadgetBug",
-            "bugType": "B2",
-            "isActive": false
-        },
-        {
-            "id": 21,
-            "position": {
-                "x": 231.5,
-                "y": 0.0,
-                "z": 84.99999237060547
+                "z": 40.0
             },
             "bugClass": "LogicBug",
             "bugType": "B9",
             "isActive": false
         },
         {
-            "id": 15,
+            "id": 4,
             "position": {
-                "x": 20.0000057220459,
+                "x": -19.999998092651368,
                 "y": 0.0,
-                "z": 915.0
+                "z": 40.00000762939453
             },
             "bugClass": "StateBug",
             "bugType": "B4",
-            "isActive": false
-        },
-        {
-            "id": 9,
-            "position": {
-                "x": 102.5,
-                "y": 0.0,
-                "z": 290.0
-            },
-            "bugClass": "GadgetBug",
-            "bugType": "B2",
             "isActive": false
         }
     ]

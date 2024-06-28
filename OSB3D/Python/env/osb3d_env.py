@@ -1,7 +1,6 @@
 ﻿from tkinter import W
 from mlagents_envs.environment import UnityEnvironment
 import numpy as np
-import matplotlib.pyplot as plt
 import logging as logs
 from mlagents_envs.base_env import ActionTuple
 import yaml
@@ -9,12 +8,10 @@ import gymnasium as gym
 import numpy as np
 from mlagents_envs.base_env import ActionTuple
 from mlagents_envs.environment import UnityEnvironment
-import matplotlib.pyplot as plt
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
-from eval.eval import OSB3DEval
 import uuid
 from typing import TypeVar
 from typing import List
@@ -25,21 +22,22 @@ from mlagents_envs.side_channel.side_channel import (
     IncomingMessage,
     OutgoingMessage,
 )
-
+from pathlib import Path
+import os
 class OSB3DEnv(gym.Env):
     def __init__(self, game_name, worker_id, no_graphics, seed, max_episode_timestep, config_file):
-
-#===============================================      
-#====██████╗ ███████╗██████╗ ██████╗ ██████╗==== 
-#===██╔═══██╗██╔════╝██╔══██╗╚════██╗██╔══██╗===
-#===██║   ██║███████╗██████╔╝ █████╔╝██║  ██║===
-#===██║   ██║╚════██║██╔══██╗ ╚═══██╗██║  ██║===
-#===╚██████╔╝███████║██████╔╝██████╔╝██████╔╝===
-#====╚═════╝ ╚══════╝╚═════╝ ╚═════╝ ╚═════╝==== 
-#===============================================
+        print("""
+        ===============================================      
+        ====██████╗ ███████╗██████╗ ██████╗ ██████╗==== 
+        ===██╔═══██╗██╔════╝██╔══██╗╚════██╗██╔══██╗===
+        ===██║   ██║███████╗██████╔╝ █████╔╝██║  ██║===
+        ===██║   ██║╚════██║██╔══██╗ ╚═══██╗██║  ██║===
+        ===╚██████╔╝███████║██████╔╝██████╔╝██████╔╝===
+        ====╚═════╝ ╚══════╝╚═════╝ ╚═════╝ ╚═════╝==== 
+        ===============================================
+        """)
 
         print("Starting Environment...")
-        time.sleep(3)
         print("You can know start the Unity scene")
         self.game_name = game_name
         self.seed = seed
@@ -71,7 +69,11 @@ class OSB3DEnv(gym.Env):
 
         self.behavior_name = "AgentBehavior?team=0"
 
-        self.unity_env = UnityEnvironment(self.game_name, worker_id=worker_id,seed=self.seed, no_graphics=self.no_graphics,side_channels=self.side_channels)
+        self.unity_env = UnityEnvironment(self.game_name,
+                                          worker_id=worker_id,
+                                          seed=self.seed,
+                                          no_graphics=self.no_graphics,
+                                          side_channels=self.side_channels,)
         self.worker_id = worker_id
         self.actions_for_episode = dict()
         self.episode = -1
@@ -86,7 +88,6 @@ class OSB3DEnv(gym.Env):
         self.trajectory = []
         self.trajectories = dict()
         self.bug_data = self.import_bugdata() 
-        
         self.bugs_found = 0
         self.bugs_found_cumulative = 0
         self.env_size = 0 
@@ -220,7 +221,7 @@ class OSB3DEnv(gym.Env):
     def set_config(self):
         with open(self.config_file, "r") as f:
             self.config = yaml.safe_load(f)
-            #print(self.config)
+            print(self.config)
 
     def action_sample(self):
         if self.unity_env.behavior_specs[self.behavior_name].action_spec.is_continuous():
@@ -228,7 +229,10 @@ class OSB3DEnv(gym.Env):
             return 2 * action_sample - 1
 
     def import_bugdata(self):
-        with open(r"C:\Users\William\Projects\osb3d\OSB3D\Assets\Data\data.json", "r") as json_file:
+
+        relative_path = "/home/william/.config/unity3d/DefaultCompany/OSB3D/Data/data.json"
+        datapath = os.path.join(os.getcwd(), relative_path)
+        with open(datapath, "r") as json_file:
             bug_data = json.load(json_file)
         return bug_data
     
@@ -263,11 +267,6 @@ class SensorSideChannel(SideChannel):
         self.config = config
 
     def on_message_received(self, msg: IncomingMessage) -> None:
-        """
-        Note: We must implement this method of the SideChannel interface to
-        receive messages from Unity
-        """
-        # We simply read a string from the message and print it.
         print(msg.read_string())
 
     def set_sensor_parameter(self):
@@ -312,11 +311,6 @@ class ActionSideChannel(SideChannel):
         self.config = config
 
     def on_message_received(self, msg: IncomingMessage) -> None:
-        """
-        Note: We must implement this method of the SideChannel interface to
-        receive messages from Unity
-        """
-        # We simply read a string from the message and print it.
         print(msg.read_string())
 
     def set_sensor_parameter(self):
@@ -359,11 +353,6 @@ class BugSideChannel(SideChannel):
         self.config = config
 
     def on_message_received(self, msg: IncomingMessage) -> None:
-        """
-        Note: We must implement this method of the SideChannel interface to
-        receive messages from Unity
-        """
-        # We simply read a string from the message and print it.
         print(msg.read_string())
 
     def set_bug_parameter(self):
@@ -412,12 +401,6 @@ class InfoSideChannel(SideChannel):
         self._message_log = value
         
     def on_message_received(self, msg: IncomingMessage) -> None:
-        """
-        Note: We must implement this method of the SideChannel interface to
-        receive messages from Unity
-        """
-        # We simply read a string from the message and print it.
-        
         self._message_log.append(msg.read_float32_list())
         
     def send_typed_message(self, key, value):
