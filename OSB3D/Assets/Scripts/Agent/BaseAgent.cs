@@ -22,9 +22,7 @@ public class BaseAgent : Agent
     string vectorObsSettings;
     public BugManager bugManager; 
     SensorManager sensorManager;
-
     InfoSideChannel infoSideChannel;
-
     private void Awake()
     {
         sensorSideChannel = new SensorSideChannel();
@@ -44,13 +42,16 @@ public class BaseAgent : Agent
     private void Start()
     {
         bugManager = FindObjectOfType<BugManager>();
+        if (bugManager == null)
+        {
+            Debug.LogError("No BugManager found in scene for BaseAgent.");
+        }
         agentController = GetComponent<AgentController>();
         playerController = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
         agentBody = transform.Find("Body");
         startPosition = transform.position;
-        //sensorSideChannel = new SensorSideChannel();
-        
+                
         vectorObsSettings = sensorSideChannel.GetWithDefault<string>("position_type", "none");
     }
 
@@ -146,10 +147,7 @@ public class BaseAgent : Agent
         {
             if ( agentCollider.GetType() != typeof(MeshCollider) )
             {
-
-
                 agentCollider.enabled = true;
-
             }
 
 

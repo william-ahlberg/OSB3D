@@ -484,7 +484,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.02e-43, y: 0, z: 0, w: 1.7106811e-12}
+  m_BoundingSphereOverride: {x: 0, y: 6.864329e+29, z: 6.52e-43, w: 4.0223e-41}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -799,8 +799,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seed: 2
-  blockCountX: 14
-  blockCountZ: 14
+  blockCountX: 2
+  blockCountZ: 2
   parkRatio: 0.25
   crossing: {fileID: 4005743241734848231, guid: 767244c251a7bd24180332c707fc2f9a, type: 3}
   edgeBlock: {fileID: 5917777203468375160, guid: 54285ac9cc2a1af49af24014232e5ce9, type: 3}
@@ -1105,7 +1105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 1
-  TakeActionsBetweenDecisions: 1
+  TakeActionsBetweenDecisions: 0
 --- !u!114 &1993042076
 MonoBehaviour:
   m_ObjectHideFlags: 0

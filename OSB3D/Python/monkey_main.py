@@ -6,26 +6,39 @@ import matplotlib.pyplot as plt
 import os
 import json
 
+RUNNING_BUILD = True
 def main():
     parser = argparse.ArgumentParser()
     frequency = 3000
     parser.add_argument("-cfg", "--configuration-file", help=None)
+    parser.add_argument("-gn", "--game-name", help=None, default=None)
+
     args = parser.parse_args()
-    #"../Build/osb3d_random_monkey"os.path.join(os.getcwd(), None
-    env = OSB3DEnv(game_name=os.path.join(os.getcwd(), "../Build/osb3d_random_monkey"),
-                   worker_id=1,
-                   no_graphics=True,
-                   seed=1,
-                   max_episode_timestep=2000,
-                   config_file=args.configuration_file)
-    print("Got here")
+    print(args.configuration_file)
+
+    if RUNNING_BUILD:
+        env = OSB3DEnv(game_name=args.game_name,
+                       worker_id=1337,
+                       no_graphics=True,
+                       seed=1,
+                       max_episode_timestep=2000,
+                       config_file=args.configuration_file)
+    else:
+        env = OSB3DEnv(game_name=None,
+                       worker_id=0,
+                       no_graphics=False,
+                       seed=1,
+                       max_episode_timestep=2000,
+                       config_file=args.configuration_file)
+
     observation, _ = env.reset()
-    print(observation)
+
     agent = RandomMonkeyAgent(action_size=6,
                               observation_size=[1, 8],
                               is_continuous=True)
+    print("Agent initialized")
     bug_cumulative = []
-    for i in range(int(10e6)):
+    for i in range(int(10e4/8)):
         action = agent.action
         observation, reward, terminated, _, info = env.step(action)
         position = observation[0][0][-4:-1]
@@ -44,7 +57,7 @@ def main():
             print(info)
             bug_cumulative.append(info["bugs_found_cumulative"])
 
-    with open(os.path.join(os.getcwd(), "../Assets/Data/bug_eval.json"), "w") as f:
+    with open(os.path.join(os.getcwd(), agent.persistent_datapath() + r"\bug_eval.json"), "w") as f:
         json.dump(bug_cumulative, f)
             
     env.close()

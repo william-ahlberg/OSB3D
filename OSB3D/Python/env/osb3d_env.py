@@ -1,5 +1,4 @@
 ﻿from tkinter import W
-from mlagents_envs.environment import UnityEnvironment
 import numpy as np
 import logging as logs
 from mlagents_envs.base_env import ActionTuple
@@ -7,7 +6,6 @@ import yaml
 import gymnasium as gym
 import numpy as np
 from mlagents_envs.base_env import ActionTuple
-from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
@@ -46,6 +44,7 @@ class OSB3DEnv(gym.Env):
         self.timesteps = 0
         self.config_file = config_file
         self.config = {}
+        self.worker_id = worker_id
 
         self.set_config()
         self.engine_channel = None
@@ -68,20 +67,18 @@ class OSB3DEnv(gym.Env):
                               self.bug_channel]
 
         self.behavior_name = "AgentBehavior?team=0"
-
         self.unity_env = UnityEnvironment(self.game_name,
-                                          worker_id=worker_id,
+                                          worker_id=self.worker_id,
                                           seed=self.seed,
                                           no_graphics=self.no_graphics,
-                                          side_channels=self.side_channels,)
-        self.worker_id = worker_id
+                                          side_channels=self.side_channels,
+                                        )
+
+        self.unity_env.reset()
         self.actions_for_episode = dict()
         self.episode = -1
         self.trajectories_for_episode = dict()
         self.reward_weights = None
-
-        self.unity_env.reset()
-
         self.coverage_of_points = []
         self.pos_buffer = dict()
         self.action_size = 6 
@@ -185,8 +182,6 @@ class OSB3DEnv(gym.Env):
     def render(self):
         raise NotImplementedError
 
-        logger.warning("Could not render")
-        return
 
     def close(self):
         self.unity_env.close()
@@ -216,21 +211,19 @@ class OSB3DEnv(gym.Env):
         return info
 
     def set_seed(self):
-        pass
+        raise NotImplementedError
     
     def set_config(self):
         with open(self.config_file, "r") as f:
             self.config = yaml.safe_load(f)
-            print(self.config)
 
     def action_sample(self):
         if self.unity_env.behavior_specs[self.behavior_name].action_spec.is_continuous():
             action_sample = np.random.rand(self.unity_env.behavior_specs[self.behavior_name].action_spec.continuous_size)
             return 2 * action_sample - 1
 
-    def import_bugdata(self):
-
-        relative_path = "/home/william/.config/unity3d/DefaultCompany/OSB3D/Data/data.json"
+    def import_bugdata(self): #TODO: Change to relative path
+        relative_path = "C:/Users/William/AppData/LocalLow/DefaultCompany/OSB3D/data.json"
         datapath = os.path.join(os.getcwd(), relative_path)
         with open(datapath, "r") as json_file:
             bug_data = json.load(json_file)
@@ -423,7 +416,21 @@ class InfoSideChannel(SideChannel):
             msg.write_float32_list(value)
 
         super().queue_message_to_send(msg)
-        
+
+
+class AgentDataLogger():
+
+    def __init__(self):
+        agent_action_space = 6
+        agent_observation_space = 8
+        data_log = {}
+
+    def log_data(self, data, data_key):
+        self.data_log[data_key] = data
+
+
+
+
 
 
 

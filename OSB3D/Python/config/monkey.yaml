@@ -5,7 +5,7 @@ unity_engine_settings:
     width: 1024
     height: 1024
     quality_level: 1
-    time_scale: 1
+    time_scale: 10
     target_frame_rate: -1
     capture_frame_rate: 60
 
@@ -26,7 +26,7 @@ action_space_settings:
 
 observation_space_settings:
     vector_obs_settings:
-        position_type: "normalized"
+        position_type: "absolute"
         include_bug_position: false
 
 bug_settings:

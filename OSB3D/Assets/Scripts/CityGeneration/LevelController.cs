@@ -31,12 +31,7 @@ public class LevelController : MonoBehaviour
 
     private float blockSize, roadWidth;
     EnvironmentParameters envParameters;
-
-
-
-
-
-
+    
     void Start()
     {
         envParameters = Academy.Instance.EnvironmentParameters;
@@ -44,8 +39,9 @@ public class LevelController : MonoBehaviour
         blockCountZ = (int)envParameters.GetWithDefault("block_count_z", blockCountZ);
         parkRatio = envParameters.GetWithDefault("park_ratio ", parkRatio);
         seed = (int)envParameters.GetWithDefault("seed", seed);
+        Debug.Log("Let's see if this goes here!");
         Setup();
-       
+        
     }
 
     //Setup() is to to also be able to generate a city from the editor 

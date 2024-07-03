@@ -46,12 +46,11 @@ public class BugManager : MonoBehaviour
             firstFrame = false;
 
             CreateBugArea<GeometryBug>(bugSideChannel.GetWithDefault<int>("geometry", 0));
-            CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", 0));
-            SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", 10));
-            SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", 10));
-            SearchBugObject<LogicBug>(bugSideChannel.GetWithDefault<int>("logic", 10));
+            CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", 100));
+            SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", 0));
+            SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", 0));
+            SearchBugObject<LogicBug>(bugSideChannel.GetWithDefault<int>("logic", 0));
             
-   
             bugs = FindObjectsByType<BugBase>(FindObjectsSortMode.None);
             bugLogger.LogBug(bugs);
             bugLogger.SerializeJson();
@@ -283,7 +282,8 @@ public class BugLogger
     public void SerializeJson()
     {
         string json = JsonHelper.ToJson(logs, true);
-        string filePath = Application.dataPath + "/Data/data.json";
+        string filePath = Application.persistentDataPath + "/data.json";
+        Debug.Log(filePath);
         System.IO.File.WriteAllText(filePath, json);
 
     }

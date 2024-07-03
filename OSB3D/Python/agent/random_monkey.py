@@ -30,16 +30,25 @@ class RandomMonkeyAgent:
 
     def save_trajectory(self):
         data = {}
+        print(self.trajectories)
         for i, rollout in enumerate(self.trajectories):
             rollout_list = [position.tolist() for position in rollout]
-            data = {i: rollout_list}
-            #f.write("%s\n" %rollout)
-        #data_serialized = json.dump(data)
-        with open(os.path.join(os.getcwd(),"../Assets/Data/rollout.json"), "w") as f:
-            json.dump(data, f)
+            data[i] = rollout_list
+        with open(self.persistent_datapath() + "/rollouts.json", "w") as f:
+            json.dump({"Rollouts": data}, f)
 
 
+    def persistent_datapath(self):
+        from sys import platform
 
+        if platform == "win32":
+            return rf"C:\Users\{os.getlogin()}\AppData\LocalLow\DefaultCompany\OSB3D"
+        elif platform == "linux" or platform == "linux2":
+            return r"$HOME/.config/unity3d/DefaultCompany/OSB3D"
+        elif platform == "darwin":
+            return r"$HOME/Library/Application Support/DefaultCompany/OSB3D"
+        else:
+            raise OSError("Unsupported platform")
 
     def increment_position_count(self, index):
        self.position_buffer["visitation_count"][index] += 1   

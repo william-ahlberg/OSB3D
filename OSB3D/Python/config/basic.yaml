@@ -13,8 +13,8 @@ unity_engine_settings:
 # City generation options
 env_settings:
     seed: 1337
-    block_count_x: 2
-    block_count_z: 2
+    block_count_x: 10
+    block_count_z: 10
     park_ratio: 0.25
 
 # Action space
