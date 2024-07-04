@@ -1,38 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Test Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-        }
-        p {
-            color: #666;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Open-Source Benchmark for Automated Testing and Validation of Complex 3D Game Environments (OSB3D)">
+  <meta name="keywords" content="OSB3D, open-source benchmark">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Open-Source Benchmark for Automated Testing and Validation of Complex 3D Game Environments (OSB3D)</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to My Test Page</h1>
-        <p>This is a simple HTML page to test if everything is working correctly.</p>
-        <p>If you can see this message, your HTML file is being served properly!</p>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Open-Source Benchmark for Automated Testing and Validation of Complex 3D Game Environments (OSB3D)</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://www.kth.se/wiahlb/">William Ahlberg</a><sup>1,2</sup>, </span>
+            <span class="author-block">
+              <a href="https://www.linkedin.com/in/juliamhannu/">Julia Hannu</a><sup>1</sup>, </span>
+            <span class="author-block">
+              <a href="https://liu.se/medarbetare/dande27">Daniel de Leng</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://liu.se/medarbetare/frehe08">Fredrik Heintz</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.linkedin.com/in/alessandro-sestini-52025b180/">Alessandro Sestini</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.linkedin.com/in/linusgisslen/">Linus Gisslén</a><sup>2</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Linköping University &nbsp; </span>
+            <span class="author-block"><sup>2</sup>SEED - Electronic Arts (EA) &nbsp; </span>
+          </div>
+          
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper coming soon</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/william-ahlberg/OSB3D"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+              </span> -->
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>
+@inproceedings{wang2022_3dmoments,
+  title     = {3D Moments from Near-Duplicate Photos},
+  author    = {Wang, Qianqian and Li, Zhengqi and Salesin, David and Snavely, Noah and Curless, Brian 
+               and Kontkanen, Janne},
+  booktitle = {CVPR},
+  year      = {2022}
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div align="center" class="container">
+    <div class="columns is-centered">
+        <div class="content">
+            This website is borrowed from <a href="https://github.com/nerfies/nerfies.github.io">nerfies</a>.
+        </div>
+      </div>
+    </div>
+</footer>
+
+
 </body>
 </html>
