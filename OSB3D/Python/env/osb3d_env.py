@@ -1,27 +1,22 @@
-﻿from tkinter import W
-import numpy as np
-import logging as logs
-from mlagents_envs.base_env import ActionTuple
-import yaml
+﻿import yaml
 import gymnasium as gym
 import numpy as np
 from mlagents_envs.base_env import ActionTuple
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
-from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 import uuid
 from typing import TypeVar
 from typing import List
 import json
-import time
 from mlagents_envs.side_channel.side_channel import (
     SideChannel,
     IncomingMessage,
     OutgoingMessage,
 )
-from pathlib import Path
-import os
+from osb3d_utils import OSB3DUtils
+
+
 class OSB3DEnv(gym.Env):
     def __init__(self, game_name, worker_id, no_graphics, seed, max_episode_timestep, config_file):
         print("""
@@ -42,6 +37,7 @@ class OSB3DEnv(gym.Env):
         self.no_graphics = no_graphics
         self._max_episode_timestep = max_episode_timestep
         self.timesteps = 0
+        self.total_timesteps = 0
         self.config_file = config_file
         self.config = {}
         self.worker_id = worker_id
@@ -88,7 +84,7 @@ class OSB3DEnv(gym.Env):
         self.bugs_found = 0
         self.bugs_found_cumulative = 0
         self.env_size = 0 
-        
+        self.info_log = {}
         
         self._bug_positions = np.zeros((len(self.bug_data["BugLog"]),3))
         
@@ -153,7 +149,7 @@ class OSB3DEnv(gym.Env):
         observation = decision_steps.obs
         #self.trajectories[self.episode].append(list(observation[-1][0]))
         self.timesteps += 1
-        if (self.timesteps > self._max_episode_timestep):
+        if (self.timesteps >= self._max_episode_timestep):
             terminated = True
 
         return observation, reward, terminated, False, dict()
@@ -176,7 +172,7 @@ class OSB3DEnv(gym.Env):
         observation = decision_step.obs
         self.bugs_found = 0
         self.timesteps = 0
-        
+
         return observation, info
 
     def render(self):
@@ -201,13 +197,17 @@ class OSB3DEnv(gym.Env):
         bug_key = "BugLog" 
         self.bugs_found = np.sum(within_distance_mask.any(axis=1))        
         self.bugs_found_cumulative += self.bugs_found
+        self.total_timesteps += self.timesteps
         info = { 
-            "bugs_found": f"{(100 * self.bugs_found / len(self.bug_data[bug_key])):.2f}%",
-            "bugs_found_cumulative": f"{(100 * self.bugs_found_cumulative / len(self.bug_data[bug_key])):.2f}%",
+            "bugs_found": f"{self.bugs_found}({(100 * self.bugs_found / len(self.bug_data[bug_key])):.2f}%)",
+            "bugs_found_cumulative": f"{self.bugs_found_cumulative}({(100 * self.bugs_found_cumulative / len(self.bug_data[bug_key])):.2f}%)",
             "area_covered": 0,
             "area_covered_cumulative": 0,
+            "steps": self.timesteps,
+            "total_steps": self.total_timesteps,
         }
         self._bug_positions = self._bug_positions[np.invert(within_distance_mask.any(axis=1)),...]
+        self.info_log[self.episode] = info
         return info
 
     def set_seed(self):
@@ -223,9 +223,11 @@ class OSB3DEnv(gym.Env):
             return 2 * action_sample - 1
 
     def import_bugdata(self): #TODO: Change to relative path
-        relative_path = "C:/Users/William/AppData/LocalLow/DefaultCompany/OSB3D/data.json"
-        datapath = os.path.join(os.getcwd(), relative_path)
-        with open(datapath, "r") as json_file:
+        osb3d_utils = OSB3DUtils()
+        data_path = osb3d_utils.persistent_datapath() + "/data.json"
+
+        print("LOOOK HERE!" + data_path)
+        with open(data_path, "r") as json_file:
             bug_data = json.load(json_file)
         return bug_data
     

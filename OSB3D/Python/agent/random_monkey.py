@@ -3,6 +3,8 @@ import numpy as np
 import random
 import os
 import json
+from osb3d_utils import OSB3DUtils
+osb3d_utils = OSB3DUtils()
 class RandomMonkeyAgent:
     
     
@@ -30,25 +32,13 @@ class RandomMonkeyAgent:
 
     def save_trajectory(self):
         data = {}
-        print(self.trajectories)
+        #print(self.trajectories)
         for i, rollout in enumerate(self.trajectories):
             rollout_list = [position.tolist() for position in rollout]
             data[i] = rollout_list
-        with open(self.persistent_datapath() + "/rollouts.json", "w") as f:
-            json.dump({"Rollouts": data}, f)
+        with open(osb3d_utils.persistent_datapath() + "/rollouts.json", "w") as f:
+            json.dump({"Rollouts": data}, f, indent=4)
 
-
-    def persistent_datapath(self):
-        from sys import platform
-
-        if platform == "win32":
-            return rf"C:\Users\{os.getlogin()}\AppData\LocalLow\DefaultCompany\OSB3D"
-        elif platform == "linux" or platform == "linux2":
-            return r"$HOME/.config/unity3d/DefaultCompany/OSB3D"
-        elif platform == "darwin":
-            return r"$HOME/Library/Application Support/DefaultCompany/OSB3D"
-        else:
-            raise OSError("Unsupported platform")
 
     def increment_position_count(self, index):
        self.position_buffer["visitation_count"][index] += 1   

@@ -5,9 +5,10 @@ from agent.random_monkey import RandomMonkeyAgent
 import matplotlib.pyplot as plt
 import os
 import json
-
+from osb3d_utils import OSB3DUtils
 RUNNING_BUILD = True
 def main():
+    osb3d_utils = OSB3DUtils()
     parser = argparse.ArgumentParser()
     frequency = 3000
     parser.add_argument("-cfg", "--configuration-file", help=None)
@@ -18,9 +19,9 @@ def main():
 
     if RUNNING_BUILD:
         env = OSB3DEnv(game_name=args.game_name,
-                       worker_id=1337,
+                       worker_id=1338,
                        no_graphics=True,
-                       seed=1,
+                       seed=1337,
                        max_episode_timestep=2000,
                        config_file=args.configuration_file)
     else:
@@ -36,9 +37,9 @@ def main():
     agent = RandomMonkeyAgent(action_size=6,
                               observation_size=[1, 8],
                               is_continuous=True)
-    print("Agent initialized")
     bug_cumulative = []
-    for i in range(int(10e4/8)):
+    print("NUMBER OF BUGS: ", len(env.bug_data["BugLog"]))
+    for i in range(int(15000*2000)):
         action = agent.action
         observation, reward, terminated, _, info = env.step(action)
         position = observation[0][0][-4:-1]
@@ -55,14 +56,14 @@ def main():
             env.spawn_point = agent.spawn_point
             observation, info = env.reset()
             print(info)
-            bug_cumulative.append(info["bugs_found_cumulative"])
+            bug_cumulative.append(info["bugs_found_cumulative_1"])
 
-    with open(os.path.join(os.getcwd(), agent.persistent_datapath() + r"\bug_eval.json"), "w") as f:
-        json.dump(bug_cumulative, f)
+    with open(osb3d_utils.persistent_datapath() + r"/info.json_1", "w") as f:
+        json.dump(env.info_log, f, indent=4)
             
+    agent.save_trajectory()
     env.close()
 
-    agent.save_trajectory()
 
 if __name__ == "__main__":
     main()
