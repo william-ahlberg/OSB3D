@@ -56,9 +56,9 @@ def main():
             env.spawn_point = agent.spawn_point
             observation, info = env.reset()
             print(info)
-            bug_cumulative.append(info["bugs_found_cumulative_1"])
+            bug_cumulative.append(info["bugs_found_cumulative"])
 
-    with open(osb3d_utils.persistent_datapath() + r"/info.json_1", "w") as f:
+    with open(osb3d_utils.persistent_datapath() + r"/info.json", "w") as f:
         json.dump(env.info_log, f, indent=4)
             
     agent.save_trajectory()

@@ -11,6 +11,8 @@
 /OSB3D/[Uu]ser[Ss]ettings/
 /OSB3D/Assets/Data
 
+# Remote files
+/docs
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /OSB3D/[Mm]emoryCaptures/
