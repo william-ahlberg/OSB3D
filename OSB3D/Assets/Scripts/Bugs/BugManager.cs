@@ -14,6 +14,13 @@ public class BugManager : MonoBehaviour
     BugBase[] bugs;
     BugLogger bugLogger = new BugLogger();
     BugSideChannel bugSideChannel;
+
+    [SerializeField] private int _defaultNumberOfGeometryBugs = 1;
+    [SerializeField] private int _defaultNumberOfPhysicsBugs = 1;
+    [SerializeField] private int _defaultNumberOfGadgetBugs = 1;
+    [SerializeField] private int _defaultNumberOfStateBugs = 1;
+    [SerializeField] private int _defaultNumberOfLogicBugs = 1;
+    
     
     private int highestBugId = 0;
     
@@ -45,11 +52,11 @@ public class BugManager : MonoBehaviour
             CalcBounds();
             firstFrame = false;
 
-            CreateBugArea<GeometryBug>(bugSideChannel.GetWithDefault<int>("geometry", 0));
-            CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", 100));
-            SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", 0));
-            SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", 0));
-            SearchBugObject<LogicBug>(bugSideChannel.GetWithDefault<int>("logic", 0));
+            CreateBugArea<GeometryBug>(bugSideChannel.GetWithDefault<int>("geometry", _defaultNumberOfGeometryBugs));
+            CreateBugArea<PhysicsBug>(bugSideChannel.GetWithDefault<int>("physics", _defaultNumberOfPhysicsBugs));
+            SearchBugObject<GadgetBug>(bugSideChannel.GetWithDefault<int>("gadget", _defaultNumberOfGadgetBugs));
+            SearchBugObject<StateBug>(bugSideChannel.GetWithDefault<int>("state", _defaultNumberOfStateBugs));
+            SearchBugObject<LogicBug>(bugSideChannel.GetWithDefault<int>("logic", _defaultNumberOfLogicBugs));
             
             bugs = FindObjectsByType<BugBase>(FindObjectsSortMode.None);
             bugLogger.LogBug(bugs);
@@ -281,8 +288,9 @@ public class BugLogger
 
     public void SerializeJson()
     {
+        Guid uniqueID = Guid.NewGuid();
         string json = JsonHelper.ToJson(logs, true);
-        string filePath = Application.persistentDataPath + "/data.json";
+        string filePath = Application.persistentDataPath + "/data.json" + "_" + uniqueID.ToString();
         Debug.Log(filePath);
         System.IO.File.WriteAllText(filePath, json);
 

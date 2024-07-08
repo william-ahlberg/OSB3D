@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.7
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.50080645, g: 0.44459248, b: 0.37618905, a: 0.7}
+  m_IndirectSpecularColor: {r: 0.49498695, g: 0.44034356, b: 0.37423915, a: 0.7}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -614,7 +614,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 2000
-  field of view: 95
+  field of view: 94.99999
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -798,7 +798,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3d7d1218ccd214db5f61542cea8c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 2
+  seed: 1337
   blockCountX: 2
   blockCountZ: 2
   parkRatio: 0.25
@@ -899,6 +899,11 @@ MonoBehaviour:
   bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  _defaultNumberOfGeometryBugs: 1
+  _defaultNumberOfPhysicsBugs: 1
+  _defaultNumberOfGadgetBugs: 1
+  _defaultNumberOfStateBugs: 1
+  _defaultNumberOfLogicBugs: 1
 --- !u!1 &1891355897
 GameObject:
   m_ObjectHideFlags: 0

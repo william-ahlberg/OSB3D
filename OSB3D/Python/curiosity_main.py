@@ -1,12 +1,15 @@
 import numpy as np
 import argparse
 from env.osb3d_env import OSB3DEnv
-from agent.random_monkey import RandomMonkeyAgent
+from agent.curiosity import CuriosityAgent
 import matplotlib.pyplot as plt
 import os
 import json
 from osb3d_utils import OSB3DUtils
+
 RUNNING_BUILD = True
+
+
 def main():
     osb3d_utils = OSB3DUtils()
     parser = argparse.ArgumentParser()
@@ -34,25 +37,30 @@ def main():
 
     observation, _ = env.reset()
 
-    agent = RandomMonkeyAgent(action_size=6,
+    agent = CuriosityAgent(action_size=6,
                               observation_size=[1, 8],
                               is_continuous=True)
     bug_cumulative = []
 
-    for i in range(int(15000*2000)):
-        action = agent.action
+    for i in range(int(15000 * 2000)):
+        action = agent.model(observation)
         observation, reward, terminated, _, info = env.step(action)
         position = observation[0][0][-4:-1]
-        
-        agent.trajectory.append(np.concatenate((position,action)))
+
+        agent.trajectory.append(np.concatenate((position, action)))
         if i == 0:
-            agent.add_position(position)    
+            agent.add_position(position)
         elif observation[0][0][-1]:
             agent.update_buffer(position)
-            
+
+        reward = agent.get_reward(position)
+
+
+
+
         if terminated:
             agent.trajectories.append(agent.trajectory)
-            agent.trajectory = [] 
+            agent.trajectory = []
             env.spawn_point = agent.spawn_point
             observation, info = env.reset()
             print(info)
@@ -60,11 +68,11 @@ def main():
 
     with open(osb3d_utils.persistent_datapath() + r"/info.json" + "_" + osb3d_utils.get_unique_id(), "w") as f:
         json.dump(env.info_log, f, indent=4)
-            
+
     agent.save_trajectory()
     env.close()
 
 
 if __name__ == "__main__":
     main()
-        
+

@@ -1,5 +1,6 @@
 from sys import platform
 import os
+import uuid
 class OSB3DUtils:
 
     def __init__(self):
@@ -13,3 +14,6 @@ class OSB3DUtils:
             return r"$HOME/Library/Application Support/DefaultCompany/OSB3D"
         else:
             raise OSError("Unsupported platform")
+
+    def get_unique_id(self):
+        return str(uuid.uuid4())

@@ -18,8 +18,6 @@ class OSB3DEval:
             for point in self.data[key]:
                 x.append(point[0])
                 y.append(point[2])
-
-
         return np.array(list(zip(x,y)))
 
     def plot_reward(self):
