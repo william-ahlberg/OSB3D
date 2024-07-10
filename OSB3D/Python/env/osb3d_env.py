@@ -95,7 +95,11 @@ class OSB3DEnv(gym.Env):
             self._bug_positions[index,:] = (x,y,z)
 
         self._spawn_point = [0,0,0]
-        
+
+        #self.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(1, 8), dtype=np.float32)
+        #self.action_space = gym.spaces.Box(low=-1, high=1, shape=(self.action_size,), dtype=np.float32)
+
+
     def set_engine_channel(self):
         self.engine_channel = EngineConfigurationChannel()
         engine_config = self.config["unity_engine_settings"]
@@ -224,9 +228,8 @@ class OSB3DEnv(gym.Env):
 
     def import_bugdata(self): #TODO: Change to relative path
         osb3d_utils = OSB3DUtils()
-        data_path = osb3d_utils.persistent_datapath() + "/data.json"
+        data_path = osb3d_utils.persistent_datapath() + "\data.json"
 
-        print("LOOOK HERE!" + data_path)
         with open(data_path, "r") as json_file:
             bug_data = json.load(json_file)
         return bug_data

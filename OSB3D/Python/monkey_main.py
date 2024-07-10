@@ -1,25 +1,26 @@
 import numpy as np
 import argparse
 from env.osb3d_env import OSB3DEnv
-from agent.random_monkey import RandomMonkeyAgent
+from agent.agent import RandomMonkeyAgent
 import matplotlib.pyplot as plt
 import os
 import json
 from osb3d_utils import OSB3DUtils
-RUNNING_BUILD = True
+RUNNING_BUILD = False
 def main():
     osb3d_utils = OSB3DUtils()
     parser = argparse.ArgumentParser()
     frequency = 3000
     parser.add_argument("-cfg", "--configuration-file", help=None)
     parser.add_argument("-gn", "--game-name", help=None, default=None)
+    parser.add_argument("-wi", "--worker-id", help=None, default=0)
 
     args = parser.parse_args()
     print(args.configuration_file)
 
     if RUNNING_BUILD:
         env = OSB3DEnv(game_name=args.game_name,
-                       worker_id=1340,
+                       worker_id=args.worker_id,
                        no_graphics=True,
                        seed=1337,
                        max_episode_timestep=2000,
@@ -38,6 +39,8 @@ def main():
                               observation_size=[1, 8],
                               is_continuous=True)
     bug_cumulative = []
+
+    print(vars(env.unity_env))
 
     for i in range(int(15000*2000)):
         action = agent.action
