@@ -799,8 +799,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seed: 1337
-  blockCountX: 2
-  blockCountZ: 2
+  blockCountX: 20
+  blockCountZ: 20
   parkRatio: 0.25
   crossing: {fileID: 4005743241734848231, guid: 767244c251a7bd24180332c707fc2f9a, type: 3}
   edgeBlock: {fileID: 5917777203468375160, guid: 54285ac9cc2a1af49af24014232e5ce9, type: 3}
@@ -858,7 +858,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxPlaceAttempts: 100
-  carsDriving: 0
+  carsDriving: 1
   stopOnCollision: 1
   carSpeed: 5
   carMin: 1
@@ -1041,8 +1041,8 @@ MonoBehaviour:
   groundDrag: 5
   jumpCooldown: 0.25
   airMultiplier: 0.1
-  sensitivityX: 100
-  sensitivityY: 100
+  sensitivityX: 200
+  sensitivityY: 200
   groundLayer:
     serializedVersion: 2
     m_Bits: 1

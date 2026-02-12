@@ -1,4 +1,3 @@
-from turtle import position
 import numpy as np
 import random
 import os
@@ -6,17 +5,11 @@ import json
 from osb3d_utils import OSB3DUtils
 import uuid
 osb3d_utils = OSB3DUtils()
-from turtle import position
-import numpy as np
-import random
-import os
-import json
-from osb3d_utils import OSB3DUtils
-import uuid
 import torch
 import torch.nn as nn
-osb3d_utils = OSB3DUtils()
 from torch.distributions.normal import Normal
+from gym.spaces import Box, Discrete, Dict, MultiDiscrete, MultiBinary
+from typing import Any, Mapping, Sequence
 
 class RandomMonkeyAgent:
     def __init__(self, observation_size=0,
@@ -180,3 +173,26 @@ class CuriosityAgent(nn.Module):
         if action is None:
             action = probs.sample()
         return action, probs.log_prob(action).sum(1), probs.entropy().sum(1), self.critic(x)
+
+class Agent:
+
+    def __init__(self, algorithm, observation_space: Dict, action_space: Dict, config):
+        super().__init__()
+        self.algorithm = algorithm
+        self.observation_space = observation_space
+        self.action_space = action_space
+        # Try to move algorithm to device if it supports `.to()`
+        if hasattr(self.algorithm, "to"):
+            try:
+                self.algorithm.to(self.device)
+            except Exception:
+                # best-effort: ignore if algorithm can't be moved now
+                pass
+
+
+    def train(self, data):
+        return self.algorithm.train(data)
+
+
+
+

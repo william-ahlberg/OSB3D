@@ -1,5 +1,11 @@
 ---
 # PPO Agent YAML Configuration
+env:
+    game_name: "osb3d"
+    headless: false
+    no_graphics: false
+
+
 
 unity_engine_settings:
     width: 1024
@@ -28,6 +34,16 @@ observation_space_settings:
     vector_obs_settings:
         position_type: "absolute"
         include_bug_position: false
+    semantic_map_settings:
+        semantic_map_x: 5
+        semantic_map_y: 5
+        semantic_map_z: 5
+    ray_perception_settings:
+        ray_perception_plane: 1
+    #camera_settings:
+    #    grayscale: true
+    #    camera_resolution_width: 128
+    #    camera_resolution_height: 128
 
 bug_settings:
     gadget: 1

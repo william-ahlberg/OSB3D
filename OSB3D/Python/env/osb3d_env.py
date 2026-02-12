@@ -3,22 +3,94 @@ import gymnasium as gym
 import numpy as np
 from mlagents_envs.base_env import ActionTuple
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
-from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
-import uuid
 from typing import TypeVar
 from typing import List
 import json
-from mlagents_envs.side_channel.side_channel import (
-    SideChannel,
-    IncomingMessage,
-    OutgoingMessage,
-)
+
+from channel.channel_manager import ChannelManager
+
+from channel.side_channel import EngineConfigurationChannel, EnvironmentParametersChannel, SensorSideChannel, ActionSideChannel, InfoSideChannel, BugSideChannel
+
+from gymnasium.spaces import Dict, Box, Discrete, MultiDiscrete
+
 from osb3d_utils import OSB3DUtils
 
 
+class UnityToGymAdapter(gym.Env):
+    def __init__(self, env: UnityEnvironment):
+        self.env = env
+        self.env.reset()
+        self.behavior_name = list(env.behavior_specs._dict.keys())[0]
+        self.spec = env.behavior_specs[self.behavior_name]
+        self.step_count = 0
+        self.length = 512  # Default episode length, can be modified as needed
+
+
+    @property
+    def unwrapped(self):
+        if hasattr(self.env, 'unwrapped'):
+            return self.env.unwrapped
+        return self.env
+
+
+    def step(self, action):
+        action_tuple = ActionTuple()
+        if self.spec.action_spec.is_continuous():
+            action_tuple.add_continuous(action.reshape(1, -1))
+        if self.spec.action_spec.is_discrete():
+            action_tuple.add_discrete(action)
+
+        self.env.set_actions(self.behavior_name, action_tuple)
+        self.env.step()
+        self.step_count += 1
+        (decision_steps, terminal_steps) = self.env.get_steps(self.behavior_name)
+
+        # Decide which observation and reward to return. Prefer terminal_steps if present.
+        if len(terminal_steps) > 0:
+            observation = terminal_steps.obs
+            reward = float(terminal_steps.reward[0])
+            terminated = True
+            truncated = False
+            info = {}
+            return observation, reward, terminated, truncated, info
+
+        # If step limit reached, treat as truncation
+        if self.step_count >= self.length:
+            print(self.step_count)
+            observation = decision_steps.obs
+            reward = float(decision_steps.reward[0])
+            terminated = False
+            truncated = True
+            info = {}
+            return observation, reward, terminated, truncated, info
+
+        # Normal decision step
+        observation = decision_steps.obs
+        reward = float(decision_steps.reward[0])
+        terminated = False
+        truncated = False
+        info = {}
+        return observation, reward, terminated, truncated, info
+
+    def reset(self, seed=0, options=None):
+        self.env.reset()
+        self.step_count = 0
+        decision_step, _ = self.env.get_steps(self.behavior_name)
+        observation = decision_step.obs
+        return observation, {}
+
+    def _is_terminal(self, interrupted):
+        if interrupted is None:
+            return False
+        try:
+            return bool(interrupted[0])
+        except Exception:
+            return bool(interrupted)
+
+
+
 class OSB3DEnv(gym.Env):
-    def __init__(self, game_name, worker_id, no_graphics, seed, max_episode_timestep, config_file):
+    def __init__(self, game_name, worker_id, no_graphics, seed, max_episode_timestep, config):
         print("""
         ===============================================      
         ====██████╗ ███████╗██████╗ ██████╗ ██████╗==== 
@@ -38,11 +110,14 @@ class OSB3DEnv(gym.Env):
         self._max_episode_timestep = max_episode_timestep
         self.timesteps = 0
         self.total_timesteps = 0
-        self.config_file = config_file
-        self.config = {}
+        self.config = config
         self.worker_id = worker_id
+        self._channel_manager = ChannelManager()
 
-        self.set_config()
+
+
+
+
         self.engine_channel = None
         self.parameter_channel = None
         self.sensor_channel = None
@@ -62,15 +137,17 @@ class OSB3DEnv(gym.Env):
                               self.info_channel,
                               self.bug_channel]
 
-        self.behavior_name = "AgentBehavior?team=0"
-        self.unity_env = UnityEnvironment(self.game_name,
-                                          worker_id=self.worker_id,
-                                          seed=self.seed,
-                                          no_graphics=self.no_graphics,
-                                          side_channels=self.side_channels,
-                                        )
+        self._env = UnityToGymAdapter(UnityEnvironment(self.game_name,
+                                                       worker_id=self.worker_id,
+                                                       seed=self.seed,
+                                                       no_graphics=self.no_graphics,
+                                                       side_channels=self.side_channels,
+                                                       ))
+        self._env.reset()
 
-        self.unity_env.reset()
+        self.behavior_name = "AgentBehavior?team=0"
+
+
         self.actions_for_episode = dict()
         self.episode = -1
         self.trajectories_for_episode = dict()
@@ -129,54 +206,20 @@ class OSB3DEnv(gym.Env):
         self.bug_channel.set_bug_parameter()
 
     def step(self, action):
-        action = np.asarray(action)
-        action_tuple = ActionTuple()
-        if (self.unity_env.behavior_specs[self.behavior_name].action_spec.is_continuous()):
-            action = np.reshape(action, [1, self.action_size])
-            action_tuple.add_continuous(action)
-        else:
-            action = np.reshape(action, [1, 1])
-            action_tuple.add_discrete(action)
+        observation, reward, terminated, truncated, info = self._env.step(action)
+        info = self._get_info(info)
+        return observation, reward, terminated, truncated, info
 
-        self.unity_env.set_actions(self.behavior_name, action_tuple)
-        self.unity_env.step()
-        # decision_steps: obs, reward, agent_id, action_mask
-        (decision_steps, terminal_steps) = self.unity_env.get_steps(self.behavior_name)
-        
-        if (terminal_steps.interrupted == True):
-            print("done")
-            terminated = True
-            reward = terminal_steps.reward[0]
-        else:
-            reward = decision_steps.reward[0]
-            terminated = False
-        observation = decision_steps.obs
-        #self.trajectories[self.episode].append(list(observation[-1][0]))
-        self.timesteps += 1
-        if (self.timesteps >= self._max_episode_timestep):
-            terminated = True
+    def _observation(self, observation):
 
-        return observation, reward, terminated, False, dict()
+        observation_order = self.observation_space
+        print("Observation order: ", observation_order)
+        for sensor in list(self.observation_space.keys()):
+           print("Sensor: ", sensor)
+        return {}
 
-    def reset(self):
-        super().reset(seed=self.seed)
-        self.import_bugdata()
-        if (self.episode != -1):
-            info = self._get_info()
-        else:
-            info = None
-            #self.env_size = self.info_channel.message_log.pop(0)
-            print("Environment size: ", self.env_size)    
-        self.unity_env.reset()
-        self.episode += 1
-        
-        print("New episode!",self.episode)
-        self.trajectories[self.episode] = []
-        decision_step, _ = self.unity_env.get_steps(self.behavior_name)
-        observation = decision_step.obs
-        self.bugs_found = 0
-        self.timesteps = 0
-
+    def reset(self, seed=0, options=None):
+        observation, info = self._env.reset()
         return observation, info
 
     def render(self):
@@ -184,7 +227,7 @@ class OSB3DEnv(gym.Env):
 
 
     def close(self):
-        self.unity_env.close()
+        self._env.close()
 
     @property
     def bug_positions(self):
@@ -194,10 +237,10 @@ class OSB3DEnv(gym.Env):
     def bug_positions(self, value):
         self._bug_position = value
 
-    def _get_info(self):
+    def _get_info(self,info):
         agent_positions = np.array(self.info_channel.message_log).reshape((len(self.info_channel.message_log),3)) 
         distances = np.linalg.norm(self._bug_positions[:, np.newaxis, :] - agent_positions, axis=2)
-        within_distance_mask = distances <= 2;
+        within_distance_mask = distances <= 2
         bug_key = "BugLog" 
         self.bugs_found = np.sum(within_distance_mask.any(axis=1))        
         self.bugs_found_cumulative += self.bugs_found
@@ -216,19 +259,15 @@ class OSB3DEnv(gym.Env):
 
     def set_seed(self):
         raise NotImplementedError
-    
-    def set_config(self):
-        with open(self.config_file, "r") as f:
-            self.config = yaml.safe_load(f)
 
     def action_sample(self):
-        if self.unity_env.behavior_specs[self.behavior_name].action_spec.is_continuous():
-            action_sample = np.random.rand(self.unity_env.behavior_specs[self.behavior_name].action_spec.continuous_size)
+        if self._env.spec.action_spec.is_continuous():
+            action_sample = np.random.rand(self._env.spec.action_spec.continuous_size)
             return 2 * action_sample - 1
 
     def import_bugdata(self): #TODO: Change to relative path
         osb3d_utils = OSB3DUtils()
-        data_path = osb3d_utils.persistent_datapath() + "\data.json"
+        data_path = osb3d_utils.persistent_datapath() + "/data.json"
 
         with open(data_path, "r") as json_file:
             bug_data = json.load(json_file)
@@ -242,7 +281,35 @@ class OSB3DEnv(gym.Env):
     def spawn_point(self, value):
         self._spawn_point = list(value)
         self.info_channel.send_typed_message("spawn_point", self._spawn_point)
-    
+
+    @property
+    def observation_space(self):
+        observation_space = Dict()
+        for sensor in self._env.spec.observation_specs:
+            if sensor.name == "VectorSensor_size8":
+                observation_space[sensor.name] = Box(low=-np.inf, high=np.inf, shape=sensor.shape, dtype=np.float32)
+            if sensor.name == "SemanticMapSensor":
+                observation_space[sensor.name] = MultiDiscrete(sensor.shape,dtype=np.int8)
+            if sensor.name == "RaySensor":
+                observation_space[sensor.name] = Box(low=-np.inf, high=np.inf, shape=sensor.shape, dtype=np.float32)
+            if sensor.name == "CameraSensor":
+                observation_space[sensor.name] = Box(low=0, high=255, shape=sensor.shape, dtype=np.uint8)
+
+        return observation_space
+
+    @property
+    def action_space(self):
+        if self._env.spec.action_spec.is_continuous():
+            continuous_action_shape = self._env.spec.action_spec.continuous_size
+            action_space = gym.spaces.Box(low=-1, high=1, shape=(continuous_action_shape,), dtype=np.float32)
+            return action_space
+        elif self._env.spec.action_spec.is_discrete():
+            discrete_action_shape = self._env.spec.action_spec.discrete_size
+            action_space = gym.spaces.Discrete(discrete_action_shape)
+            return action_space
+        else:
+            raise NotImplementedError
+
 
 class DiscreteEnvironment():
     
@@ -255,173 +322,7 @@ class DiscreteEnvironment():
         self.min_x = min_z
         self.x_disc = x_disc
         self.y_disc = y_disc
-        self.z_disc = z_disc 
-
-class SensorSideChannel(SideChannel):
-
-    T = TypeVar("T")
-    def __init__(self, config) -> None:
-        super().__init__(uuid.UUID("aa97d987-4c42-4878-b597-3de40edf66a6"))
-        self.config = config
-
-    def on_message_received(self, msg: IncomingMessage) -> None:
-        print(msg.read_string())
-
-    def set_sensor_parameter(self):
-        if "observation_space_settings" not in self.config.keys():
-            print("No sensor configuration was defined, using default values!")
-        else:
-            sensor_config = self.config["observation_space_settings"]
-            for key1, value1 in sensor_config.items():
-                self.send_typed_message(key1,True)
-                for key2, value2 in value1.items():
-                    self.send_typed_message(key2, value2)
-
-    def send_typed_message(self, key, value):
-        msg = OutgoingMessage()
-        msg.write_string(key)
-
-        if isinstance(value, str):
-            msg.write_string(value)
-
-        elif isinstance(value, bool):
-            msg.write_bool(value)
-
-        elif isinstance(value, int):
-            msg.write_int32(value)
-
-        elif isinstance(value, float):
-            msg.write_float32(value)
-
-        elif isinstance(value, list):
-            msg.write_int32(len(value))
-            for i in value:
-                msg.write_string(i)
-
-        super().queue_message_to_send(msg)
-
-class ActionSideChannel(SideChannel):
-
-    T = TypeVar("T")
-
-    def __init__(self, config) -> None:
-        super().__init__(uuid.UUID("4a6982f9-d298-4f7b-b7eb-bb7012603bba"))
-        self.config = config
-
-    def on_message_received(self, msg: IncomingMessage) -> None:
-        print(msg.read_string())
-
-    def set_sensor_parameter(self):
-        if "observation_space_settings" not in self.config.keys():
-            print("No sensor configuration was defined, using default values!")
-        else:
-            action_config = self.config["action_space_settings"]
-            for key, value in action_config.items():
-                self.send_typed_message(key, value)
-
-    def send_typed_message(self, key, value):
-        msg = OutgoingMessage()
-        msg.write_string(key)
-
-        if isinstance(value, str):
-            msg.write_string(value)
-
-        elif isinstance(value, bool):
-            msg.write_bool(value)
-
-        elif isinstance(value, int):
-            msg.write_int32(value)
-
-        elif isinstance(value, float):
-            msg.write_float32(value)
-
-        elif isinstance(value, list):
-            msg.write_int32(len(value))
-            for i in value:
-                msg.write_string(i)
-
-        super().queue_message_to_send(msg)
-
-class BugSideChannel(SideChannel):
-
-    T = TypeVar("T")
-
-    def __init__(self, config) -> None:
-        super().__init__(uuid.UUID("b1961881-7cec-498d-9f45-1f7d8a299378"))
-        self.config = config
-
-    def on_message_received(self, msg: IncomingMessage) -> None:
-        print(msg.read_string())
-
-    def set_bug_parameter(self):
-        if "bug_settings" not in self.config.keys():
-            print("No bug configuration was defined, using default values!")
-        else:
-            bug_config = self.config["bug_settings"]
-            for key, value in bug_config.items():
-                self.send_typed_message(key, value)
-
-    def send_typed_message(self, key, value):
-        msg = OutgoingMessage()
-        msg.write_string(key)
-
-        if isinstance(value, str):
-            msg.write_string(value)
-
-        elif isinstance(value, bool):
-            msg.write_bool(value)
-
-        elif isinstance(value, int):
-            msg.write_int32(value)
-
-        elif isinstance(value, float):
-            msg.write_float32(value)
-
-        elif isinstance(value, list):
-            msg.write_int32(len(value))
-            for i in value:
-                msg.write_string(i)
-
-        super().queue_message_to_send(msg)
-
-class InfoSideChannel(SideChannel):
-    
-    def __init__(self) -> None:
-        super().__init__(uuid.UUID("a0b3abca-2146-4ddb-ac7b-713aebedd67f"))
-        self._message_log = []
-
-    @property
-    def message_log(self) -> List[float]:
-        return self._message_log
-    
-    @message_log.setter
-    def message_log(self, value) -> None:
-        self._message_log = value
-        
-    def on_message_received(self, msg: IncomingMessage) -> None:
-        self._message_log.append(msg.read_float32_list())
-        
-    def send_typed_message(self, key, value):
-        msg = OutgoingMessage()
-        msg.write_string(key)
-
-        if isinstance(value, str):
-            msg.write_string(value)
-
-        elif isinstance(value, bool):
-            msg.write_bool(value)
-
-        elif isinstance(value, int):
-            msg.write_int32(value)
-
-        elif isinstance(value, float):
-            msg.write_float32(value)
-
-        elif isinstance(value, list):
-            msg.write_float32_list(value)
-
-        super().queue_message_to_send(msg)
-
+        self.z_disc = z_disc
 
 class AgentDataLogger():
 

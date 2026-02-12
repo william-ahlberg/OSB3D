@@ -36,8 +36,6 @@ public class SensorSideChannel : SideChannel
         {"camera_settings", typeof(bool) },
         {"ray_perception_settings", typeof(bool) },
         {"semantic_map_settings", typeof(bool) },
-
-
     };
 
 

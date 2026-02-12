@@ -100,7 +100,7 @@ public class Semantic3DMap : ISensor
 
     public string GetName()
     {
-        return "SemanticMap";
+        return "SemanticMapSensor";
     }
 
     public void Reset()
@@ -310,7 +310,7 @@ public class Semantic3DMap : ISensor
         bool otherAgent = true;
         while(otherAgent)
         {
-            if(go.CompareTag("Agent") && !GameObject.ReferenceEquals(go, agent))
+            if(go.CompareTag("Player") && !GameObject.ReferenceEquals(go, agent))
             {
                 startI ++;
                 if(startI - 1 >= numColliders)
@@ -336,7 +336,7 @@ public class Semantic3DMap : ISensor
                 break;
             }
 
-            if(colliders[i].gameObject.CompareTag("Agent") && !GameObject.ReferenceEquals(colliders[i].gameObject, agent))
+            if(colliders[i].gameObject.CompareTag("Player") && !GameObject.ReferenceEquals(colliders[i].gameObject, agent))
             {
                 continue;
             }

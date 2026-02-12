@@ -40,7 +40,7 @@ def main():
                               is_continuous=True)
     bug_cumulative = []
 
-    print(vars(env.unity_env))
+    print(vars(env._env))
 
     for i in range(int(15000*2000)):
         action = agent.action

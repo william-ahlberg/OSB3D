@@ -57,11 +57,12 @@ public class SensorManager : MonoBehaviour
         if (cameraSettings)
         {
             agentCamera = GetComponentInChildren<Camera>();
+            Debug.Log("Camera found: " + agentCamera);
             cameraSensor = sensors.AddComponent<CameraSensorComponent>();
             cameraSensor.Width = sensorSideChannel.GetWithDefault<int>("camera_resolution_width", cameraSensorWidth);
             cameraSensor.Height = sensorSideChannel.GetWithDefault<int>("camera_resolution_height", cameraSensorHeight);
             cameraSensor.Grayscale = sensorSideChannel.GetWithDefault<bool>("grayscale", false);
-            cameraSensor.SensorName = "AgentCameraSensor";
+            cameraSensor.SensorName = "CameraSensor";
             cameraSensor.Camera = agentCamera;
         }
 
@@ -86,8 +87,6 @@ public class SensorManager : MonoBehaviour
             semanticMapSensor.offset_z = 1.0f;
             semanticMapSensor._gridScale = 2.0f;
             semanticMapSensor._gridHeight = 2.0f;
-
-
             semanticMapSensor.Tags = new List<string>() { "Building", "Item", "Road", "Car", "Ground" };
         }
     }
